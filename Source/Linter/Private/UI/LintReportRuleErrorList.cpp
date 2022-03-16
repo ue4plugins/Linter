@@ -1,6 +1,6 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
 
-#include "UI/LintReportruleErrorList.h"
+#include "UI/LintReportRuleErrorList.h"
 #include "LinterStyle.h"
 #include "IContentBrowserSingleton.h"
 #include "Framework/Views/ITypedTableView.h"
