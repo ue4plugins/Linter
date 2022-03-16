@@ -257,7 +257,7 @@ int32 ULinterCommandlet::Main(const FString& InParams)
 		}
 	}
 
-	if (NumErrors > 0 || Switches.Contains(TEXT("TreatWarningsAsErrors")) && NumWarnings > 0)
+	if (NumErrors > 0 || (Switches.Contains(TEXT("TreatWarningsAsErrors")) && NumWarnings > 0))
 	{
 		UE_LOG(LinterCommandlet, Display, TEXT("Lint completed with errors. Returning error code 2."));
 		return 2;
