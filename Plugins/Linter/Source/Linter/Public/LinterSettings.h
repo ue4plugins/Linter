@@ -18,6 +18,6 @@ class ULinterSettings : public UObject
 public:
 
 	UPROPERTY(EditAnywhere, config, Category = Settings)
-	TAssetPtr<ULintRuleSet> DefaultLintRuleSet;
+	TSoftObjectPtr<ULintRuleSet> DefaultLintRuleSet;
 
 };

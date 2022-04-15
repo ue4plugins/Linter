@@ -50,8 +50,8 @@ void FLinterContentBrowserExtensions::InstallHooks(FLinterModule* LinterModule, 
 							{
 								lm->SetDesiredLintPaths(SelectedPaths);
 							}
-							FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"));
 						}
+							FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"));
 					})),
 					NAME_None,
 					EUserInterfaceActionType::Button);
