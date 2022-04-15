@@ -61,11 +61,11 @@ FName ULintRule::GetRuleBasedObjectVariantName_Implementation(UObject* ObjectToL
 		UMaterialInterface* MI = Cast<UMaterialInterface>(ObjectToLint);
 		if (MI != nullptr)
 		{
-#if ENGINE_MINOR_VERSION >= 25
+//#if ENGINE_MINOR_VERSION >= 25
 			TMicRecursionGuard RecursionGuard;
-#else
-			UMaterialInterface::TMicRecursionGuard RecursionGuard;
-#endif
+//#else
+//			UMaterialInterface::TMicRecursionGuard RecursionGuard;
+//#endif
 			const UMaterial* Material = MI->GetMaterial_Concurrent(RecursionGuard);
 			if (Material != nullptr)
 			{
