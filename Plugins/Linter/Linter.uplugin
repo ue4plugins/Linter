@@ -58,6 +58,21 @@
 				"Server",
 				"Client"
 			]
+		},
+		{
+			"Name": "TemplateLinter",
+			"Type": "Editor",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Win32",
+				"Mac",
+				"Linux"
+			],
+			"BlacklistTargets": [
+				"Server",
+				"Client"
+			]
 		}
 	]
 }
