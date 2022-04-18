@@ -3,6 +3,7 @@
 #include "LintRuleSet.h"
 #include "LinterNamingConvention.h"
 #include "HAL/FileManager.h"
+#include "Engine/Texture2D.h"
 
 ULintRule_Texture_Size_PowerOfTwo::ULintRule_Texture_Size_PowerOfTwo(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

@@ -10,6 +10,7 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
 #include "Widgets/Layout/SSeparator.h"
+#include "AssetData.h"
 
 #define LOCTEXT_NAMESPACE "LinterBatchRenamer"
 

@@ -7,6 +7,7 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Types/SlateStructs.h"
 #include "Misc/ScopedSlowTask.h"
+#include "AssetData.h"
 
 class SAssetLinkWidget : public SCompoundWidget
 {

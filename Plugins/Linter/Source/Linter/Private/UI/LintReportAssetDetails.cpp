@@ -19,6 +19,8 @@
 #include "UI/LintReportAssetError.h"
 #include "LintRule.h"
 #include "AssetThumbnail.h"
+#include "UI/LintReportAssetErrorList.h"
+#include "Widgets/Layout/SBox.h"
 
 
 #define LOCTEXT_NAMESPACE "LintReport"

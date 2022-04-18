@@ -8,6 +8,8 @@
 #include "Widgets/Views/SListView.h"
 #include "Widgets/Views/STableRow.h"
 #include "Widgets/Layout/SBox.h"
+#include "Widgets/Images/SImage.h"
+#include "LinterStyle.h"
 
 #define LOCTEXT_NAMESPACE "LintReport"
 

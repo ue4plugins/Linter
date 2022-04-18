@@ -2,6 +2,7 @@
 
 #pragma once
 
+class FLinterModule;
 
 // Integrate Linter actions into the Content Browser
 class FLinterContentBrowserExtensions

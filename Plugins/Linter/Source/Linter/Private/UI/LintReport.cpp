@@ -24,6 +24,15 @@
 #include "Misc/FileHelper.h"
 #include "Widgets/Input/SComboButton.h"
 #include "UI/LintReportRuleDetails.h"
+#include "LinterStyle.h"
+#include "Linter.h"
+#include "Interfaces/IPluginManager.h"
+#include "Framework/Application/SlateApplication.h"
+#include "Widgets/Input/SButton.h"
+#include "EditorStyleSet.h"
+#include "Widgets/Images/SImage.h"
+#include "Framework/MultiBox/MultiBoxExtender.h"
+#include "Framework/MultiBox/MultiBoxBuilder.h"
 
 #define LOCTEXT_NAMESPACE "Linter"
 

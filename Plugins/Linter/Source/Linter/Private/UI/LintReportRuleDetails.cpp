@@ -19,6 +19,8 @@
 #include "UI/LintReportRuleErrorList.h"
 #include "LintRule.h"
 #include "AssetThumbnail.h"
+#include "Widgets/Layout/SBox.h"
+#include "Widgets/Images/SImage.h"
 
 
 
