@@ -3,8 +3,11 @@
 
 #include "CoreMinimal.h"
 #include "LintRule.h"
+#include "LintRule_Blueprint_Base.h"
 
 #include "LintRule_Blueprint_Vars_NonAtomic.generated.h"
+
+struct FBPVariableDescription;
 
 UCLASS(BlueprintType, Blueprintable, Abstract)
 class LINTER_API ULintRule_Blueprint_Vars_NonAtomic : public ULintRule_Blueprint_Base

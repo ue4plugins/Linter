@@ -2,6 +2,7 @@
 #include "LintRules/LintRule_IsNamedCorrectly_Base.h"
 #include "LintRuleSet.h"
 #include "LinterNamingConvention.h"
+#include "Engine/Blueprint.h"
 
 ULintRule_IsNamedCorrectly_Base::ULintRule_IsNamedCorrectly_Base(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

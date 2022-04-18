@@ -3,6 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Misc/ScopedSlowTask.h"
+#include "Engine/DataAsset.h"
 #include "LintRule.h"
 
 #include "LintRuleSet.generated.h"

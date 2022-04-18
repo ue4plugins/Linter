@@ -8,6 +8,11 @@
 #include "Widgets/Text/STextBlock.h"
 #include "Widgets/Images/SThrobber.h"
 #include "Widgets/Text/SRichTextBlock.h"
+#include "Widgets/Input/SHyperlink.h"
+#include "SlateOptMacros.h"
+#include "ContentBrowserModule.h"
+#include "AssetRegistryModule.h"
+#include "IContentBrowserSingleton.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 void SAssetLinkWidget::Construct(const FArguments& Args)
