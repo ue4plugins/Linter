@@ -134,3 +134,10 @@ void ULinterNamingConvention::SortConventions()
 		return false;
 	});
 }
+
+void ULinterNamingConvention::PreSave(const class ITargetPlatform* TargetPlatform)
+{
+	Super::PreSave(TargetPlatform);
+
+	SortConventions();
+}
