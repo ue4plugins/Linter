@@ -158,3 +158,11 @@ void ULinterNamingConvention::SortConventions()
 		return false;
 	});
 }
+
+void ULinterNamingConvention::PreSave(const class ITargetPlatform* TargetPlatform)
+{
+	Super::PreSave(TargetPlatform);
+
+	SortConventions();
+}
+>>>>>>> 99c97f0 (Sort Class Naming Conventions on PreSave):Plugins/Linter/Source/Linter/Private/LinterNamingConvention.cpp
