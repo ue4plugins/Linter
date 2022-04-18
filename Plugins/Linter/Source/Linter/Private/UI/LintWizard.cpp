@@ -20,6 +20,8 @@
 #include "Logging/MessageLog.h"
 #include "Logging/TokenizedMessage.h"
 
+#include "Misc/EngineVersionComparison.h"
+
 #include "LinterStyle.h"
 #include "LintRuleSet.h"
 #include "LinterSettings.h"
@@ -88,7 +90,11 @@ void SLintWizard::Construct(const FArguments& InArgs)
 				.FinishButtonText(LOCTEXT("FinishButtonText", "Close"))
 				.OnFinished_Lambda([&]()
 				{
+#if UE_VERSION_NEWER_THAN(4, 26, 0)
+					FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"))->RequestCloseTab();
+#else
 					FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"))->RequestCloseTab();
+#endif
 				})
 				+ SWizard::Page()
 				.CanShow_Lambda([&]() { return RuleSets.Num() > 0; })
@@ -521,7 +527,11 @@ void SLintWizard::Construct(const FArguments& InArgs)
 																		LOCTEXT("ZipTaskShortName", "Zip Project Task"), FEditorStyle::GetBrush(TEXT("MainFrame.CookContent")));
 																}
 
+#if UE_VERSION_NEWER_THAN(4, 26, 0)
+																FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"))->RequestCloseTab();
+#else
 																FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"))->RequestCloseTab();
+#endif
 															}
 															return FReply::Handled();
 														})
