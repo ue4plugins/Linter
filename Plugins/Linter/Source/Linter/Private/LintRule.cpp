@@ -10,6 +10,7 @@
 #include "IAssetRegistry.h"
 #include "IAssetTools.h"
 #include "AssetRegistryModule.h"
+#include "Misc/EngineVersionComparison.h"
 
 
 ULintRule::ULintRule(const FObjectInitializer& ObjectInitializer)
@@ -61,7 +62,7 @@ FName ULintRule::GetRuleBasedObjectVariantName_Implementation(UObject* ObjectToL
 		UMaterialInterface* MI = Cast<UMaterialInterface>(ObjectToLint);
 		if (MI != nullptr)
 		{
-#if ENGINE_MINOR_VERSION >= 25
+#if UE_VERSION_NEWER_THAN(4, 25, 0)
 			TMicRecursionGuard RecursionGuard;
 #else
 			UMaterialInterface::TMicRecursionGuard RecursionGuard;
