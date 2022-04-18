@@ -1,7 +1,11 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
 #pragma once
 #include "Widgets/SCompoundWidget.h"
-#include "LintRule.h"
+#include "Widgets/DeclarativeSyntaxSupport.h"
+#include "AssetData.h"
+
+struct FLintRuleViolation;
+class FAssetThumbnailPool;
 
 class SLintReportAssetDetails : public SCompoundWidget
 {

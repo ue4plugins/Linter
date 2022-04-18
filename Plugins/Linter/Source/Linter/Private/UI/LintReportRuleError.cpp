@@ -8,6 +8,10 @@
 #include "Widgets/Views/SListView.h"
 #include "Widgets/Views/STableRow.h"
 #include "Widgets/Layout/SBox.h"
+#include "LinterStyle.h"
+#include "ContentBrowserModule.h"
+#include "AssetRegistryModule.h"
+#include "IContentBrowserSingleton.h"
 
 #define LOCTEXT_NAMESPACE "LintReport"
 
@@ -57,3 +61,4 @@ void SLintReportRuleError::Construct(const FArguments& Args)
 	];
 }
 
+#undef LOCTEXT_NAMESPACE

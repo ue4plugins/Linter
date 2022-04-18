@@ -18,7 +18,10 @@
 #include "Widgets/Text/STextBlock.h"
 #include "Framework/Views/ITypedTableView.h"
 #include "UI/LintReportAssetError.h"
+#include "UI/LintReportAssetErrorList.h"
+#include "UI/LintReportRuleError.h"
 #include "LintRule.h"
+#include "Widgets/Views/SListView.h"
 
 #define LOCTEXT_NAMESPACE "LintReport"
 
@@ -42,3 +45,5 @@ void SLintReportRuleErrorList::Construct(const FArguments& Args)
 		})
 	];
 }
+
+#undef LOCTEXT_NAMESPACE

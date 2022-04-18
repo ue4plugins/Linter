@@ -7,6 +7,10 @@
 #include "AssetData.h"
 #include "Linter.h"
 
+class ULintRuleSet;
+struct FLintRuleList;
+struct FLintRuleViolation;
+
 class FLintRunner : public FRunnable
 {
 

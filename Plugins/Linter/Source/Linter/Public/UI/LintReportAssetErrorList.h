@@ -3,6 +3,8 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 
+struct FLintRuleViolation;
+
 class SLintReportAssetErrorList : public SCompoundWidget
 {
 public:

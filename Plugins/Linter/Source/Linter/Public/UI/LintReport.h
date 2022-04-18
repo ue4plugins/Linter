@@ -7,6 +7,10 @@
 #include "LintReportAssetError.h"
 #include "LintRule.h"
 
+class STextBlock;
+class SComboButton;
+class SScrollBox;
+struct FLintRuleViolation;
 
 class SLintReport : public SCompoundWidget
 {

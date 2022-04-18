@@ -6,6 +6,7 @@
 #include "Templates/SharedPointer.h"
 #include "IDetailCustomization.h"
 #include "PropertyHandle.h"
+#include "Engine/DataAsset.h"
 #include "LinterNamingConvention.generated.h"
 
 

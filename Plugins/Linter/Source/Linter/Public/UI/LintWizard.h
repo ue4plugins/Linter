@@ -9,6 +9,9 @@
 
 #include "LintReport.h"
 
+template <typename OptionType>
+class SComboBox;
+
 /**
  * 
  */
