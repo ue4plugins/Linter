@@ -25,9 +25,20 @@ void FLinterNamingConventionDetails::CustomizeDetails(class IDetailLayoutBuilder
 
 void FLinterNamingConventionDetails::OnGenerateElementForDetails(TSharedRef<IPropertyHandle> StructProperty, int32 ElementIndex, IDetailChildrenBuilder& ChildrenBuilder, IDetailLayoutBuilder* DetailLayout)
 {
+	TSharedRef<SWidget> RemoveButton = PropertyCustomizationHelpers::MakeRemoveButton(FSimpleDelegate::CreateLambda([this, DetailLayout, ElementIndex] {
+		TSharedRef<IPropertyHandle> NamingConventionsProperty            = DetailLayout->GetProperty(GET_MEMBER_NAME_CHECKED(ULinterNamingConvention, ClassNamingConventions), ULinterNamingConvention::StaticClass());
+		TSharedPtr<IPropertyHandleArray> NamingConventionsPropertyHandle = NamingConventionsProperty->AsArray();
+		NamingConventionsPropertyHandle->DeleteItem(ElementIndex);
+	}));
+
 	ChildrenBuilder.AddCustomRow(FText::GetEmpty())
 	[
 		SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			RemoveButton
+		]
 		+ SHorizontalBox::Slot()
 		.FillWidth(1.0f)
 		[
