@@ -12,6 +12,7 @@
 #include "Framework/Commands/UIAction.h"
 #include "Delegates/IDelegateInstance.h"
 #include "TooltipEditor/TooltipTool.h"
+#include "Misc/EngineVersionComparison.h"
 
 #define LOCTEXT_NAMESPACE "Linter"
 DEFINE_LOG_CATEGORY_STATIC(LinterContentBrowserExtensions, Log, All);
@@ -50,7 +51,11 @@ void FLinterContentBrowserExtensions::InstallHooks(FLinterModule* LinterModule, 
 							{
 								lm->SetDesiredLintPaths(SelectedPaths);
 							}
+#if UE_VERSION_NEWER_THAN(4, 26, 0)
+							FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"));
+#else
 							FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"));
+#endif
 						}
 					})),
 					NAME_None,
