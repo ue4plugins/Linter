@@ -21,4 +21,5 @@ public:
 
 	UPROPERTY(EditAnywhere, config, Category = Settings)
 	TSoftObjectPtr<ULintRuleSet> DefaultLintRuleSet;
+
 };

@@ -6,6 +6,11 @@
 #include "Templates/SharedPointer.h"
 #include "IDetailCustomization.h"
 #include "PropertyHandle.h"
+#include "Engine/DataAsset.h"
+#include "Misc/EngineVersionComparison.h"
+#if UE_VERSION_NEWER_THAN(5, 0, 0)
+#include "UObject/ObjectSaveContext.h"
+#endif
 #include "LinterNamingConvention.generated.h"
 
 
@@ -76,7 +81,11 @@ public:
 	UFUNCTION(Blueprintcallable, Category = "Conventions")
 	void SortConventions();
 
+#if UE_VERSION_NEWER_THAN(5, 0, 0)
+	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
+#else
 	virtual void PreSave(const class ITargetPlatform* TargetPlatform) override;
+#endif
 
 protected:
 

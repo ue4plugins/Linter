@@ -159,10 +159,18 @@ void ULinterNamingConvention::SortConventions()
 	});
 }
 
+#if UE_VERSION_NEWER_THAN(5, 0, 0)
+void ULinterNamingConvention::PreSave(FObjectPreSaveContext ObjectSaveContext)
+{
+	Super::PreSave(ObjectSaveContext);
+
+	SortConventions();
+}
+#else
 void ULinterNamingConvention::PreSave(const class ITargetPlatform* TargetPlatform)
 {
 	Super::PreSave(TargetPlatform);
 
 	SortConventions();
 }
->>>>>>> 99c97f0 (Sort Class Naming Conventions on PreSave):Plugins/Linter/Source/Linter/Private/LinterNamingConvention.cpp
+#endif
