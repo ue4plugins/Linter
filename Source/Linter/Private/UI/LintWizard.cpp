@@ -19,6 +19,15 @@
 #include "FileHelpers.h"
 #include "Logging/MessageLog.h"
 #include "Logging/TokenizedMessage.h"
+#include "ContentBrowserModule.h"
+#include "DesktopPlatformModule.h"
+#include "AssetToolsModule.h"
+#include "Framework/Docking/TabManager.h"
+#include "Widgets/Input/SComboBox.h"
+#include "Widgets/Docking/SDockTab.h"
+#include "Misc/App.h"
+#include "Engine/World.h"
+#include "Misc/EngineVersionComparison.h"
 
 #include "LinterStyle.h"
 #include "LintRuleSet.h"
@@ -88,7 +97,11 @@ void SLintWizard::Construct(const FArguments& InArgs)
 				.FinishButtonText(LOCTEXT("FinishButtonText", "Close"))
 				.OnFinished_Lambda([&]()
 				{
+#if UE_VERSION_NEWER_THAN(4, 26, 0)
 					FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"))->RequestCloseTab();
+#else
+					FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"))->RequestCloseTab();
+#endif
 				})
 				+ SWizard::Page()
 				.CanShow_Lambda([&]() { return RuleSets.Num() > 0; })
@@ -521,7 +534,15 @@ void SLintWizard::Construct(const FArguments& InArgs)
 																		LOCTEXT("ZipTaskShortName", "Zip Project Task"), FAppStyle::GetBrush(TEXT("MainFrame.CookContent")));
 																}
 
+<<<<<<< HEAD:Source/Linter/Private/UI/LintWizard.cpp
 																FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"))->RequestCloseTab();
+=======
+#if UE_VERSION_NEWER_THAN(4, 26, 0)
+																FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"))->RequestCloseTab();
+#else
+																FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"))->RequestCloseTab();
+#endif
+>>>>>>> 7384b2d (Fix UE version check):Plugins/Linter/Source/Linter/Private/UI/LintWizard.cpp
 															}
 															return FReply::Handled();
 														})
