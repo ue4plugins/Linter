@@ -2,8 +2,6 @@
 
 #include "Internationalization/Regex.h"
 #include "CoreMinimal.h"
-#include "UObject/Class.h"
-#include "UObject/Object.h"
 
 /**
 * Helper struct for showing function tooltip widgets

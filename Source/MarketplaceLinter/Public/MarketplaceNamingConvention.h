@@ -2,8 +2,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
-#include "Templates/SharedPointer.h"
 #include "LinterNamingConvention.h"
 #include "MarketplaceNamingConvention.generated.h"
 

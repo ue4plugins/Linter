@@ -1,6 +1,8 @@
 #include "LintRuleSet.h"
-#include "LintRunner.h"
 
+#include "AnyObject_LinterDummyClass.h"
+#include "LintRunner.h"
+#include "Linter.h"
 #include "AssetRegistryModule.h"
 #include "Modules/ModuleManager.h"
 #include "HAL/RunnableThread.h"
@@ -18,6 +20,7 @@ ULinterNamingConvention* ULintRuleSet::GetNamingConvention() const
 
 TArray<FLintRuleViolation> ULintRuleSet::LintPath(TArray<FString> AssetPaths, FScopedSlowTask* ParentScopedSlowTask /*= nullptr*/) const
 {
+	// ReSharper disable once CppExpressionWithoutSideEffects
 	NamingConvention.LoadSynchronous();
 
 	TArray<FLintRuleViolation> RuleViolations;
@@ -28,7 +31,7 @@ TArray<FLintRuleViolation> ULintRuleSet::LintPath(TArray<FString> AssetPaths, FS
 	}
 
 	// Begin loading assets
-	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 
 	UE_LOG(LogLinter, Display, TEXT("Loading the asset registry..."));
 	AssetRegistryModule.Get().SearchAllAssets(/*bSynchronousSearch =*/true);
@@ -100,14 +103,14 @@ TArray<FLintRuleViolation> ULintRuleSet::LintPath(TArray<FString> AssetPaths, FS
 	return RuleViolations;
 }
 
-TArray<TSharedPtr<FLintRuleViolation>> ULintRuleSet::LintPathShared(TArray<FString> AssetPaths, FScopedSlowTask* ParentScopedSlowTask /*= nullptr*/) const
+TArray<TSharedPtr<FLintRuleViolation>> ULintRuleSet::LintPathShared(const TArray<FString> AssetPaths, FScopedSlowTask* ParentScopedSlowTask /*= nullptr*/) const
 {
 	TArray<FLintRuleViolation> RuleViolations = LintPath(AssetPaths, ParentScopedSlowTask);
 
 	TArray<TSharedPtr<FLintRuleViolation>> SharedRuleViolations;
-	for (FLintRuleViolation Violation : RuleViolations)
+	for (const FLintRuleViolation Violation : RuleViolations)
 	{
-		TSharedPtr<FLintRuleViolation> SharedViolation = TSharedPtr<FLintRuleViolation>(new FLintRuleViolation(Violation));
+		TSharedPtr<FLintRuleViolation> SharedViolation = MakeShared<FLintRuleViolation>(Violation);
 		SharedViolation->PopulateAssetData();
 		SharedRuleViolations.Push(SharedViolation);
 	}
@@ -115,26 +118,26 @@ TArray<TSharedPtr<FLintRuleViolation>> ULintRuleSet::LintPathShared(TArray<FStri
 	return SharedRuleViolations;
 }
 
-const FLintRuleList* ULintRuleSet::GetLintRuleListForClass(TSoftClassPtr<UObject> Class) const
+const FLintRuleList* ULintRuleSet::GetLintRuleListForClass(const TSoftClassPtr<UObject> Class) const
 {
-	UClass* searchClass = Class.LoadSynchronous();
-	while (searchClass != nullptr)
+	UClass* SearchClass = Class.LoadSynchronous();
+	while (SearchClass != nullptr)
 	{
-		const FLintRuleList* pRuleList = ClassLintRulesMap.Find(searchClass);
-		if (pRuleList != nullptr)
+		const FLintRuleList* RuleList = ClassLintRulesMap.Find(SearchClass);
+		if (RuleList != nullptr)
 		{
-			return pRuleList;
+			return RuleList;
 		}
 
 		// @HACK: If we reach UObject, find our hack rule for fallback
-		if (searchClass == UObject::StaticClass())
+		if (SearchClass == UObject::StaticClass())
 		{
-			const FLintRuleList* anyObjectRuleList = ClassLintRulesMap.Find(UAnyObject_LinterDummyClass::StaticClass());
-			return anyObjectRuleList;
+			const FLintRuleList* AnyObjectRuleList = ClassLintRulesMap.Find(UAnyObject_LinterDummyClass::StaticClass());
+			return AnyObjectRuleList;
 		}
 
 		// Load our parent class in case we failed to get naming conventions
-		searchClass = searchClass->GetSuperClass();
+		SearchClass = SearchClass->GetSuperClass();
 	}
 
 	return nullptr;

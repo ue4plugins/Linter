@@ -19,7 +19,7 @@ ULintRule_Blueprint_LooseNodes::ULintRule_Blueprint_LooseNodes(const FObjectInit
 
 bool ULintRule_Blueprint_LooseNodes::PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const
 {
-	UBlueprint* Blueprint = CastChecked<UBlueprint>(ObjectToLint);
+	const UBlueprint* Blueprint = CastChecked<UBlueprint>(ObjectToLint);
 
 	// Check for loose nodes
 	TArray<UEdGraph*> Graphs;
@@ -27,7 +27,7 @@ bool ULintRule_Blueprint_LooseNodes::PassesRule_Internal_Implementation(UObject*
 
 	for (UEdGraph* Graph : Graphs)
 	{
-		for (UEdGraphNode* Node : Graph->Nodes)
+		for (const UEdGraphNode* Node : Graph->Nodes)
 		{
 			if (
 				Node->IsAutomaticallyPlacedGhostNode() ||
@@ -44,7 +44,7 @@ bool ULintRule_Blueprint_LooseNodes::PassesRule_Internal_Implementation(UObject*
 			bool bNodeIsolated = true;
 
 			TArray<UEdGraphPin*> Pins = Node->GetAllPins();
-			for (UEdGraphPin* Pin : Pins)
+			for (const UEdGraphPin* Pin : Pins)
 			{
 				if (Pin->LinkedTo.Num() != 0)
 				{

@@ -10,9 +10,9 @@
 	"DocsURL": "http://discord.gamemak.in",
 	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/ca0639af6339476da86fa3bcf15de8ec",
 	"SupportURL": "http://discord.gamemak.in",
-	"EngineVersion": "4.26.0",
 	"CanContainContent": true,
-	"Installed": true,
+	"Installed": false,
+	"EnabledByDefault": true,
 	"Modules": [
 		{
 			"Name": "Linter",
@@ -20,7 +20,6 @@
 			"LoadingPhase": "PreDefault",
 			"WhitelistPlatforms": [
 				"Win64",
-				"Win32",
 				"Mac",
 				"Linux"
 			],
@@ -35,7 +34,6 @@
 			"LoadingPhase": "PreDefault",
 			"WhitelistPlatforms": [
 				"Win64",
-				"Win32",
 				"Mac",
 				"Linux"
 			],
@@ -50,7 +48,6 @@
 			"LoadingPhase": "PreDefault",
 			"WhitelistPlatforms": [
 				"Win64",
-				"Win32",
 				"Mac",
 				"Linux"
 			],

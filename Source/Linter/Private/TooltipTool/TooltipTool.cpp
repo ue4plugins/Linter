@@ -16,6 +16,7 @@
 #include "EdGraphSchema_K2.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "FileHelpers.h"
+#include "Widgets/Layout/SSeparator.h"
 
 #define LOCTEXT_NAMESPACE "LinterTooltipTool"
 
@@ -45,7 +46,7 @@ FTooltipTool::FTooltipTool(const TArray<FAssetData> Assets)
 			.MaxWidth(400.0f)
 			.SizingRule(ESizingRule::Autosized);
 
-		TSharedPtr<SBorder> DialogWrapper =
+		const TSharedPtr<SBorder> DialogWrapper =
 			SNew(SBorder)
 			.BorderImage(FEditorStyle::GetBrush("ToolPanel.GroupBorder"))
 			.Padding(4.0f)
@@ -63,9 +64,9 @@ FTooltipTool::EResult FTooltipTool::ShowModal()
 {
 	//Show Dialog
 	GEditor->EditorAddModalWindow(DialogWindow.ToSharedRef());
-	EResult UserResponse = (EResult)DialogWidget->GetUserResponse();
+	const EResult UserResponse = (EResult)DialogWidget->GetUserResponse();
 
-	if (UserResponse == EResult::Confirm)
+	if (UserResponse == Confirm)
 	{
 
 
@@ -100,7 +101,7 @@ void STooltipTool::Construct(const FArguments& InArgs)
 			.OptionsSource(&Blueprints.Get())
 			.InitiallySelectedItem(Blueprints.Get()[0])
 			.OnGenerateWidget_Lambda(
-			[](TSharedPtr<FAssetData> Item)
+			[](const TSharedPtr<FAssetData> Item)
 			{
 				return SNew(STextBlock)
 					.Text(FText::FromName(Item->AssetName))
@@ -165,7 +166,7 @@ void STooltipTool::Construct(const FArguments& InArgs)
 				[&]{
 					// Save package here if SCC is enabled because the user can use SCC to revert a change
 					TArray<UPackage*> OutermostPackagesToSave;
-					for (auto Asset : Blueprints.Get())
+					for (const auto Asset : Blueprints.Get())
 					{
 						OutermostPackagesToSave.Add(Asset->GetPackage());
 					}
@@ -234,7 +235,7 @@ void STooltipTool::Construct(const FArguments& InArgs)
 										];
 								})
 							.OnSelectionChanged_Lambda(
-								[&](TSharedPtr<FBPVariableDescription> Item, ESelectInfo::Type SelectInfo)
+								[&](const TSharedPtr<FBPVariableDescription> Item, ESelectInfo::Type SelectInfo)
 								{
 									if (!Item.IsValid())
 									{
@@ -351,7 +352,7 @@ void STooltipTool::Construct(const FArguments& InArgs)
 										];
 								})
 							.OnSelectionChanged_Lambda(
-								[&](TSharedPtr<FBPFunctionPointers> Item, ESelectInfo::Type SelectInfo)
+								[&](const TSharedPtr<FBPFunctionPointers> Item, ESelectInfo::Type SelectInfo)
 								{
 									FunctionArgumentDescriptions.Empty();
 									FunctionOutputDescriptions.Empty();
@@ -371,23 +372,23 @@ void STooltipTool::Construct(const FArguments& InArgs)
 
 									check(Item->FunctionEntryNode);
 									TArray<UEdGraphPin*> InputPins = Item->FunctionEntryNode->GetAllPins();
-									for (UEdGraphPin* Pin : InputPins)
+									for (const UEdGraphPin* Pin : InputPins)
 									{
-										if (Pin->Direction == EEdGraphPinDirection::EGPD_Output)
-										{	
+										if (Pin->Direction == EGPD_Output)
+										{
 											if (Pin->PinType.PinCategory != UEdGraphSchema_K2::PC_Exec)
 											{
 												FunctionArgumentDescriptions.Add(MakeShared<FBPFunctionArgumentDescription>(FText::FromString(Pin->GetName()), FText::GetEmpty(), UEdGraphSchema_K2::TypeToText(Pin->PinType)));
-											}												
-										} 
+											}
+										}
 									}
 
 									if (Item->FunctionResultNode != nullptr)
 									{
 										TArray<UEdGraphPin*> OutputPins = Item->FunctionResultNode->GetAllPins();
-										for (UEdGraphPin* Pin : OutputPins)
+										for (const UEdGraphPin* Pin : OutputPins)
 										{
-											if (Pin->Direction == EEdGraphPinDirection::EGPD_Input)
+											if (Pin->Direction == EGPD_Input)
 											{
 												if (Pin->PinType.PinCategory != UEdGraphSchema_K2::PC_Exec)
 												{
@@ -418,7 +419,7 @@ void STooltipTool::Construct(const FArguments& InArgs)
 									FunctionOutputListView->RebuildList();
 
 									FunctionDescriptionTooltipBox->SetText(CurrentFunctionDescription);
-								
+
 								})
 							]
 						]
@@ -456,7 +457,6 @@ void STooltipTool::Construct(const FArguments& InArgs)
 										{
 											UpdateCurrentFunctionTooltipText();
 										}
-										
 									}
 								})
 						]
@@ -650,7 +650,7 @@ FTooltipTool::EResult STooltipTool::GetUserResponse() const
 	return UserResponse;
 }
 
-FReply STooltipTool::OnButtonClick(FTooltipTool::EResult ButtonID)
+FReply STooltipTool::OnButtonClick(const FTooltipTool::EResult ButtonID)
 {
 	ParentWindow->RequestDestroyWindow();
 	UserResponse = ButtonID;
@@ -680,7 +680,7 @@ void STooltipTool::UpdateVariableTooltipText(const FText& NewText)
 	MemberListView->GetSelectedItems(SelectedMembers);
 	if (SelectedMembers.Num() == 1)
 	{
-		TSharedPtr<FAssetData> BlueprintAsset = BlueprintComboBox->GetSelectedItem();
+		const TSharedPtr<FAssetData> BlueprintAsset = BlueprintComboBox->GetSelectedItem();
 		UBlueprint* Blueprint = CastChecked<UBlueprint>(BlueprintAsset->GetAsset());
 		SelectedMembers[0]->SetMetaData(FBlueprintMetadata::MD_Tooltip, NewText.ToString());
 		FBlueprintEditorUtils::SetBlueprintVariableMetaData(Blueprint, SelectedMembers[0]->VarName, nullptr, FBlueprintMetadata::MD_Tooltip, NewText.ToString());
@@ -703,7 +703,7 @@ void STooltipTool::UpdateCurrentFunctionTooltipText()
 	check(SelectedFunctions.Num() == 1); //If anything is selected, only one thing should be selected.
 
 	for (int32 i = 0; i < FunctionArgumentDescriptions.Num(); i++)
-	{	
+	{
 		// @TODO: Don't do this
 		TSharedRef<const SWidget> Child = FunctionArgumentListView->WidgetFromItem(FunctionArgumentDescriptions[i])->GetContent()->GetChildren()->GetChildAt(1);
 		const SEditableTextBox& TooltipBox = static_cast<const SEditableTextBox&>(Child.Get());
@@ -717,9 +717,9 @@ void STooltipTool::UpdateCurrentFunctionTooltipText()
 		FunctionOutputDescriptions[i]->Tooltip = TooltipBox.GetText();
 	}
 
-	FString RawTooltip = FTooltipStringHelper::ConvertTooltipDataToRawTooltip(FunctionDescriptionTooltipBox->GetText(), FunctionArgumentDescriptions, FunctionOutputDescriptions);
-	
-	TSharedPtr<FBPFunctionPointers> FunctionPointer = SelectedFunctions[0];
+	const FString RawTooltip = FTooltipStringHelper::ConvertTooltipDataToRawTooltip(FunctionDescriptionTooltipBox->GetText(), FunctionArgumentDescriptions, FunctionOutputDescriptions);
+
+	const TSharedPtr<FBPFunctionPointers> FunctionPointer = SelectedFunctions[0];
 	FunctionPointer->FunctionEntryNode->MetaData.ToolTip = FText::FromString(RawTooltip);
 }
 
@@ -736,18 +736,18 @@ void STooltipTool::RebuildMemberList()
 	}
 
 	UBlueprint* Blueprint = Cast<UBlueprint>(BlueprintComboBox->GetSelectedItem().Get()->GetAsset());
-	
+
 	// Get variables
-	for (FBPVariableDescription Member : Blueprint->NewVariables)
+	for (const FBPVariableDescription Member : Blueprint->NewVariables)
 	{
 		if ((Member.PropertyFlags & CPF_DisableEditOnInstance) != CPF_DisableEditOnInstance)
 		{
-			Members.Push(TSharedPtr<FBPVariableDescription>(new FBPVariableDescription(Member)));
+			Members.Push(MakeShared<FBPVariableDescription>(Member));
 		}
 	}
 
 	// Get functions
-	for (UEdGraph* FunctionGraph : Blueprint->FunctionGraphs)
+	for (const UEdGraph* FunctionGraph : Blueprint->FunctionGraphs)
 	{
 		if (FunctionGraph->GetFName() != UEdGraphSchema_K2::FN_UserConstructionScript)
 		{

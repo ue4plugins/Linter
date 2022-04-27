@@ -6,8 +6,9 @@ public class MarketplaceLinter : ModuleRules
 {
     public MarketplaceLinter(ReadOnlyTargetRules Target) : base(Target)
     {
-        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;		
-		
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        bUseUnity = false;
+
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
@@ -15,8 +16,8 @@ public class MarketplaceLinter : ModuleRules
 				"Linter"
 			}
 		);
-			
-		
+
+
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
             {
@@ -39,7 +40,7 @@ public class MarketplaceLinter : ModuleRules
                 "AppFramework",
                 "DesktopPlatform",
                 "UATHelper"
-				// ... add private dependencies that you statically link with here ...	
+				// ... add private dependencies that you statically link with here ...
 			}
 		);
     }

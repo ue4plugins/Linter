@@ -17,11 +17,11 @@ bool ULintRule_Blueprint_Vars_Regex::PassesRule_Internal_Implementation(UObject*
 
 	bool bRuleViolated = false;
 
-	FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintVarsRegex", "{Previous}{WhiteSpace}Please fix variable named {VarName}.");
+	const FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintVarsRegex", "{Previous}{WhiteSpace}Please fix variable named {VarName}.");
 	FText AllFixes;
 
-	FString TestRegexPatternString = RegexPatternString;
-	FString BoolTestRegexPatternString = TEXT("b") + RegexPatternString;
+	const FString TestRegexPatternString = RegexPatternString;
+	const FString BoolTestRegexPatternString = TEXT("b") + RegexPatternString;
 
 	const FRegexPattern TestRegexPattern = FRegexPattern(TestRegexPatternString);
 	const FRegexPattern BoolTestRegexPattern = FRegexPattern(BoolTestRegexPatternString);
@@ -30,10 +30,10 @@ bool ULintRule_Blueprint_Vars_Regex::PassesRule_Internal_Implementation(UObject*
 	{
 		FString PropName = Desc.VarName.ToString();
 		FText TypeName = UEdGraphSchema_K2::TypeToText(Desc.VarType);
-		bool bIsBool = Desc.VarType.PinCategory == UEdGraphSchema_K2::PC_Boolean;
+		const bool bIsBool = Desc.VarType.PinCategory == UEdGraphSchema_K2::PC_Boolean;
 		
 		FRegexMatcher Matcher(bIsBool ? BoolTestRegexPattern : TestRegexPattern, PropName);
-		bool bFoundMatch = Matcher.FindNext();
+		const bool bFoundMatch = Matcher.FindNext();
 
 		if ((bFoundMatch && bMustNotContainRegexPattern) || (!bFoundMatch && !bMustNotContainRegexPattern))
 		{

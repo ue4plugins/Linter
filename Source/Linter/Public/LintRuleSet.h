@@ -2,12 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LinterNamingConvention.h"
 #include "Misc/ScopedSlowTask.h"
 #include "LintRule.h"
-
 #include "LintRuleSet.generated.h"
-
-class ULinterNamingConvention;
 
 USTRUCT(BlueprintType)
 struct LINTER_API FLintRuleList
@@ -66,4 +64,3 @@ protected:
 	TMap<TSubclassOf<UObject>, FLintRuleList> ClassLintRulesMap;
 
 };
-

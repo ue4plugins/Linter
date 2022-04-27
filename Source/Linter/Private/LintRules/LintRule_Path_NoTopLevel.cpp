@@ -13,7 +13,7 @@ ULintRule_Path_NoTopLevel::ULintRule_Path_NoTopLevel(const FObjectInitializer& O
 
 bool ULintRule_Path_NoTopLevel::PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const
 {
-	FString PathName = ObjectToLint->GetPathName();
+	const FString PathName = ObjectToLint->GetPathName();
 	TArray<FString> PathElements;
 	PathName.ParseIntoArray(PathElements, TEXT("/"), true);
 

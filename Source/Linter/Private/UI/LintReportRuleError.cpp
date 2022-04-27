@@ -1,16 +1,17 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
+
 #include "UI/LintReportRuleError.h"
-#include "Widgets/Layout/SBorder.h"
+
+#include "ContentBrowserModule.h"
+#include "IContentBrowserSingleton.h"
+#include "LinterStyle.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Layout/SExpandableArea.h"
 #include "Widgets/Input/SHyperlink.h"
 #include "LintRule.h"
-#include "Widgets/Views/SListView.h"
-#include "Widgets/Views/STableRow.h"
-#include "Widgets/Layout/SBox.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 
 #define LOCTEXT_NAMESPACE "LintReport"
-
 
 void SLintReportRuleError::Construct(const FArguments& Args)
 {
@@ -36,8 +37,8 @@ void SLintReportRuleError::Construct(const FArguments& Args)
 				.Text(FText::FromName(RuleViolation.Get()->ViolatorAssetData.PackageName))
 				.OnNavigate_Lambda([&]()
 				{
-					FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
-					FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+					const FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
+					const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 					TArray<FAssetData> AssetDatas;
 					AssetDatas.Push(AssetRegistryModule.Get().GetAssetByObjectPath(RuleViolation.Get()->ViolatorAssetData.ObjectPath));
 					ContentBrowserModule.Get().SyncBrowserToAssets(AssetDatas);
@@ -56,4 +57,3 @@ void SLintReportRuleError::Construct(const FArguments& Args)
 		]
 	];
 }
-

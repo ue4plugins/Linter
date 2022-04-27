@@ -1,11 +1,8 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 #pragma once
 
-#include "EditorStyleSet.h"
-#include "LinterStyle.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SCompoundWidget.h"
-#include "Types/SlateStructs.h"
 #include "Misc/ScopedSlowTask.h"
 
 
@@ -28,7 +25,7 @@ class SStepWidget : public SCompoundWidget
 public:
 
 	SLATE_BEGIN_ARGS(SStepWidget)
-		: _StepStatus(EStepStatus::NoStatus)
+		: _StepStatus(NoStatus)
 		, _ShowStepStatusIcon(true)
 	{
 	}
@@ -62,7 +59,7 @@ public:
 	FOnStepPerformAction OnPerformAction;
 	TAttribute<bool> ShowStepStatusIcon;
 
-	bool IsStepCompleted(bool bAllowWarning = true);
-	
+	bool IsStepCompleted(bool bAllowWarning = true) const;
+
 	void Construct(const FArguments& Args);
 };

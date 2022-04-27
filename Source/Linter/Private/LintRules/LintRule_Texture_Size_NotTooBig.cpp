@@ -2,7 +2,6 @@
 #include "LintRules/LintRule_Texture_Size_NotTooBig.h"
 #include "LintRuleSet.h"
 #include "LinterNamingConvention.h"
-#include "HAL/FileManager.h"
 
 ULintRule_Texture_Size_NotTooBig::ULintRule_Texture_Size_NotTooBig(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -25,13 +24,13 @@ bool ULintRule_Texture_Size_NotTooBig::PassesRule_Internal_Implementation(UObjec
 {
 	const UTexture2D* Texture = CastChecked<UTexture2D>(ObjectToLint);
 
-	int32 TexSizeX = Texture->GetSizeX();
-	int32 TexSizeY = Texture->GetSizeY();
+	const int32 TexSizeX = Texture->GetSizeX();
+	const int32 TexSizeY = Texture->GetSizeY();
 
 	// Check to see if textures are too big
 	if (TexSizeX > MaxTextureSizeX || TexSizeY > MaxTextureSizeY)
 	{
-		FText RecommendedAction = NSLOCTEXT("Linter", "LintRule_Texture_Size_NotTooBig_TooBig", "Please shrink your textures dimensions so that they fit within {0}x{1} pixels.");
+		const FText RecommendedAction = NSLOCTEXT("Linter", "LintRule_Texture_Size_NotTooBig_TooBig", "Please shrink your textures dimensions so that they fit within {0}x{1} pixels.");
 		OutRuleViolations.Push(FLintRuleViolation(ObjectToLint, GetClass(), FText::FormatOrdered(RecommendedAction, MaxTextureSizeX, MaxTextureSizeY)));
 		return false;
 	}

@@ -2,11 +2,6 @@
 
 #include "MarketplaceLinter.h"
 #include "ISettingsModule.h"
-#include "Framework/Docking/TabManager.h"
-#include "LevelEditor.h"
-
-#include "Widgets/Input/SButton.h"
-#include "Styling/SlateStyle.h"
 
 #define LOCTEXT_NAMESPACE "FMarketplaceLinterModule"
 

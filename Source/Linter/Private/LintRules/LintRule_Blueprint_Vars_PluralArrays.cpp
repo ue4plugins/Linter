@@ -15,7 +15,7 @@ bool ULintRule_Blueprint_Vars_PluralArrays::PassesRule_Internal_Implementation(U
 
 	bool bRuleViolated = false;
 
-	FText FixTextTemplate = NSLOCTEXT("Linter", "PluralArrayHasArray", "{Previous}{WhiteSpace}Please remove the word 'Array' from your variable {VarName}.");
+	const FText FixTextTemplate = NSLOCTEXT("Linter", "PluralArrayHasArray", "{Previous}{WhiteSpace}Please remove the word 'Array' from your variable {VarName}.");
 	FText AllFixes;
 	
 	for (FBPVariableDescription Desc : Blueprint->NewVariables)

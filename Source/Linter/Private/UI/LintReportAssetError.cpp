@@ -1,27 +1,26 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
+
 #include "UI/LintReportAssetError.h"
-#include "Widgets/Layout/SBorder.h"
+
+#include "LinterStyle.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Layout/SExpandableArea.h"
 #include "Widgets/Input/SHyperlink.h"
 #include "LintRule.h"
-#include "Widgets/Views/SListView.h"
-#include "Widgets/Views/STableRow.h"
 #include "Widgets/Layout/SBox.h"
 
 #define LOCTEXT_NAMESPACE "LintReport"
-
 
 void SLintReportAssetError::Construct(const FArguments& Args)
 {
 	RuleViolation = Args._RuleViolation;
 	const float PaddingAmount = FLinterStyle::Get()->GetFloat("Linter.Padding");
 
-	ULintRule* LintRule = RuleViolation.Get()->ViolatedRule.Get()->GetDefaultObject<ULintRule>();
+	const ULintRule* LintRule = RuleViolation.Get()->ViolatedRule.Get()->GetDefaultObject<ULintRule>();
 	check(LintRule != nullptr);
 
 	const FSlateBrush* RuleIcon = nullptr;
-	bool bHasURL = !LintRule->RuleURL.IsEmpty();
+	const bool bHasURL = !LintRule->RuleURL.IsEmpty();
 
 	switch (LintRule->RuleSeverity)
 	{
@@ -84,7 +83,7 @@ void SLintReportAssetError::Construct(const FArguments& Args)
 					SNew(SImage)
 					.Cursor(EMouseCursor::Hand)
 					.Visibility(bHasURL ? EVisibility::Visible : EVisibility::Collapsed)
-					.OnMouseButtonDown_Lambda([&](const FGeometry& Geo, const FPointerEvent& Event) { FPlatformProcess::LaunchURL(*RuleViolation.Get()->ViolatedRule.Get()->GetDefaultObject<ULintRule>()->RuleURL, NULL, NULL); return FReply::Handled(); })
+					.OnMouseButtonDown_Lambda([&](const FGeometry& Geo, const FPointerEvent& Event) { FPlatformProcess::LaunchURL(*RuleViolation.Get()->ViolatedRule.Get()->GetDefaultObject<ULintRule>()->RuleURL, nullptr, nullptr); return FReply::Handled(); })
 					.Image(FLinterStyle::Get()->GetBrush("Linter.Report.Link"))
 				]
 			]
@@ -109,4 +108,3 @@ void SLintReportAssetError::Construct(const FArguments& Args)
 		]
 	];
 }
-

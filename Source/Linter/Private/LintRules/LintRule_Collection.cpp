@@ -2,7 +2,6 @@
 #include "LintRules/LintRule_Collection.h"
 #include "LintRuleSet.h"
 #include "LinterNamingConvention.h"
-#include "HAL/FileManager.h"
 
 ULintRule_Collection::ULintRule_Collection(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

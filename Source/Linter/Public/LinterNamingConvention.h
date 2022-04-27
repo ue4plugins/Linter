@@ -36,7 +36,7 @@ struct LINTER_API FLinterNamingConventionInfo
 
 	UPROPERTY(EditAnywhere, Category = Default)
 	FString Suffix;
-	
+
 	UPROPERTY(EditAnywhere, Category = Default)
 	FName Variant;
 };
@@ -65,6 +65,8 @@ public:
 
 	ULinterNamingConvention(const FObjectInitializer& ObjectInitializer);
 
+	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
+
 	UPROPERTY(EditAnywhere, Category="Conventions", meta = (AllowAbstract = ""))
 	TArray<FLinterNamingConventionInfo> ClassNamingConventions;
 
@@ -73,9 +75,4 @@ public:
 
 	UFUNCTION(Blueprintcallable, Category = "Conventions")
 	void SortConventions();
-
-protected:
-
-	
-
 };

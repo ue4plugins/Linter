@@ -1,10 +1,12 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "LintRule.h"
-
 #include "LintRule_Blueprint_Base.generated.h"
+
+class ULintRuleSet;
 
 /**
  *Comment

@@ -1,10 +1,7 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
-#include "UI/LintReport.h"
-#include "UI/LintReportAssetError.h"
 
+#include "UI/LintReport.h"
 #include "LintRule.h"
-#include "Widgets/Views/STableRow.h"
-#include "Widgets/Views/SListView.h"
 #include "Widgets/SBoxPanel.h"
 #include "LintRuleSet.h"
 #include "UI/LintReportAssetErrorList.h"
@@ -21,6 +18,9 @@
 #include "Dom/JsonValue.h"
 #include "DesktopPlatformModule.h"
 #include "IDesktopPlatform.h"
+#include "Linter.h"
+#include "LinterStyle.h"
+#include "Interfaces/IPluginManager.h"
 #include "Misc/FileHelper.h"
 #include "Widgets/Input/SComboButton.h"
 #include "UI/LintReportRuleDetails.h"
@@ -72,7 +72,7 @@ void SLintReport::Construct(const FArguments& Args)
 				SNew(SButton)
 				.Text(LOCTEXT("ExportToJSON", "Export To JSON"))
 				.OnClicked_Lambda([this]() -> FReply
-				{ 
+				{
 					IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
 
 					const void* ParentWindowWindowHandle = FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr);
@@ -80,9 +80,9 @@ void SLintReport::Construct(const FArguments& Args)
 					const FText Title = LOCTEXT("ExportToJsonTitle", "Export Lint Report as JSON");
 					const FString FileTypes = TEXT("Json (*.json)|*.json");
 
-					FDateTime Now = FDateTime::Now();
-					FString Output = TEXT("lint-report-") + FDateTime::Now().ToString() + TEXT(".json");
-					
+					const FDateTime Now = FDateTime::Now();
+					const FString Output = TEXT("lint-report-") + Now.ToString() + TEXT(".json");
+
 					FString DefaultPath = FPaths::ProjectSavedDir() / TEXT("LintReports");
 					DefaultPath = FPaths::ConvertRelativePathToFull(DefaultPath);
 					IFileManager::Get().MakeDirectory(*DefaultPath, true);
@@ -100,7 +100,7 @@ void SLintReport::Construct(const FArguments& Args)
 
 					if (OutFilenames.Num() > 0)
 					{
-						FString WritePath = FPaths::ConvertRelativePathToFull(OutFilenames[0]);
+						const FString WritePath = FPaths::ConvertRelativePathToFull(OutFilenames[0]);
 						FFileHelper::SaveStringToFile(JsonReport, *WritePath);
 						FPlatformProcess::LaunchURL(*WritePath, TEXT(""), nullptr);
 					}
@@ -116,7 +116,7 @@ void SLintReport::Construct(const FArguments& Args)
 				SNew(SButton)
 				.Text(LOCTEXT("ExportToHTML", "Export To HTML"))
 				.OnClicked_Lambda([this]() -> FReply
-				{ 
+				{
 					IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
 
 					const void* ParentWindowWindowHandle = FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr);
@@ -124,9 +124,9 @@ void SLintReport::Construct(const FArguments& Args)
 					const FText Title = LOCTEXT("ExportToHTMLTitle", "Export Lint Report as HTML");
 					const FString FileTypes = TEXT("HTML (*.html)|*.html");
 
-					FDateTime Now = FDateTime::Now();
-					FString Output = TEXT("lint-report-") + FDateTime::Now().ToString() + TEXT(".html");
-					
+					const FDateTime Now = FDateTime::Now();
+					const FString Output = TEXT("lint-report-") + Now.ToString() + TEXT(".html");
+
 					FString DefaultPath = FPaths::ProjectSavedDir() / TEXT("LintReports");
 					DefaultPath = FPaths::ConvertRelativePathToFull(DefaultPath);
 					IFileManager::Get().MakeDirectory(*DefaultPath, true);
@@ -144,7 +144,7 @@ void SLintReport::Construct(const FArguments& Args)
 
 					if (OutFilenames.Num() > 0)
 					{
-						FString WritePath = FPaths::ConvertRelativePathToFull(OutFilenames[0]);
+						const FString WritePath = FPaths::ConvertRelativePathToFull(OutFilenames[0]);
 						FFileHelper::SaveStringToFile(HTMLReport, *WritePath);
 						FPlatformProcess::LaunchURL(*WritePath, TEXT(""), nullptr);
 					}
@@ -206,7 +206,7 @@ void SLintReport::Construct(const FArguments& Args)
 							[
 								SNew(SImage).Image( FEditorStyle::GetBrush("GenericViewButton") )
 							]
- 
+
 							+SHorizontalBox::Slot()
 							.AutoWidth()
 							.Padding(2, 0, 0, 0)
@@ -378,7 +378,7 @@ TSharedRef<SWidget> SLintReport::GetViewButtonContent()
 			FSlateIcon(),
 			FUIAction(
 				FExecuteAction::CreateLambda([&]()
-				{ 
+				{
 					if (AssetDetailsScrollBoxPtr.IsValid())
 					{
 						AssetDetailsScrollBoxPtr->SetVisibility(EVisibility::SelfHitTestInvisible);
@@ -401,7 +401,7 @@ TSharedRef<SWidget> SLintReport::GetViewButtonContent()
 			FSlateIcon(),
 			FUIAction(
 				FExecuteAction::CreateLambda([&]()
-				{ 
+				{
 					if (AssetDetailsScrollBoxPtr.IsValid())
 					{
 						AssetDetailsScrollBoxPtr->SetVisibility(EVisibility::Collapsed);

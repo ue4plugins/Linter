@@ -1,8 +1,12 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "LintRule.generated.h"
+
+class ULintRule;
+class ULintRuleSet;
 
 UENUM(BlueprintType)
 enum class ELintRuleSeverity : uint8
@@ -25,7 +29,7 @@ struct LINTER_API FLintRuleViolation
 	{
 	}
 
-	FLintRuleViolation(UObject* InViolator, TSubclassOf<ULintRule> InViolatedRule, const FText InRecommendedAction = FText::GetEmpty())
+	FLintRuleViolation(UObject* InViolator, const TSubclassOf<ULintRule> InViolatedRule, const FText InRecommendedAction = FText::GetEmpty())
 		: Violator(InViolator)
 		, ViolatedRule(InViolatedRule)
 		, RecommendedAction(InRecommendedAction)
@@ -92,7 +96,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Lint")
 	virtual bool PassesRule(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const;
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Display")
 	virtual bool IsRuleSuppressed() const;
 

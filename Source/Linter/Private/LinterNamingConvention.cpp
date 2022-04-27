@@ -1,9 +1,12 @@
+
 #include "LinterNamingConvention.h"
+#include "AnyObject_LinterDummyClass.h"
 #include "DetailLayoutBuilder.h"
 #include "PropertyCustomizationHelpers.h"
 #include "Templates/SharedPointer.h"
 #include "DetailCategoryBuilder.h"
 #include "IDetailChildrenBuilder.h"
+#include "UObject/ObjectSaveContext.h"
 
 TSharedRef<IDetailCustomization> FLinterNamingConventionDetails::MakeInstance()
 {
@@ -14,20 +17,34 @@ void FLinterNamingConventionDetails::CustomizeDetails(class IDetailLayoutBuilder
 {
 	// Edit the Conventions category
 	IDetailCategoryBuilder& DetailCategory = DetailBuilder.EditCategory("Conventions");
-	TSharedRef<IPropertyHandle> NamingConventionsProperty = DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(ULinterNamingConvention, ClassNamingConventions), ULinterNamingConvention::StaticClass());
+	const TSharedRef<IPropertyHandle> NamingConventionsProperty = DetailBuilder.GetProperty(GET_MEMBER_NAME_CHECKED(ULinterNamingConvention, ClassNamingConventions), ULinterNamingConvention::StaticClass());
 
-	TSharedRef<FDetailArrayBuilder> ConventionsPropertyBuilder = MakeShareable(new FDetailArrayBuilder(NamingConventionsProperty));
+	const TSharedRef<FDetailArrayBuilder> ConventionsPropertyBuilder = MakeShareable(new FDetailArrayBuilder(NamingConventionsProperty));
 	ConventionsPropertyBuilder->OnGenerateArrayElementWidget(FOnGenerateArrayElementWidget::CreateSP(this, &FLinterNamingConventionDetails::OnGenerateElementForDetails, &DetailBuilder));
 
 
 	DetailCategory.AddCustomBuilder(ConventionsPropertyBuilder);
 }
 
-void FLinterNamingConventionDetails::OnGenerateElementForDetails(TSharedRef<IPropertyHandle> StructProperty, int32 ElementIndex, IDetailChildrenBuilder& ChildrenBuilder, IDetailLayoutBuilder* DetailLayout)
+void FLinterNamingConventionDetails::OnGenerateElementForDetails(const TSharedRef<IPropertyHandle> StructProperty, int32 ElementIndex, IDetailChildrenBuilder& ChildrenBuilder, IDetailLayoutBuilder* DetailLayout)
 {
+	const TSharedRef<SWidget> RemoveButton = PropertyCustomizationHelpers::MakeRemoveButton(FSimpleDelegate::CreateLambda([this, DetailLayout, ElementIndex]
+		{
+			const TSharedRef<IPropertyHandle> NamingConventionsProperty
+						= DetailLayout->GetProperty(GET_MEMBER_NAME_CHECKED(ULinterNamingConvention, ClassNamingConventions), ULinterNamingConvention::StaticClass());
+			const TSharedPtr<IPropertyHandleArray> NamingConventionsPropertyHandle = NamingConventionsProperty->AsArray();
+			NamingConventionsPropertyHandle->DeleteItem(ElementIndex);
+		}
+	));
+
 	ChildrenBuilder.AddCustomRow(FText::GetEmpty())
 	[
 		SNew(SHorizontalBox)
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			RemoveButton
+		]
 		+ SHorizontalBox::Slot()
 		.FillWidth(1.0f)
 		[
@@ -58,36 +75,43 @@ ULinterNamingConvention::ULinterNamingConvention(const FObjectInitializer& Objec
 	ClassNamingConventions = TArray<FLinterNamingConventionInfo>();
 }
 
-TArray<FLinterNamingConventionInfo> ULinterNamingConvention::GetNamingConventionsForClassVariant(TSoftClassPtr<UObject> Class, FName Variant /*= NAME_None*/) const
+void ULinterNamingConvention::PreSave(const FObjectPreSaveContext SaveContext)
+{
+	Super::PreSave(SaveContext);
+
+	SortConventions();
+}
+
+TArray<FLinterNamingConventionInfo> ULinterNamingConvention::GetNamingConventionsForClassVariant(const TSoftClassPtr<UObject> Class, FName Variant /*= NAME_None*/) const
 {
 	TArray<FLinterNamingConventionInfo> NamingConventionList;
 
-	UClass* searchClass = Class.Get();
-	while (NamingConventionList.Num() == 0 && searchClass != nullptr)
+	UClass* SearchClass = Class.Get();
+	while (NamingConventionList.Num() == 0 && SearchClass != nullptr)
 	{
-		NamingConventionList = ClassNamingConventions.FilterByPredicate([searchClass, Variant](const FLinterNamingConventionInfo& Info)
+		NamingConventionList = ClassNamingConventions.FilterByPredicate([SearchClass, Variant](const FLinterNamingConventionInfo& Info)
 			{
-				return (Info.SoftClassPtr.Get() == searchClass && Info.Variant == Variant);
+				return (Info.SoftClassPtr.Get() == SearchClass && Info.Variant == Variant);
 			});
 
 		// Abort if we try to go above UObject
-		if (searchClass == UObject::StaticClass())
+		if (SearchClass == UObject::StaticClass())
 		{
 			break;
 		}
 
 		// @HACK: Editor UI won't allow us to select the UObject class in some cases
-		if (searchClass == UAnyObject_LinterDummyClass::StaticClass())
+		if (SearchClass == UAnyObject_LinterDummyClass::StaticClass())
 		{
-			searchClass = UObject::StaticClass();
+			SearchClass = UObject::StaticClass();
 			continue;
 		}
 
 		// Load our parent class in case we failed to get naming conventions
-		searchClass = searchClass->GetSuperClass();
+		SearchClass = SearchClass->GetSuperClass();
 	}
 
-	return NamingConventionList;	
+	return NamingConventionList;
 }
 
 void ULinterNamingConvention::SortConventions()
@@ -101,24 +125,24 @@ void ULinterNamingConvention::SortConventions()
 
 		if (A.SoftClassPtr.GetAssetName() == B.SoftClassPtr.GetAssetName())
 		{
-			int32 sort = A.Variant.Compare(B.Variant);
-			if (sort < 0)
+			int32 Sort = A.Variant.Compare(B.Variant);
+			if (Sort < 0)
 			{
 				return true;
 			}
 
-			if (sort == 0)
+			if (Sort == 0)
 			{
-				sort = A.Prefix.Compare(B.Prefix);
-				if (sort < 0)
+				Sort = A.Prefix.Compare(B.Prefix);
+				if (Sort < 0)
 				{
 					return true;
 				}
 
-				if (sort == 0)
+				if (Sort == 0)
 				{
-					sort = A.Suffix.Compare(B.Suffix);
-					if (sort <= 0)
+					Sort = A.Suffix.Compare(B.Suffix);
+					if (Sort <= 0)
 					{
 						return true;
 					}

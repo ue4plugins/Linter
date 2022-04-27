@@ -1,5 +1,8 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
+
 #include "LintRunner.h"
+#include "Linter.h"
+#include "LintRuleSet.h"
 
 #define LOCTEXT_NAMESPACE "Linter"
 
@@ -50,7 +53,7 @@ bool FLintRunner::Init()
 }
 
 uint32 FLintRunner::Run()
-{	
+{
 	if (LoadedObject == nullptr || pLoadedRuleList == nullptr || RuleSet == nullptr || pOutRuleViolations == nullptr)
 	{
 		return 2;
@@ -64,7 +67,7 @@ uint32 FLintRunner::Run()
 
 	if (RuleViolations.Num() > 0)
 	{
-		FScopeLock lock(&LintDataUpdateLock);
+		FScopeLock Lock(&LintDataUpdateLock);
 		pOutRuleViolations->Append(RuleViolations);
 	}
 

@@ -44,8 +44,8 @@ public:
 	TSharedPtr<FAssetData> SelectedRuleSet;
 
 	bool bOfferPackage = false;
-	EStepStatus FixUpRedirectorStatus = EStepStatus::Unknown;
-	EStepStatus SaveAllStatus = EStepStatus::Unknown;
+	EStepStatus FixUpRedirectorStatus = Unknown;
+	EStepStatus SaveAllStatus = Unknown;
 
 	void OnLintReportEntered();
 	void OnMarketplaceRecommendationsEntered();

@@ -1,7 +1,10 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
 #pragma once
+
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
+
+struct FLintRuleViolation;
 
 class SLintReportAssetErrorList : public SCompoundWidget
 {
@@ -17,7 +20,6 @@ public:
 	TAttribute<TArray<TSharedPtr<FLintRuleViolation>>> RuleViolations;
 
 public:
-	
-	void Construct(const FArguments& Args);
 
+	void Construct(const FArguments& Args);
 };

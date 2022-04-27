@@ -1,11 +1,13 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
-#include "HAL/ThreadSafeCounter.h"
 #include "HAL/Runnable.h"
-#include "AssetData.h"
-#include "Linter.h"
+
+struct FLintRuleList;
+struct FLintRuleViolation;
+class ULintRuleSet;
 
 class FLintRunner : public FRunnable
 {
@@ -31,4 +33,3 @@ protected:
 
 	FScopedSlowTask* ParentScopedSlowTask;
 };
-

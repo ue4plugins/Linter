@@ -30,14 +30,14 @@ bool ULintRule_Blueprint_Funcs_PublicDescriptions::PassesRule_Internal_Implement
 	}
 
 	bool bRuleViolated = false;
-	FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintFuncsPublicDescriptions", "{Previous}{WhiteSpace}Please give public function {FuncName} a description.");
+	const FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintFuncsPublicDescriptions", "{Previous}{WhiteSpace}Please give public function {FuncName} a description.");
 	FText AllFixes;
 
-	for (UEdGraph* FunctionGraph : Blueprint->FunctionGraphs)
+	for (const UEdGraph* FunctionGraph : Blueprint->FunctionGraphs)
 	{
 		if (FunctionGraph->GetFName() != UEdGraphSchema_K2::FN_UserConstructionScript)
 		{
-			UK2Node_FunctionEntry* FunctionEntryNode = nullptr;
+			const UK2Node_FunctionEntry* FunctionEntryNode = nullptr;
 			TArray<UK2Node_FunctionEntry*> EntryNodes;
 
 			FunctionGraph->GetNodesOfClass(EntryNodes);

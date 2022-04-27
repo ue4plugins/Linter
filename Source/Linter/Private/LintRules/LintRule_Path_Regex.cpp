@@ -2,7 +2,6 @@
 #include "LintRules/LintRule_Path_Regex.h"
 #include "LintRuleSet.h"
 #include "LinterNamingConvention.h"
-#include "HAL/FileManager.h"
 #include "Internationalization/Regex.h"
 
 ULintRule_Path_Regex::ULintRule_Path_Regex(const FObjectInitializer& ObjectInitializer)
@@ -18,9 +17,9 @@ ULintRule_Path_Regex::ULintRule_Path_Regex(const FObjectInitializer& ObjectIniti
 
 bool ULintRule_Path_Regex::PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const
 {
-	FString PathName = ObjectToLint->GetPathName();
-	
-	FRegexPattern RegexPattern = FRegexPattern(RegexPatternString);
+	const FString PathName = ObjectToLint->GetPathName();
+
+	const FRegexPattern RegexPattern = FRegexPattern(RegexPatternString);
 	bool bRuleViolated = false;
 
 	if (bCheckPerPathElement)
@@ -31,7 +30,7 @@ bool ULintRule_Path_Regex::PassesRule_Internal_Implementation(UObject* ObjectToL
 		for (int32 i = 0; i < PathElements.Num() - 1; ++i)
 		{
 			FRegexMatcher RegexMatcher(RegexPattern, PathElements[i]);
-			bool bFoundMatch = RegexMatcher.FindNext();
+			const bool bFoundMatch = RegexMatcher.FindNext();
 
 			if ((bFoundMatch && bMustNotContainRegexPattern) || (!bFoundMatch && !bMustNotContainRegexPattern))
 			{
@@ -43,7 +42,7 @@ bool ULintRule_Path_Regex::PassesRule_Internal_Implementation(UObject* ObjectToL
 	else
 	{
 		FRegexMatcher RegexMatcher(RegexPattern, PathName);
-		bool bFoundMatch = RegexMatcher.FindNext();
+		const bool bFoundMatch = RegexMatcher.FindNext();
 
 		if ((bFoundMatch && bMustNotContainRegexPattern) || (!bFoundMatch && !bMustNotContainRegexPattern))
 		{

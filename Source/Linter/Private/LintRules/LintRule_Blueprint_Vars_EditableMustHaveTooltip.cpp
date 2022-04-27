@@ -15,7 +15,7 @@ bool ULintRule_Blueprint_Vars_EditableMustHaveTooltip::PassesRule_Internal_Imple
 
 	bool bRuleViolated = false;
 
-	FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintVarsEditableMustHaveTooltip", "{Previous}{WhiteSpace}Please give variable {VarName} a tooltip as it is marked editable.");
+	const FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintVarsEditableMustHaveTooltip", "{Previous}{WhiteSpace}Please give variable {VarName} a tooltip as it is marked editable.");
 	FText AllFixes;
 	
 	for (FBPVariableDescription Desc : Blueprint->NewVariables)

@@ -45,7 +45,7 @@ bool ULintRule_Blueprint_Funcs_MaxNodes::IsNodeTrivial(const UEdGraphNode* Node)
 
 	if (const UK2Node_CallFunction* CallFuncNode = Cast<UK2Node_CallFunction>(Node))
 	{
-		FName FuncName = CallFuncNode->FunctionReference.GetMemberName();
+		const FName FuncName = CallFuncNode->FunctionReference.GetMemberName();
 		if (FuncName == TEXT("Conv_InterfaceToObject")
 			|| FuncName.ToString().Contains(TEXT("MakeLiteral"))
 			|| FuncName.ToString().Contains(TEXT("ToString"))
@@ -65,10 +65,10 @@ bool ULintRule_Blueprint_Funcs_MaxNodes::PassesRule_Internal_Implementation(UObj
 	UBlueprint* Blueprint = CastChecked<UBlueprint>(ObjectToLint);
 
 	bool bRuleViolated = false;
-	FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintFuncsMaxNodes", "{Previous}{WhiteSpace}Please simply function {FuncName} as it has {Nodes} nodes when we want a max of {MaxNodes}.");
+	const FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintFuncsMaxNodes", "{Previous}{WhiteSpace}Please simply function {FuncName} as it has {Nodes} nodes when we want a max of {MaxNodes}.");
 	FText AllFixes;
 
-	for (auto FunctionGraph : Blueprint->FunctionGraphs)
+	for (const auto FunctionGraph : Blueprint->FunctionGraphs)
 	{
 		if (FunctionGraph->GetFName() != UEdGraphSchema_K2::FN_UserConstructionScript)
 		{

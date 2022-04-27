@@ -1,19 +1,20 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
+
 #include "LinterContentBrowserExtensions.h"
 #include "Modules/ModuleManager.h"
 #include "LevelEditor.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 #include "LinterStyle.h"
-#include "LauncherPlatformModule.h"
-#include "UnrealEdMisc.h"
 #include "ContentBrowserModule.h"
-#include "EditorStyleSet.h"
+#include "Linter.h"
+#include "BatchRenameTool/BatchRenameTool.h"
 #include "Framework/MultiBox/MultiBoxExtender.h"
 #include "Framework/Commands/UIAction.h"
 #include "Delegates/IDelegateInstance.h"
 #include "TooltipEditor/TooltipTool.h"
 
 #define LOCTEXT_NAMESPACE "Linter"
+
 DEFINE_LOG_CATEGORY_STATIC(LinterContentBrowserExtensions, Log, All);
 
 void FLinterContentBrowserExtensions::InstallHooks(FLinterModule* LinterModule, FDelegateHandle* pContentBrowserExtenderDelegateHandle, class FDelegateHandle* pAssetExtenderDelegateHandle)
@@ -44,13 +45,13 @@ void FLinterContentBrowserExtensions::InstallHooks(FLinterModule* LinterModule, 
 					FSlateIcon(FLinterStyle::GetStyleSetName(), "Linter.Toolbar.Icon"),
 					FUIAction(FExecuteAction::CreateLambda([SelectedPaths]()
 					{
-						if (FLinterModule* lm = FModuleManager::GetModulePtr<FLinterModule>("Linter"))
+						if (FLinterModule* Linter = FModuleManager::GetModulePtr<FLinterModule>("Linter"))
 						{
-							if (lm != nullptr)
+							if (Linter != nullptr)
 							{
-								lm->SetDesiredLintPaths(SelectedPaths);
+								Linter->SetDesiredLintPaths(SelectedPaths);
 							}
-							FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"));
+							FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"));
 						}
 					})),
 					NAME_None,
@@ -77,7 +78,7 @@ void FLinterContentBrowserExtensions::InstallHooks(FLinterModule* LinterModule, 
 		{
 			MenuBuilder.BeginSection("LinterAssetContext", LOCTEXT("CB_LinterHeader", "Linter"));
 			{
-				
+
 				// Run through the assets to determine if any are blueprints
 				bool bAnyBlueprintsSelected = false;
 				for (auto AssetIt = SelectedAssets.CreateConstIterator(); AssetIt; ++AssetIt)

@@ -15,7 +15,7 @@ bool ULintRule_Blueprint_Vars_NoConfigFlag::PassesRule_Internal_Implementation(U
 
 	bool bRuleViolated = false;
 
-	FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintVarsNoConfigFlag", "{Previous}{WhiteSpace}Please disable the config flag on variable {VarName}.");
+	const FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintVarsNoConfigFlag", "{Previous}{WhiteSpace}Please disable the config flag on variable {VarName}.");
 	FText AllFixes;
 
 	for (FBPVariableDescription Desc : Blueprint->NewVariables)

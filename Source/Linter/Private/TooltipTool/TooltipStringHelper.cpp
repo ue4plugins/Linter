@@ -66,11 +66,11 @@ bool FTooltipStringHelper::ParseFunctionRawTooltip(FString RawTooltip, FText& Ou
 			{
 				if (bCurrentArgumentIsInput)
 				{
-					FTooltipStringHelper::FindAndUpdateArgumentTooltip(CurrentArgumentName, FText::FromString(CurrentArgumentTooltip), Inputs);
+					FindAndUpdateArgumentTooltip(CurrentArgumentName, FText::FromString(CurrentArgumentTooltip), Inputs);
 				}
 				else
 				{
-					FTooltipStringHelper::FindAndUpdateArgumentTooltip(CurrentArgumentName, FText::FromString(CurrentArgumentTooltip), Outputs);
+					FindAndUpdateArgumentTooltip(CurrentArgumentName, FText::FromString(CurrentArgumentTooltip), Outputs);
 				}
 
 				CurrentArgumentName = FText::GetEmpty();
@@ -105,11 +105,11 @@ bool FTooltipStringHelper::ParseFunctionRawTooltip(FString RawTooltip, FText& Ou
 			{
 				if (bCurrentArgumentIsInput)
 				{
-					FTooltipStringHelper::FindAndUpdateArgumentTooltip(CurrentArgumentName, FText::FromString(CurrentArgumentTooltip), Inputs);
+					FindAndUpdateArgumentTooltip(CurrentArgumentName, FText::FromString(CurrentArgumentTooltip), Inputs);
 				}
 				else
 				{
-					FTooltipStringHelper::FindAndUpdateArgumentTooltip(CurrentArgumentName, FText::FromString(CurrentArgumentTooltip), Outputs);
+					FindAndUpdateArgumentTooltip(CurrentArgumentName, FText::FromString(CurrentArgumentTooltip), Outputs);
 				}
 
 				CurrentArgumentName = FText::GetEmpty();
@@ -145,11 +145,11 @@ bool FTooltipStringHelper::ParseFunctionRawTooltip(FString RawTooltip, FText& Ou
 		{
 			if (bCurrentArgumentIsInput)
 			{
-				FTooltipStringHelper::FindAndUpdateArgumentTooltip(CurrentArgumentName, FText::FromString(CurrentArgumentTooltip), Inputs);
+				FindAndUpdateArgumentTooltip(CurrentArgumentName, FText::FromString(CurrentArgumentTooltip), Inputs);
 			}
 			else
 			{
-				FTooltipStringHelper::FindAndUpdateArgumentTooltip(CurrentArgumentName, FText::FromString(CurrentArgumentTooltip), Outputs);
+				FindAndUpdateArgumentTooltip(CurrentArgumentName, FText::FromString(CurrentArgumentTooltip), Outputs);
 			}
 
 			CurrentArgumentName = FText::GetEmpty();
@@ -164,7 +164,7 @@ bool FTooltipStringHelper::ParseFunctionRawTooltip(FString RawTooltip, FText& Ou
 FString FTooltipStringHelper::ConvertTooltipDataToRawTooltip(FText FunctionDescription, TArray<TSharedPtr<FBPFunctionArgumentDescription>> Inputs, TArray<TSharedPtr<FBPFunctionArgumentDescription>> Outputs)
 {
 	FString RawTooltip = FunctionDescription.ToString();
-	for (TSharedPtr<FBPFunctionArgumentDescription> Arg : Inputs)
+	for (const TSharedPtr<FBPFunctionArgumentDescription> Arg : Inputs)
 	{
 		RawTooltip.Append(FString::Printf(TEXT("\n@param %s  %s\t\t\t%s"), TEXT("     "), *Arg->ArgumentName.ToString(), *Arg->Tooltip.ToString()));		
 	}
@@ -175,7 +175,7 @@ FString FTooltipStringHelper::ConvertTooltipDataToRawTooltip(FText FunctionDescr
 	}
 	else
 	{
-		for (TSharedPtr<FBPFunctionArgumentDescription> Arg : Outputs)
+		for (const TSharedPtr<FBPFunctionArgumentDescription> Arg : Outputs)
 		{
 			RawTooltip.Append(FString::Printf(TEXT("\n@param %s  %s\t\t\t%s"), TEXT("[out]"), *Arg->ArgumentName.ToString(), *Arg->Tooltip.ToString()));
 		}
@@ -186,7 +186,7 @@ FString FTooltipStringHelper::ConvertTooltipDataToRawTooltip(FText FunctionDescr
 
 bool FTooltipStringHelper::FindAndUpdateArgumentTooltip(FText ArgumentName, FText Tooltip, TArray<TSharedPtr<FBPFunctionArgumentDescription>>& Arguments)
 {
-	TSharedPtr<FBPFunctionArgumentDescription>* FuncArg = Arguments.FindByPredicate([&](TSharedPtr<FBPFunctionArgumentDescription> Arg){ return Arg->ArgumentName.EqualTo(ArgumentName, ETextComparisonLevel::Quinary);});
+	const TSharedPtr<FBPFunctionArgumentDescription>* FuncArg = Arguments.FindByPredicate([&](TSharedPtr<FBPFunctionArgumentDescription> Arg){ return Arg->ArgumentName.EqualTo(ArgumentName, ETextComparisonLevel::Quinary);});
 	if (FuncArg != nullptr)
 	{
 		(*FuncArg)->Tooltip = Tooltip;

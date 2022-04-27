@@ -6,16 +6,17 @@ public class Linter : ModuleRules
 {
     public Linter(ReadOnlyTargetRules Target) : base(Target)
     {
-        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;		
-		
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        bUseUnity = false;
+
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",
 			}
 		);
-			
-		
+
+
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
             {
@@ -36,7 +37,7 @@ public class Linter : ModuleRules
 				"DesktopPlatform",
 				"Json",
                 "UATHelper"
-				// ... add private dependencies that you statically link with here ...	
+				// ... add private dependencies that you statically link with here ...
 			}
 		);
 

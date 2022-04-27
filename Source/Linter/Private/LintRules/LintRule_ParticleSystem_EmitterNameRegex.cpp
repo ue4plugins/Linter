@@ -31,17 +31,17 @@ bool ULintRule_ParticleSystem_EmitterNameRegex::PassesRule_Internal_Implementati
 
 	bool bRuleViolated = false;
 
-	FText FixTextTemplate = NSLOCTEXT("Linter", "ParticleHasBadEmitterNames", "{Previous}{WhiteSpace}Please rename emitter {EmitterName}.");
+	const FText FixTextTemplate = NSLOCTEXT("Linter", "ParticleHasBadEmitterNames", "{Previous}{WhiteSpace}Please rename emitter {EmitterName}.");
 	FText AllFixes;
 
 	if (ParticleSystem->Emitters.Num() >= MinEmittersNeededToEnforce)
 	{
-		FRegexPattern RegexPattern = FRegexPattern(RegexPatternString);
+		const FRegexPattern RegexPattern = FRegexPattern(RegexPatternString);
 		
-		for (UParticleEmitter* Emitter : ParticleSystem->Emitters)
+		for (const UParticleEmitter* Emitter : ParticleSystem->Emitters)
 		{
 			FRegexMatcher RegexMatcher(RegexPattern, Emitter->EmitterName.ToString());
-			bool bFoundMatch = RegexMatcher.FindNext();
+			const bool bFoundMatch = RegexMatcher.FindNext();
 
 			if ((bFoundMatch && bMustNotContainRegexPattern) || (!bFoundMatch && !bMustNotContainRegexPattern))
 			{

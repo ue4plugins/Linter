@@ -29,12 +29,12 @@ bool ULintRule_Blueprint_Funcs_MustHaveReturn::PassesRule_Internal_Implementatio
 	}
 
 	bool bRuleViolated = false;
-	FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintFuncsMustHaveReturn", "{Previous}{WhiteSpace}Please give function {FuncName} a return node.");
+	const FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintFuncsMustHaveReturn", "{Previous}{WhiteSpace}Please give function {FuncName} a return node.");
 	FText AllFixes;
 
 	static const FName DefaultAnimGraphName("AnimGraph");
 
-	for (auto FunctionGraph : Blueprint->FunctionGraphs)
+	for (const auto FunctionGraph : Blueprint->FunctionGraphs)
 	{
 		if (FunctionGraph->GetFName() != UEdGraphSchema_K2::FN_UserConstructionScript
 			&& FunctionGraph->GetFName() != DefaultAnimGraphName)

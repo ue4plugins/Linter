@@ -2,7 +2,6 @@
 #include "LintRules/LintRule_Path_DisallowNames.h"
 #include "LintRuleSet.h"
 #include "LinterNamingConvention.h"
-#include "HAL/FileManager.h"
 
 ULintRule_Path_DisallowNames::ULintRule_Path_DisallowNames(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -12,7 +11,7 @@ ULintRule_Path_DisallowNames::ULintRule_Path_DisallowNames(const FObjectInitiali
 
 bool ULintRule_Path_DisallowNames::PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const
 {
-	FString PathName = ObjectToLint->GetPathName();
+	const FString PathName = ObjectToLint->GetPathName();
 	TArray<FString> PathElements;
 	PathName.ParseIntoArray(PathElements, TEXT("/"), true);
 

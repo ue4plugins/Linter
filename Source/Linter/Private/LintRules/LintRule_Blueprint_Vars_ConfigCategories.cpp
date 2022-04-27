@@ -1,8 +1,10 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
+
 #include "LintRules/LintRule_Blueprint_Vars_ConfigCategories.h"
 #include "LintRuleSet.h"
 #include "Engine/Blueprint.h"
 #include "EdGraphSchema_K2.h"
+#include "Kismet2/BlueprintEditorUtils.h"
 
 ULintRule_Blueprint_Vars_ConfigCategories::ULintRule_Blueprint_Vars_ConfigCategories(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -15,8 +17,8 @@ bool ULintRule_Blueprint_Vars_ConfigCategories::PassesRule_Internal_Implementati
 
 	bool bRuleViolated = false;
 
-	FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintVarsConfigCategories", "{Previous}{WhiteSpace}Please give variable {VarName} a category.");
-	FText FixTextTemplateEditable = NSLOCTEXT("Linter", "BlueprintVarsConfigCategoriesEditable", "{Previous}{WhiteSpace}Please give editable variable {VarName} a category starting with 'Config'.");
+	const FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintVarsConfigCategories", "{Previous}{WhiteSpace}Please give variable {VarName} a category.");
+	const FText FixTextTemplateEditable = NSLOCTEXT("Linter", "BlueprintVarsConfigCategoriesEditable", "{Previous}{WhiteSpace}Please give editable variable {VarName} a category starting with 'Config'.");
 	FText AllFixes;
 
 	int32 VariableCount = Blueprint->NewVariables.Num();
@@ -31,8 +33,8 @@ bool ULintRule_Blueprint_Vars_ConfigCategories::PassesRule_Internal_Implementati
 	if (VariableCount < NumVariablesToRequireCategorization)
 	{
 		return true;
-	}	
-	
+	}
+
 	for (FBPVariableDescription Desc : Blueprint->NewVariables)
 	{
 		FString PropName = Desc.VarName.ToString();

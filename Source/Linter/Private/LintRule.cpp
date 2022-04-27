@@ -5,9 +5,7 @@
 #include "Materials/Material.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Engine/Blueprint.h"
-#include "AssetData.h"
 #include "Modules/ModuleManager.h"
-#include "IAssetRegistry.h"
 #include "IAssetTools.h"
 #include "AssetRegistryModule.h"
 
@@ -58,10 +56,10 @@ FName ULintRule::GetRuleBasedObjectVariantName_Implementation(UObject* ObjectToL
 	}
 
 	{
-		UMaterialInterface* MI = Cast<UMaterialInterface>(ObjectToLint);
+		const UMaterialInterface* MI = Cast<UMaterialInterface>(ObjectToLint);
 		if (MI != nullptr)
 		{
-#if ENGINE_MINOR_VERSION >= 25
+#if ENGINE_MINOR_VERSION >= 25 || ENGINE_MAJOR_VERSION >= 5
 			TMicRecursionGuard RecursionGuard;
 #else
 			UMaterialInterface::TMicRecursionGuard RecursionGuard;
@@ -69,7 +67,7 @@ FName ULintRule::GetRuleBasedObjectVariantName_Implementation(UObject* ObjectToL
 			const UMaterial* Material = MI->GetMaterial_Concurrent(RecursionGuard);
 			if (Material != nullptr)
 			{
-				if (Material->MaterialDomain == EMaterialDomain::MD_PostProcess)
+				if (Material->MaterialDomain == MD_PostProcess)
 				{
 					return "PostProcess";
 				}
@@ -78,10 +76,10 @@ FName ULintRule::GetRuleBasedObjectVariantName_Implementation(UObject* ObjectToL
 	}
 
 	{
-		UBlueprint* Blueprint = Cast<UBlueprint>(ObjectToLint);
+		const UBlueprint* Blueprint = Cast<UBlueprint>(ObjectToLint);
 		if (Blueprint != nullptr)
 		{
-			if (Blueprint->BlueprintType == EBlueprintType::BPTYPE_MacroLibrary)
+			if (Blueprint->BlueprintType == BPTYPE_MacroLibrary)
 			{
 				return "MacroLibrary";
 			}
@@ -132,7 +130,7 @@ TArray<TSharedPtr<FLintRuleViolation>> FLintRuleViolation::AllRuleViolationsWith
 	// This should really be done when the structs are first created
 	TArray<TSharedPtr<FLintRuleViolation>> SharedViolations;
 	TArray<FLintRuleViolation> Violations = AllRuleViolationsWithViolator(RuleViolationCollection, SearchViolator);
-	for (FLintRuleViolation Violation : Violations)
+	for (const FLintRuleViolation Violation : Violations)
 	{
 		SharedViolations.Push(TSharedPtr<FLintRuleViolation>(new FLintRuleViolation(Violation)));
 	}
@@ -237,7 +235,7 @@ TMultiMap<const ULintRule*, TSharedPtr<FLintRuleViolation>> FLintRuleViolation::
 
 bool FLintRuleViolation::PopulateAssetData()
 {
-	IAssetRegistry& AssetRegistry = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry").Get();
+	const IAssetRegistry& AssetRegistry = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry").Get();
 	TArray<FAssetRenameData> AssetRenameData;
 
 	if (Violator.IsValid())

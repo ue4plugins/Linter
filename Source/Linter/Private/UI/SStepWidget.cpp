@@ -1,23 +1,24 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
 #include "UI/SStepWidget.h"
+
+#include "LinterStyle.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Layout/SBorder.h"
-#include "Widgets/Layout/SBox.h"
 #include "Widgets/Images/SImage.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Text/STextBlock.h"
 #include "Widgets/Images/SThrobber.h"
 #include "Widgets/Text/SRichTextBlock.h"
 
-bool SStepWidget::IsStepCompleted(bool bAllowWarning /*= true*/)
+bool SStepWidget::IsStepCompleted(const bool bAllowWarning) const
 {
-	EStepStatus Status = StepStatus.Get();
-	if (bAllowWarning && Status == EStepStatus::Warning)
+	const EStepStatus Status = StepStatus.Get();
+	if (bAllowWarning && Status == Warning)
 	{
 		return true;
 	}
 
-	return Status == EStepStatus::Success;
+	return Status == Success;
 }
 
 void SStepWidget::Construct(const FArguments& Args)
@@ -32,22 +33,22 @@ void SStepWidget::Construct(const FArguments& Args)
 	// Visibility lambda based on whether step is in progress
 	auto VisibleIfInProgress = [this]()
 	{
-		return StepStatus.Get(EStepStatus::NoStatus) == EStepStatus::InProgress ? EVisibility::Visible : EVisibility::Collapsed;
+		return StepStatus.Get(NoStatus) == InProgress ? EVisibility::Visible : EVisibility::Collapsed;
 	};
 
 	// Enabled lambda based on whether this widget has a step status that requires action
 	auto EnabledBasedOnStepStatus = [this]() -> bool
 	{
-		switch (StepStatus.Get(EStepStatus::NoStatus))
+		switch (StepStatus.Get(NoStatus))
 		{
-			case EStepStatus::NoStatus:
-			case EStepStatus::InProgress:
-			case EStepStatus::Success:
+			case NoStatus:
+			case InProgress:
+			case Success:
 				return false;
-			case EStepStatus::Unknown:
-			case EStepStatus::Warning:
-			case EStepStatus::Error:
-			case EStepStatus::NeedsUpdate:
+			case Unknown:
+			case Warning:
+			case Error:
+			case NeedsUpdate:
 				return true;
 		}
 		return false;
@@ -70,10 +71,10 @@ void SStepWidget::Construct(const FArguments& Args)
 				.AutoWidth()
 				[
 					SNew(SImage)
-					.Visibility_Lambda([&]() { return StepStatus.Get(EStepStatus::NoStatus) == EStepStatus::NoStatus || !ShowStepStatusIcon.Get(true) ? EVisibility::Collapsed : EVisibility::Visible; })
+					.Visibility_Lambda([&]() { return StepStatus.Get(NoStatus) == NoStatus || !ShowStepStatusIcon.Get(true) ? EVisibility::Collapsed : EVisibility::Visible; })
 					.Image_Lambda([&]()
 					{
-						switch (StepStatus.Get(EStepStatus::NoStatus))
+						switch (StepStatus.Get(NoStatus))
 						{
 							case NoStatus:
 							case Unknown:
@@ -88,7 +89,7 @@ void SStepWidget::Construct(const FArguments& Args)
 							case Success:
 								return FLinterStyle::Get()->GetBrush("Linter.Step.Good");
 						}
-	
+
 						return FLinterStyle::Get()->GetBrush("Linter.Step.Unknown");
 					})
 				]
@@ -135,7 +136,7 @@ void SStepWidget::Construct(const FArguments& Args)
 						[
 							SNew(SButton)
 							.IsEnabled_Lambda(EnabledBasedOnStepStatus)
-							.Visibility_Lambda([&]() { return StepStatus.Get(EStepStatus::NoStatus) == EStepStatus::NoStatus ? EVisibility::Collapsed : EVisibility::Visible; })
+							.Visibility_Lambda([&]() { return StepStatus.Get(NoStatus) == NoStatus ? EVisibility::Collapsed : EVisibility::Visible; })
 							.OnClicked_Lambda([&]()
 							{
 								FScopedSlowTask SlowTask(1.0f, StepActionText.Get(FText()));

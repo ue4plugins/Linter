@@ -4,12 +4,9 @@
 #include "ISettingsModule.h"
 #include "Framework/Docking/TabManager.h"
 #include "LevelEditor.h"
-#include "Widgets/Input/SButton.h"
 #include "Styling/SlateStyle.h"
 #include "AssetRegistryModule.h"
 #include "IAssetRegistry.h"
-#include "AssetData.h"
-#include "ContentBrowserModule.h"
 #include "PropertyEditorModule.h"
 
 #include "LinterStyle.h"
@@ -26,7 +23,7 @@ static const FName LinterTabName = "LinterTab";
 void FLinterModule::StartupModule()
 {
 	// Load the asset registry module
-	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(FName("AssetRegistry"));
+	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(FName("AssetRegistry"));
 	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
 	if (AssetRegistry.IsLoadingAssets())
@@ -43,7 +40,7 @@ void FLinterModule::StartupModule()
 	{
 		// Register slate style overrides
 		FLinterStyle::Initialize();
-		TSharedPtr<FSlateStyleSet> StyleSetPtr = FLinterStyle::StyleSet;
+		const TSharedPtr<FSlateStyleSet> StyleSetPtr = FLinterStyle::StyleSet;
 
 		if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 		{
@@ -103,10 +100,10 @@ TSharedRef<SDockTab> FLinterModule::SpawnTab(const FSpawnTabArgs& TabSpawnArgs, 
 
 	const TSharedRef<SDockTab> MajorTab =
 		SNew(SDockTab)
-		.Icon(IconBrush)
 		.TabRole(ETabRole::MajorTab);
 
 	MajorTab->SetContent(SNew(SLintWizard));
+	MajorTab->SetTabIcon(IconBrush);
 
 	return MajorTab;
 }
@@ -118,8 +115,8 @@ void FLinterModule::OnInitialAssetRegistrySearchComplete()
 
 void FLinterModule::TryToLoadAllLintRuleSets()
 {
-	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(FName("AssetRegistry"));
-	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(FName("AssetRegistry"));
+	const IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
 	TArray<FAssetData> FoundRuleSets;
 	AssetRegistry.GetAssetsByClass(ULintRuleSet::StaticClass()->GetFName(), FoundRuleSets, true);
@@ -135,6 +132,6 @@ void FLinterModule::TryToLoadAllLintRuleSets()
 }
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FLinterModule, Linter)
 DEFINE_LOG_CATEGORY(LogLinter);

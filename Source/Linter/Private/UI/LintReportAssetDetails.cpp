@@ -1,4 +1,5 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
+
 #include "UI/LintReportAssetDetails.h"
 #include "LinterStyle.h"
 #include "Widgets/Layout/SBorder.h"
@@ -9,16 +10,13 @@
 #include "IContentBrowserSingleton.h"
 #include "AssetRegistryModule.h"
 #include "Widgets/Input/SHyperlink.h"
-#include "Widgets/Layout/SSpacer.h"
 #include "IAssetTools.h"
 #include "AssetToolsModule.h"
-#include "Misc/MessageDialog.h"
 #include "Internationalization/Internationalization.h"
 #include "Widgets/Text/STextBlock.h"
-#include "Framework/Views/ITypedTableView.h"
-#include "UI/LintReportAssetError.h"
 #include "LintRule.h"
 #include "AssetThumbnail.h"
+#include "UI/LintReportAssetErrorList.h"
 
 
 #define LOCTEXT_NAMESPACE "LintReport"
@@ -31,15 +29,15 @@ void SLintReportAssetDetails::Construct(const FArguments& Args)
 
 	const float PaddingAmount = FLinterStyle::Get()->GetFloat("Linter.Padding");
 
-	FText AssetName = FText::FromString(AssetData.Get().AssetName.ToString());
-	FText AssetPath = FText::FromString(AssetData.Get().GetFullName());
+	const FText AssetName = FText::FromString(AssetData.Get().AssetName.ToString());
+	const FText AssetPath = FText::FromString(AssetData.Get().GetFullName());
 
 	const TSharedPtr<FAssetThumbnail> AssetThumbnail = MakeShareable(new FAssetThumbnail(AssetData.Get().GetAsset(), 96, 96, ThumbnailPool.Get()));
 
 	int32 NumErrors = 0;
 	int32 NumWarnings = 0;
 
-	for (TSharedPtr<FLintRuleViolation> RuleViolation : RuleViolations.Get())
+	for (const TSharedPtr<FLintRuleViolation> RuleViolation : RuleViolations.Get())
 	{
 		switch (RuleViolation->ViolatedRule.Get()->GetDefaultObject<ULintRule>()->RuleSeverity)
 		{
@@ -53,7 +51,7 @@ void SLintReportAssetDetails::Construct(const FArguments& Args)
 				break;
 			//case ELintRuleSeverity::Ignore:
 			default:
-				break;			
+				break;
 		}
 	}
 
@@ -113,7 +111,7 @@ void SLintReportAssetDetails::Construct(const FArguments& Args)
 								.Text(AssetPath)
 								.OnNavigate_Lambda([&]()
 								{
-									FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
+									const FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
 									FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 									TArray<FAssetData> AssetDatas;
 									AssetDatas.Push(AssetData.Get());

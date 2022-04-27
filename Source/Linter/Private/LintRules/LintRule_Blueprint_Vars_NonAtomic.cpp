@@ -28,7 +28,7 @@ bool ULintRule_Blueprint_Vars_NonAtomic::PassesRule_Internal_Implementation(UObj
 
 	bool bRuleViolated = false;
 
-	FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintVarsNonAtomic", "{Previous}{WhiteSpace}Please fix variable named {VarName}.");
+	const FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintVarsNonAtomic", "{Previous}{WhiteSpace}Please fix variable named {VarName}.");
 	FText AllFixes;
 	
 	for (FBPVariableDescription Desc : Blueprint->NewVariables)

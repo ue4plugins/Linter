@@ -2,12 +2,11 @@
 #include "LintRules/LintRule_Texture_Size_PowerOfTwo.h"
 #include "LintRuleSet.h"
 #include "LinterNamingConvention.h"
-#include "HAL/FileManager.h"
 
 ULintRule_Texture_Size_PowerOfTwo::ULintRule_Texture_Size_PowerOfTwo(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	IgnoreTexturesInTheseGroups.Add(TextureGroup::TEXTUREGROUP_UI);
+	IgnoreTexturesInTheseGroups.Add(TEXTUREGROUP_UI);
 }
 
 bool ULintRule_Texture_Size_PowerOfTwo::PassesRule(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const
@@ -35,10 +34,10 @@ bool ULintRule_Texture_Size_PowerOfTwo::PassesRule_Internal_Implementation(UObje
 	int32 TexSizeX = Texture->GetSizeX();
 	int32 TexSizeY = Texture->GetSizeY();
 
-	bool bXFail = ((TexSizeX & (TexSizeX - 1)) != 0);
-	bool bYFail = ((TexSizeY & (TexSizeY - 1)) != 0);
+	const bool bXFail = ((TexSizeX & (TexSizeX - 1)) != 0);
+	const bool bYFail = ((TexSizeY & (TexSizeY - 1)) != 0);
 
-	UEnum* TextureGroupEnum = StaticEnum<TextureGroup>();
+	const UEnum* TextureGroupEnum = StaticEnum<TextureGroup>();
 	FString IgnoredLODGroupNames;
 
 	for (TEnumAsByte<TextureGroup> LODGroup : IgnoreTexturesInTheseGroups)

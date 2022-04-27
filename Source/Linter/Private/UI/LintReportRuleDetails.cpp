@@ -9,13 +9,10 @@
 #include "IContentBrowserSingleton.h"
 #include "AssetRegistryModule.h"
 #include "Widgets/Input/SHyperlink.h"
-#include "Widgets/Layout/SSpacer.h"
 #include "IAssetTools.h"
 #include "AssetToolsModule.h"
-#include "Misc/MessageDialog.h"
 #include "Internationalization/Internationalization.h"
 #include "Widgets/Text/STextBlock.h"
-#include "Framework/Views/ITypedTableView.h"
 #include "UI/LintReportRuleErrorList.h"
 #include "LintRule.h"
 #include "AssetThumbnail.h"
@@ -35,8 +32,8 @@ void SLintReportRuleDetails::Construct(const FArguments& Args)
 	ULintRule* BrokenRule = (RuleViolations.Get())[0]->ViolatedRule.GetDefaultObject();
 	check(BrokenRule != nullptr);
 
-	FText RuleName = BrokenRule->RuleTitle;
-	FText RuleDesc = BrokenRule->RuleDescription;
+	const FText RuleName = BrokenRule->RuleTitle;
+	const FText RuleDesc = BrokenRule->RuleDescription;
 
 	RuleURL = BrokenRule->RuleURL;
 
@@ -57,8 +54,8 @@ void SLintReportRuleDetails::Construct(const FArguments& Args)
 		break;
 	}
 
-	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
-	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+	const IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
 	RuleAssetData = AssetRegistry.GetAssetByObjectPath(FName(*BrokenRule->GetPathName()), true);
 	FText RuleAssetPath;
@@ -132,7 +129,7 @@ void SLintReportRuleDetails::Construct(const FArguments& Args)
 							.Image(FLinterStyle::Get()->GetBrush("Linter.Report.Link"))
 							.Cursor(EMouseCursor::Hand)
 							.Visibility(RuleURL.IsEmpty() ? EVisibility::Collapsed : EVisibility::Visible)
-							.OnMouseButtonDown_Lambda([&](const FGeometry& Geo, const FPointerEvent& Event) { FPlatformProcess::LaunchURL(*RuleURL, NULL, NULL); return FReply::Handled(); })
+							.OnMouseButtonDown_Lambda([&](const FGeometry& Geo, const FPointerEvent& Event) { FPlatformProcess::LaunchURL(*RuleURL, nullptr, nullptr); return FReply::Handled(); })
 						]
 						// Link to Rule Definition Asset
 						+ SHorizontalBox::Slot()
@@ -145,7 +142,7 @@ void SLintReportRuleDetails::Construct(const FArguments& Args)
 							.Visibility(EVisibility::Collapsed)
 							.OnMouseButtonDown_Lambda([&](const FGeometry& Geo, const FPointerEvent& Event)
 							{
-								FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
+								const FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
 								ContentBrowserModule.Get().SyncBrowserToAssets(TArray<FAssetData>({ RuleAssetData }));
 								return FReply::Handled();
 							})
@@ -160,7 +157,7 @@ void SLintReportRuleDetails::Construct(const FArguments& Args)
 							.Text(FText::FormatNamed(LOCTEXT("AssetCountDisplay", "{NumAssets} {NumAssets}|plural(one=Asset,other=Assets)"), TEXT("NumAssets"), RuleViolations.Get().Num()))
 							.OnNavigate_Lambda([&]()
 							{
-								FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
+								const FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
 								TArray<FAssetData> AssetDatas;
 
 								for (const TSharedPtr<FLintRuleViolation>& RuleViolation : RuleViolations.Get())

@@ -15,6 +15,7 @@
 #include "Framework/Notifications/NotificationManager.h"
 #include "Logging/MessageLog.h"
 #include "Logging/TokenizedMessage.h"
+#include "Widgets/Layout/SSeparator.h"
 
 #define LOCTEXT_NAMESPACE "LinterBatchRenamer"
 
@@ -32,7 +33,7 @@ FDlgBatchRenameTool::FDlgBatchRenameTool(const TArray<FAssetData> Assets)
 			.AutoCenter(EAutoCenter::PreferredWorkArea)
 			.ClientSize(FVector2D(350, 165));
 
-		TSharedPtr<SBorder> DialogWrapper =
+		const TSharedPtr<SBorder> DialogWrapper =
 			SNew(SBorder)
 			.BorderImage(FEditorStyle::GetBrush("ToolPanel.GroupBorder"))
 			.Padding(4.0f)
@@ -48,9 +49,9 @@ FDlgBatchRenameTool::EResult FDlgBatchRenameTool::ShowModal()
 {
 	//Show Dialog
 	GEditor->EditorAddModalWindow(DialogWindow.ToSharedRef());
-	EResult UserResponse = (EResult)DialogWidget->GetUserResponse();
+	const EResult UserResponse = (EResult)DialogWidget->GetUserResponse();
 
-	if (UserResponse == EResult::Confirm)
+	if (UserResponse == Confirm)
 	{
 		Prefix = DialogWidget->PrefixTextBox->GetText().ToString();
 		Suffix = DialogWidget->SuffixTextBox->GetText().ToString();
@@ -63,10 +64,10 @@ FDlgBatchRenameTool::EResult FDlgBatchRenameTool::ShowModal()
 		// If no information is given, treat as canceled
 		if (Prefix.IsEmpty() && Suffix.IsEmpty() && Find.IsEmpty())
 		{
-			return EResult::Cancel;
+			return Cancel;
 		}
 
-		FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
+		const FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
 		TArray<FAssetRenameData> AssetsAndNames;
 
 		for (auto AssetIt = SelectedAssets.CreateConstIterator(); AssetIt; ++AssetIt)

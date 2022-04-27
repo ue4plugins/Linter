@@ -1,8 +1,6 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
 #pragma once
 
-#include "Modules/ModuleManager.h"
-
 DECLARE_LOG_CATEGORY_EXTERN(LogGamemakinLinter, Verbose, All);
 
 class GAMEMAKINLINTER_API FGamemakinLinterModule : public IModuleInterface

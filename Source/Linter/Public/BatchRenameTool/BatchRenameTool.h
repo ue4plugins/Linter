@@ -2,14 +2,12 @@
 
 #pragma once
 
-#include "EditorStyleSet.h"
 #include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/Input/SCheckBox.h"
 #include "Widgets/SWindow.h"
 #include "Widgets/SUserWidget.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
-#include "Widgets/Layout/SSeparator.h"
 
 #define LOCTEXT_NAMESPACE "LinterBatchRenamer"
 

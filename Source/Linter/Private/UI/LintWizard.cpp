@@ -4,18 +4,18 @@
 #include "CoreGlobals.h"
 #include "Delegates/Delegate.h"
 #include "AssetRegistryModule.h"
+#include "AssetToolsModule.h"
+#include "ContentBrowserModule.h"
+#include "DesktopPlatformModule.h"
 #include "IAssetRegistry.h"
-#include "AssetData.h"
 #include "SlateOptMacros.h"
 #include "Widgets/Layout/SSeparator.h"
-#include "Widgets/Views/SListView.h"
 #include "Widgets/Text/SRichTextBlock.h"
 #include "Widgets/Notifications/SNotificationList.h"
 #include "Widgets/Layout/SScrollBox.h"
 #include "IUATHelperModule.h"
 #include "Misc/FeedbackContext.h"
 #include "Framework/Notifications/NotificationManager.h"
-#include "AssetThumbnail.h"
 #include "FileHelpers.h"
 #include "Logging/MessageLog.h"
 #include "Logging/TokenizedMessage.h"
@@ -25,7 +25,7 @@
 #include "LinterSettings.h"
 #include "UI/SAssetLinkWidget.h"
 
-
+#define LOCTEXT_NAMESPACE "LintWizard"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 void SLintWizard::Construct(const FArguments& InArgs)
@@ -36,12 +36,12 @@ void SLintWizard::Construct(const FArguments& InArgs)
 	RuleSets = TArray<TSharedPtr<FAssetData>>();
 
 	// Try to load the default rule set
-	ULintRuleSet* DefaultRuleSet = GetDefault<ULinterSettings>()->DefaultLintRuleSet.LoadSynchronous();
+	const ULintRuleSet* DefaultRuleSet = GetDefault<ULinterSettings>()->DefaultLintRuleSet.LoadSynchronous();
 
 	// Even though this happens on module startup, we try force loading all rule sets again in case any new unloaded rule sets have been added
 	// or for some reason our existing rule sets were unloaded from memory
-	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(FName("AssetRegistry"));
-	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(FName("AssetRegistry"));
+	const IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
 	TArray<FAssetData> FoundRuleSets;
 	AssetRegistry.GetAssetsByClass(ULintRuleSet::StaticClass()->GetFName(), FoundRuleSets, true);
@@ -49,7 +49,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 	// Attempt to get all RuleSets in memory so that linting tools are better aware of them
 	for (const FAssetData& RuleSetData : FoundRuleSets)
 	{
-		ULintRuleSet* LoadedRuleSet = Cast<ULintRuleSet>(RuleSetData.GetAsset());
+		const ULintRuleSet* LoadedRuleSet = Cast<ULintRuleSet>(RuleSetData.GetAsset());
 		if (LoadedRuleSet != nullptr)
 		{
 			FAssetData* newData = new FAssetData;
@@ -83,12 +83,12 @@ void SLintWizard::Construct(const FArguments& InArgs)
 				.CancelButtonStyle(FEditorStyle::Get(), "FlatButton.Default")
 				.FinishButtonStyle(FEditorStyle::Get(), "FlatButton.Success")
 				.ButtonTextStyle(FEditorStyle::Get(), "LargeText")
-				.ForegroundColor(FEditorStyle::Get().GetSlateColor("WhiteBrush"))
+				//.ForegroundColor(FEditorStyle::Get().GetSlateColor("WhiteBrush"))
 				.CanFinish(true)
 				.FinishButtonText(LOCTEXT("FinishButtonText", "Close"))
 				.OnFinished_Lambda([&]()
 				{
-					FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"))->RequestCloseTab();
+					FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"))->RequestCloseTab();
 				})
 				+ SWizard::Page()
 				.CanShow_Lambda([&]() { return RuleSets.Num() > 0; })
@@ -119,13 +119,13 @@ void SLintWizard::Construct(const FArguments& InArgs)
 						.OptionsSource(&RuleSets)
 						.InitiallySelectedItem(SelectedRuleSet)
 						.OnGenerateWidget_Lambda([&](TSharedPtr<FAssetData> LintRuleSet)
-						{ 
+						{
 							ULintRuleSet* RuleSet = Cast<ULintRuleSet>(LintRuleSet->GetAsset());
 							if (RuleSet != nullptr)
 							{
 								return SNew(STextBlock).Text(RuleSet->RuleSetDescription.IsEmpty() ? FText::FromString(RuleSet->GetPathName()) : RuleSet->RuleSetDescription);
 							}
-							return SNew(STextBlock).Text(FText::FromString(TEXT("This Lint Rule Set Failed To Load? Uhhhh....")));							
+							return SNew(STextBlock).Text(FText::FromString(TEXT("This Lint Rule Set Failed To Load? Uhhhh....")));
 						})
 						.OnSelectionChanged_Lambda([&](TSharedPtr<FAssetData> Item, ESelectInfo::Type SelectInfo) { SelectedRuleSet = Item; RuleSetSelectionComboBox->RefreshOptions(); })
 						.ContentPadding(4.0f)
@@ -256,10 +256,10 @@ void SLintWizard::Construct(const FArguments& InArgs)
 								.StepActionText(LOCTEXT("FixUpRedirectsStepAction", "Fix Up Redirectors"))
 								.OnPerformAction_Lambda([this](FScopedSlowTask& ScopedSlowTask)
 								{
-									FixUpRedirectorStatus = EStepStatus::InProgress;
+									FixUpRedirectorStatus = InProgress;
 									bool bSuccess = true;
 
-									FAssetRegistryModule& AssetRegistryModule = FModuleManager::Get().LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+									const FAssetRegistryModule& AssetRegistryModule = FModuleManager::Get().LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 									ScopedSlowTask.EnterProgressFrame(0, LOCTEXT("Linter.FixUpRedirects.FindingRedirectors", "Looking For redirectors..."));
 
 									// Form a filter from the paths
@@ -287,7 +287,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 										{
 											// Transform Objects array to ObjectRedirectors array
 											TArray<UObjectRedirector*> Redirectors;
-											for (auto Object : Objects)
+											for (const auto Object : Objects)
 											{
 												auto Redirector = CastChecked<UObjectRedirector>(Object);
 												Redirectors.Add(Redirector);
@@ -310,7 +310,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 										}
 									}
 
-									FixUpRedirectorStatus = bSuccess ? EStepStatus::Success : EStepStatus::Error;
+									FixUpRedirectorStatus = bSuccess ? Success : Error;
 								})
 							]
 							// Build Lighting Widget
@@ -394,7 +394,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 								.StepActionText(LOCTEXT("SaveAllStepNameAction", "Save All"))
 								.OnPerformAction_Lambda([this](FScopedSlowTask& ScopedSlowTask)
 								{
-									SaveAllStatus = EStepStatus::InProgress;
+									SaveAllStatus = InProgress;
 
 									// Taken from MainFrameActions.cpp SaveAll
 									const bool bPromptUserToSave = false;
@@ -405,7 +405,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 									const bool bCanBeDeclined = false;
 									if (FEditorFileUtils::SaveDirtyPackages(bPromptUserToSave, bSaveMapPackages, bSaveContentPackages, bFastSave, bNotifyNoPackagesSaved, bCanBeDeclined))
 									{
-										SaveAllStatus = EStepStatus::Success;
+										SaveAllStatus = Success;
 									}
 									else
 									{
@@ -414,8 +414,8 @@ void SLintWizard::Construct(const FArguments& InArgs)
 										NotificationInfo.Hyperlink = FSimpleDelegate::CreateStatic([]() { FMessageLog("LoadErrors").Open(EMessageSeverity::Info, true); });
 										NotificationInfo.HyperlinkText = LOCTEXT("LoadObjectHyperlink", "Show Message Log");
 										FSlateNotificationManager::Get().AddNotification(NotificationInfo);
-										SaveAllStatus = EStepStatus::Error;
-									}					
+										SaveAllStatus = Error;
+									}
 								})
 							]
 							// Package Project step
@@ -489,7 +489,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 															bool bOpened = false;
 															TArray<FString> SaveFilenames;
 															IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
-															if (DesktopPlatform != NULL)
+															if (DesktopPlatform != nullptr)
 															{
 																bOpened = DesktopPlatform->SaveFileDialog(
 																	NULL,
@@ -521,7 +521,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 																		LOCTEXT("ZipTaskShortName", "Zip Project Task"), FEditorStyle::GetBrush(TEXT("MainFrame.CookContent")));
 																}
 
-																FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"))->RequestCloseTab();
+																FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"))->RequestCloseTab();
 															}
 															return FReply::Handled();
 														})
@@ -590,7 +590,7 @@ bool SLintWizard::LoadAssetsIfNeeded(const TArray<FString>& ObjectPaths, TArray<
 	{
 		const FString& ObjectPath = ObjectPaths[PathIdx];
 
-		UObject* FoundObject = FindObject<UObject>(NULL, *ObjectPath);
+		UObject* FoundObject = FindObject<UObject>(nullptr, *ObjectPath);
 		if (FoundObject)
 		{
 			LoadedObjects.Add(FoundObject);
@@ -622,7 +622,7 @@ bool SLintWizard::LoadAssetsIfNeeded(const TArray<FString>& ObjectPaths, TArray<
 			SlowTask.EnterProgressFrame(1, FText::Format(LOCTEXT("LoadingObjectf", "Loading {0}..."), FText::FromString(ObjectPath)));
 
 			// Load up the object
-			UObject* LoadedObject = LoadObject<UObject>(NULL, *ObjectPath, NULL, LoadFlags, NULL);
+			UObject* LoadedObject = LoadObject<UObject>(nullptr, *ObjectPath, nullptr, LoadFlags, nullptr);
 			if (LoadedObject)
 			{
 				LoadedObjects.Add(LoadedObject);
@@ -635,7 +635,7 @@ bool SLintWizard::LoadAssetsIfNeeded(const TArray<FString>& ObjectPaths, TArray<
 			if (GWarn->ReceivedUserCancel())
 			{
 				// If the user has canceled stop loading the remaining objects. We don't add the remaining objects to the failed string,
-				// this would only result in launching another dialog when by their actions the user clearly knows not all of the 
+				// this would only result in launching another dialog when by their actions the user clearly knows not all of the
 				// assets will have been loaded.
 				break;
 			}
@@ -650,3 +650,5 @@ bool SLintWizard::LoadAssetsIfNeeded(const TArray<FString>& ObjectPaths, TArray<
 
 	return true;
 }
+
+#undef LOCTEXT_NAMESPACE

@@ -2,7 +2,6 @@
 #include "LintRules/LintRule_StaticMesh_ValidUVs.h"
 #include "LintRuleSet.h"
 #include "LinterNamingConvention.h"
-#include "HAL/FileManager.h"
 
 ULintRule_StaticMesh_ValidUVs::ULintRule_StaticMesh_ValidUVs(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -37,14 +36,14 @@ bool ULintRule_StaticMesh_ValidUVs::PassesRule_Internal_Implementation(UObject* 
 
 	if ((!bIgnoreMissingUVs && MissingUVs.Num() > 0))
 	{
-		FText RecommendedAction = NSLOCTEXT("Linter", "LintRule_StaticMesh_ValidUVs_Missing", "Static mesh has missing UVs. Please add at least one valid UV channel.");
+		const FText RecommendedAction = NSLOCTEXT("Linter", "LintRule_StaticMesh_ValidUVs_Missing", "Static mesh has missing UVs. Please add at least one valid UV channel.");
 		OutRuleViolations.Push(FLintRuleViolation(ObjectToLint, GetClass(), RecommendedAction));
 		return false;
 	}
 
 	if (BadUVs.Num() > 0)
 	{
-		FText RecommendedAction = NSLOCTEXT("Linter", "LintRule_StaticMesh_ValidUVs_Bad", "Static mesh has invalid UVs. [{0}]");
+		const FText RecommendedAction = NSLOCTEXT("Linter", "LintRule_StaticMesh_ValidUVs_Bad", "Static mesh has invalid UVs. [{0}]");
 		FText::FormatOrdered(RecommendedAction, FText::FromString(FString::Join(BadUVs, TEXT(", "))));
 		OutRuleViolations.Push(FLintRuleViolation(ObjectToLint, GetClass(), RecommendedAction));
 		return false;

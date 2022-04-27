@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "Modules/ModuleManager.h"
-
 DECLARE_LOG_CATEGORY_EXTERN(LogMarketplaceLinter, Verbose, All);
 
 class MARKETPLACELINTER_API FMarketplaceLinterModule : public IModuleInterface

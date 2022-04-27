@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "Modules/ModuleManager.h"
-
 #include "Widgets/Docking/SDockTab.h"
 #include "Styling/SlateStyle.h"
 

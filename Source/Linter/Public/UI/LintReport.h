@@ -4,7 +4,6 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/Layout/SScrollBox.h"
 
-#include "LintReportAssetError.h"
 #include "LintRule.h"
 
 

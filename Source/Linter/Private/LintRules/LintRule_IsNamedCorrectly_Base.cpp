@@ -38,8 +38,8 @@ bool ULintRule_IsNamedCorrectly_Base::PassesRule_Internal_Implementation(UObject
 	bool bFoundMatchingNameRule = false;
 	for (FLinterNamingConventionInfo Info : NameSettingList)
 	{
-		bool bPassesPrefixCheck = Info.Prefix.IsEmpty() ? true : ObjectToLint->GetName().StartsWith(Info.Prefix, ESearchCase::CaseSensitive);
-		bool bPassesSuffixCheck = Info.Suffix.IsEmpty() ? true : ObjectToLint->GetName().EndsWith(Info.Suffix, ESearchCase::CaseSensitive);
+		const bool bPassesPrefixCheck = Info.Prefix.IsEmpty() ? true : ObjectToLint->GetName().StartsWith(Info.Prefix, ESearchCase::CaseSensitive);
+		const bool bPassesSuffixCheck = Info.Suffix.IsEmpty() ? true : ObjectToLint->GetName().EndsWith(Info.Suffix, ESearchCase::CaseSensitive);
 		// Run prefix and suffix checks using found name settings if they are non-null
 
 		if (bPassesPrefixCheck && bPassesSuffixCheck)
@@ -51,8 +51,8 @@ bool ULintRule_IsNamedCorrectly_Base::PassesRule_Internal_Implementation(UObject
 
 	if (!bFoundMatchingNameRule)
 	{
-		FString SuggestedName = BuildSuggestedName(ObjectToLint->GetName(), NameSettingList[0].Prefix, NameSettingList[0].Suffix);
-		FText RecommendedAction = FText::FormatOrdered(NSLOCTEXT("Linter", "IsNamedCorrectly_RecommendedAction", "Recommended name: [{0}]."), FText::FromString(SuggestedName));
+		const FString SuggestedName = BuildSuggestedName(ObjectToLint->GetName(), NameSettingList[0].Prefix, NameSettingList[0].Suffix);
+		const FText RecommendedAction = FText::FormatOrdered(NSLOCTEXT("Linter", "IsNamedCorrectly_RecommendedAction", "Recommended name: [{0}]."), FText::FromString(SuggestedName));
 		OutRuleViolations.Push(FLintRuleViolation(ObjectToLint, GetClass(), RecommendedAction));
 		return false;
 	}
@@ -65,8 +65,8 @@ FString ULintRule_IsNamedCorrectly_Base::BuildSuggestedName(FString CurrentName,
 {
 	FString SuggestedName;
 
-	int32 FirstUnderscore = CurrentName.Find(TEXT("_"));
-	int32 LastUnderscore = CurrentName.Find(TEXT("_"), ESearchCase::IgnoreCase, ESearchDir::FromEnd);
+	const int32 FirstUnderscore = CurrentName.Find(TEXT("_"));
+	const int32 LastUnderscore = CurrentName.Find(TEXT("_"), ESearchCase::IgnoreCase, ESearchDir::FromEnd);
 
 	bool bAddPrefix = false;
 	bool bAddSuffix = false;

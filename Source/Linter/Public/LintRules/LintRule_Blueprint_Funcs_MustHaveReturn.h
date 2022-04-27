@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "LintRule.h"
-
+#include "LintRule_Blueprint_Base.h"
 #include "LintRule_Blueprint_Funcs_MustHaveReturn.generated.h"
 
 UCLASS(BlueprintType, Blueprintable, Abstract)
@@ -16,5 +16,4 @@ public:
 
 protected:
 	virtual bool PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const override;
-
 };

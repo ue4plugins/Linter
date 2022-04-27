@@ -1,9 +1,7 @@
 // Copyright 2020 Gamemakin LLC. All Rights Reserved.
 
 #include "LinterCommandlet.h"
-#include "Editor.h"
 #include "AssetRegistryModule.h"
-#include "AssetData.h"
 #include "Engine/ObjectLibrary.h"
 #include "Dom/JsonObject.h"
 #include "Dom/JsonValue.h"
@@ -13,7 +11,9 @@
 #include "Serialization/JsonWriter.h"
 #include "Serialization/JsonSerializer.h"
 #include "Linter.h"
+#include "LinterSettings.h"
 #include "LintRule.h"
+#include "LintRuleSet.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LinterCommandlet, All, All);
 
@@ -38,7 +38,7 @@ int32 ULinterCommandlet::Main(const FString& InParams)
 	TArray<FString> Paths;
 	TArray<FString> Switches;
 	TMap<FString, FString> ParamsMap;
-	UCommandlet::ParseCommandLine(*Params, Paths, Switches, ParamsMap);
+	ParseCommandLine(*Params, Paths, Switches, ParamsMap);
 
 	UE_LOG(LinterCommandlet, Display, TEXT("Linter is indeed running!"));
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
@@ -166,7 +166,7 @@ int32 ULinterCommandlet::Main(const FString& InParams)
 		if (Switches.Contains(TEXT("json")) || ParamsMap.Contains(FString(TEXT("json"))))
 		{
 			FDateTime Now = FDateTime::Now();
-			FString JsonOutputName = TEXT("lint-report-") + FDateTime::Now().ToString() + TEXT(".json");
+			FString JsonOutputName = TEXT("lint-report-") + Now.ToString() + TEXT(".json");
 
 			const FString LintReportPath = FPaths::ProjectSavedDir() / TEXT("LintReports");
 			FString FullOutputPath = LintReportPath / JsonOutputName;
@@ -204,7 +204,7 @@ int32 ULinterCommandlet::Main(const FString& InParams)
 		if (Switches.Contains(TEXT("html")) || ParamsMap.Contains(FString(TEXT("html"))))
 		{
 			FDateTime Now = FDateTime::Now();
-			FString HtmlOutputName = TEXT("lint-report-") + FDateTime::Now().ToString() + TEXT(".html");
+			FString HtmlOutputName = TEXT("lint-report-") + Now.ToString() + TEXT(".html");
 
 			const FString LintReportPath = FPaths::ProjectSavedDir() / TEXT("LintReports");
 			FString FullOutputPath = LintReportPath / HtmlOutputName;
@@ -257,7 +257,7 @@ int32 ULinterCommandlet::Main(const FString& InParams)
 		}
 	}
 
-	if (NumErrors > 0 || Switches.Contains(TEXT("TreatWarningsAsErrors")) && NumWarnings > 0)
+	if (NumErrors > 0 || (Switches.Contains(TEXT("TreatWarningsAsErrors")) && NumWarnings > 0))
 	{
 		UE_LOG(LinterCommandlet, Display, TEXT("Lint completed with errors. Returning error code 2."));
 		return 2;

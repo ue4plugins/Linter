@@ -24,7 +24,7 @@ bool ULintRule_SoundWave_SampleRate::PassesRule(UObject* ObjectToLint, const ULi
 
 bool ULintRule_SoundWave_SampleRate::PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const
 {
-	USoundWave* SoundWave = const_cast<USoundWave*>(CastChecked<USoundWave>(ObjectToLint));
+	const USoundWave* SoundWave = const_cast<USoundWave*>(CastChecked<USoundWave>(ObjectToLint));
 
 	if (ValidSampleRates.Contains(SoundWave->GetSampleRateForCurrentPlatform()))
 	{

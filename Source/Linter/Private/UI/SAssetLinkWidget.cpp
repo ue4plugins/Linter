@@ -1,15 +1,16 @@
 // Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
+
 #include "UI/SAssetLinkWidget.h"
+#include "ContentBrowserModule.h"
+#include "IContentBrowserSingleton.h"
+#include "SlateOptMacros.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Widgets/SBoxPanel.h"
-#include "Widgets/Layout/SBorder.h"
-#include "Widgets/Layout/SBox.h"
-#include "Widgets/Images/SImage.h"
-#include "Widgets/Input/SButton.h"
-#include "Widgets/Text/STextBlock.h"
-#include "Widgets/Images/SThrobber.h"
+#include "Widgets/Input/SHyperlink.h"
 #include "Widgets/Text/SRichTextBlock.h"
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
+
 void SAssetLinkWidget::Construct(const FArguments& Args)
 {
 	const float PaddingAmount = FLinterStyle::Get()->GetFloat("Linter.Padding");
@@ -23,10 +24,11 @@ void SAssetLinkWidget::Construct(const FArguments& Args)
 		[
 			SNew(SHyperlink)
 			.Text(FText::FromName(AssetData.Get().AssetName))
+			.Padding(PaddingAmount)
 			.OnNavigate_Lambda([&]()
 			{
-				FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
-				FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+				const FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
+				const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 				TArray<FAssetData> AssetDatas;
 				AssetDatas.Push(AssetRegistryModule.Get().GetAssetByObjectPath(AssetData.Get().ObjectPath));
 				ContentBrowserModule.Get().SyncBrowserToAssets(AssetDatas);
@@ -34,4 +36,5 @@ void SAssetLinkWidget::Construct(const FArguments& Args)
 		]
 	];
 }
+
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

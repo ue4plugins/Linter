@@ -2,14 +2,10 @@
 
 #pragma once
 
-#include "EditorStyleSet.h"
-
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/SUserWidget.h"
 #include "Widgets/SWindow.h"
-#include "Widgets/Layout/SSeparator.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
-#include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/Input/SCheckBox.h"
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
