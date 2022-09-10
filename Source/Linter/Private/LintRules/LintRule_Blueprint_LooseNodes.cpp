@@ -29,14 +29,12 @@ bool ULintRule_Blueprint_LooseNodes::PassesRule_Internal_Implementation(UObject*
 	{
 		for (const UEdGraphNode* Node : Graph->Nodes)
 		{
-			if (
-				Node->IsAutomaticallyPlacedGhostNode() ||
+			if (Node->IsAutomaticallyPlacedGhostNode() ||
 				Node->IsA(UK2Node_Event::StaticClass()) ||
 				Node->IsA(UK2Node_FunctionEntry::StaticClass()) ||
 				Node->IsA(UK2Node_Knot::StaticClass()) ||
 				Node->IsA(UEdGraphNode_Comment::StaticClass()) ||
-				Node->IsA(UK2Node_Tunnel::StaticClass())
-				)
+				Node->IsA(UK2Node_Tunnel::StaticClass()))
 			{
 				continue;
 			}
