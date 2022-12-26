@@ -10,7 +10,7 @@
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 #include "Widgets/Views/SListView.h"
-#include "AssetData.h"
+#include "AssetRegistry/AssetData.h"
 #include "Engine/Blueprint.h"
 #include "K2Node_FunctionEntry.h"
 #include "K2Node_FunctionResult.h"
@@ -124,8 +124,8 @@ private:
 
 public:
 
-	
-	
+
+
 	TAttribute<TArray<TSharedPtr<FAssetData>>> Blueprints;
 	TSharedPtr<SComboBox<TSharedPtr<FAssetData>>> BlueprintComboBox;
 
@@ -139,7 +139,7 @@ public:
 	TArray<TSharedPtr<FBPFunctionArgumentDescription>> FunctionOutputDescriptions;
 	TSharedPtr<SListView<TSharedPtr<FBPFunctionArgumentDescription>>> FunctionOutputListView;
 
-	
+
 	TArray<TSharedPtr<FBPVariableDescription>> Members;
 	TSharedPtr<SListView<TSharedPtr<FBPVariableDescription>>> MemberListView;
 	TSharedPtr<SMultiLineEditableTextBox> VariableTooltipEditableTextBox;

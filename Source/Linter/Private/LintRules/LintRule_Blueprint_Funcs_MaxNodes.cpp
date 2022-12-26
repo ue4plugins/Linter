@@ -68,7 +68,7 @@ bool ULintRule_Blueprint_Funcs_MaxNodes::PassesRule_Internal_Implementation(UObj
 	const FText FixTextTemplate = NSLOCTEXT("Linter", "BlueprintFuncsMaxNodes", "{Previous}{WhiteSpace}Please simply function {FuncName} as it has {Nodes} nodes when we want a max of {MaxNodes}.");
 	FText AllFixes;
 
-	for (const auto FunctionGraph : Blueprint->FunctionGraphs)
+	for (auto&& FunctionGraph : Blueprint->FunctionGraphs)
 	{
 		if (FunctionGraph->GetFName() != UEdGraphSchema_K2::FN_UserConstructionScript)
 		{

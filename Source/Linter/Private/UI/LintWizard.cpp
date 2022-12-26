@@ -71,7 +71,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 	[
 		SNew(SBorder)
 		.Padding(18)
-		.BorderImage(FEditorStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
+		.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
 		[
 			SNew(SVerticalBox)
 			+ SVerticalBox::Slot()
@@ -79,11 +79,11 @@ void SLintWizard::Construct(const FArguments& InArgs)
 				SAssignNew(MainWizard, SWizard)
 				.ShowPageList(false)
 				.ShowCancelButton(false)
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Default")
-				.CancelButtonStyle(FEditorStyle::Get(), "FlatButton.Default")
-				.FinishButtonStyle(FEditorStyle::Get(), "FlatButton.Success")
-				.ButtonTextStyle(FEditorStyle::Get(), "LargeText")
-				//.ForegroundColor(FEditorStyle::Get().GetSlateColor("WhiteBrush"))
+				.ButtonStyle(FAppStyle::Get(), "FlatButton.Default")
+				.CancelButtonStyle(FAppStyle::Get(), "FlatButton.Default")
+				.FinishButtonStyle(FAppStyle::Get(), "FlatButton.Success")
+				.ButtonTextStyle(FAppStyle::Get(), "LargeText")
+				//.ForegroundColor(FAppStyle::Get().GetSlateColor("WhiteBrush"))
 				.CanFinish(true)
 				.FinishButtonText(LOCTEXT("FinishButtonText", "Close"))
 				.OnFinished_Lambda([&]()
@@ -100,7 +100,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 					.Padding(0)
 					[
 						SNew(STextBlock)
-						.TextStyle( FEditorStyle::Get(), "NewClassDialog.PageTitle" )
+						.TextStyle( FAppStyle::Get(), "NewClassDialog.PageTitle" )
 						.Text(LOCTEXT("LinterSelectionTitle", "Linter Rule Set Selection"))
 					]
 					// Title spacer
@@ -147,7 +147,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 					.Padding(0)
 					[
 						SNew(STextBlock)
-						.TextStyle( FEditorStyle::Get(), "NewClassDialog.PageTitle" )
+						.TextStyle( FAppStyle::Get(), "NewClassDialog.PageTitle" )
 						.Text(LOCTEXT("LinterReportTitle", "Lint Report"))
 					]
 					// Marketplace No Errors Required Text
@@ -188,7 +188,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 					.Padding(0)
 					[
 						SNew(STextBlock)
-						.TextStyle( FEditorStyle::Get(), "NewClassDialog.PageTitle" )
+						.TextStyle( FAppStyle::Get(), "NewClassDialog.PageTitle" )
 						.Text(LOCTEXT("MarketplaceInfoTitle", "Marketplace Recommendations"))
 					]
 					// Title spacer
@@ -211,11 +211,11 @@ void SLintWizard::Construct(const FArguments& InArgs)
 							.AutoHeight()
 							[
 								SNew(SBorder)
-								.BorderImage(FEditorStyle::GetBrush("NoBorder"))
+								.BorderImage(FAppStyle::GetBrush("NoBorder"))
 								.Padding(PaddingAmount)
 								[
 									SNew(SBorder)
-									.BorderImage(FEditorStyle::GetBrush("ToolPanel.GroupBorder"))
+									.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
 									.Padding(PaddingAmount)
 									[
 										SNew(SHorizontalBox)
@@ -277,7 +277,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 										TArray<FString> ObjectPaths;
 										for (const auto& Asset : AssetList)
 										{
-											ObjectPaths.Add(Asset.ObjectPath.ToString());
+											ObjectPaths.Add(Asset.GetObjectPathString());
 										}
 
 										ScopedSlowTask.EnterProgressFrame(0.25f, LOCTEXT("Linter.FixUpRedirects.LoadingRedirectors", "Loading redirectors..."));
@@ -287,7 +287,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 										{
 											// Transform Objects array to ObjectRedirectors array
 											TArray<UObjectRedirector*> Redirectors;
-											for (const auto Object : Objects)
+											for (auto&& Object : Objects)
 											{
 												auto Redirector = CastChecked<UObjectRedirector>(Object);
 												Redirectors.Add(Redirector);
@@ -318,12 +318,12 @@ void SLintWizard::Construct(const FArguments& InArgs)
 							.Padding(PaddingAmount)
 							[
 								SNew(SBorder)
-								.BorderImage(FEditorStyle::GetBrush("NoBorder"))
+								.BorderImage(FAppStyle::GetBrush("NoBorder"))
 								.Padding(PaddingAmount)
 								.Visibility_Lambda([&](){ return (MapAssetDataList.Num() > 0) ? EVisibility::SelfHitTestInvisible : EVisibility::Collapsed; })
 								[
 									SNew(SBorder)
-									.BorderImage(FEditorStyle::GetBrush("ToolPanel.GroupBorder"))
+									.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
 									.Padding(PaddingAmount)
 									[
 										SNew(SVerticalBox)
@@ -425,11 +425,11 @@ void SLintWizard::Construct(const FArguments& InArgs)
 							[
 								SNew(SBorder)
 								.Visibility(EVisibility::Collapsed)
-								.BorderImage(FEditorStyle::GetBrush("NoBorder"))
+								.BorderImage(FAppStyle::GetBrush("NoBorder"))
 								.Padding(PaddingAmount)
 								[
 									SNew(SBorder)
-									.BorderImage(FEditorStyle::GetBrush("ToolPanel.GroupBorder"))
+									.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
 									.Padding(PaddingAmount)
 									[
 										SNew(SVerticalBox)
@@ -518,7 +518,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 																	FString CommandLine = FString::Printf(TEXT("ZipProjectUp %s -project=\"%s\" -install=\"%s\""), UATFlags, *ProjectPath, *FinalFileName);
 
 																	IUATHelperModule::Get().CreateUatTask(CommandLine, PlatformName, LOCTEXT("ZipTaskName", "Zipping Up Project"),
-																		LOCTEXT("ZipTaskShortName", "Zip Project Task"), FEditorStyle::GetBrush(TEXT("MainFrame.CookContent")));
+																		LOCTEXT("ZipTaskShortName", "Zip Project Task"), FAppStyle::GetBrush(TEXT("MainFrame.CookContent")));
 																}
 
 																FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"))->RequestCloseTab();
@@ -547,7 +547,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 	FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
 	TArray<FAssetData> AssetDatas;
 	FARFilter Filter;
-	Filter.ClassNames.Add(UWorld::StaticClass()->GetFName());
+	Filter.ClassPaths.Add(FTopLevelAssetPath(UWorld::StaticClass()));
 	Filter.bRecursivePaths = true;
 	Filter.PackagePaths.Add(TEXT("/Game"));
 	AssetRegistryModule.Get().GetAssets(Filter, AssetDatas);

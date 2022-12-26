@@ -34,7 +34,7 @@ bool ULintRule_Blueprint_Funcs_MustHaveReturn::PassesRule_Internal_Implementatio
 
 	static const FName DefaultAnimGraphName("AnimGraph");
 
-	for (const auto FunctionGraph : Blueprint->FunctionGraphs)
+	for (auto&& FunctionGraph : Blueprint->FunctionGraphs)
 	{
 		if (FunctionGraph->GetFName() != UEdGraphSchema_K2::FN_UserConstructionScript
 			&& FunctionGraph->GetFName() != DefaultAnimGraphName)

@@ -48,7 +48,7 @@ FTooltipTool::FTooltipTool(const TArray<FAssetData> Assets)
 
 		const TSharedPtr<SBorder> DialogWrapper =
 			SNew(SBorder)
-			.BorderImage(FEditorStyle::GetBrush("ToolPanel.GroupBorder"))
+			.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
 			.Padding(4.0f)
 			[
 				SAssignNew(DialogWidget, STooltipTool)
@@ -166,7 +166,7 @@ void STooltipTool::Construct(const FArguments& InArgs)
 				[&]{
 					// Save package here if SCC is enabled because the user can use SCC to revert a change
 					TArray<UPackage*> OutermostPackagesToSave;
-					for (const auto Asset : Blueprints.Get())
+					for (auto&& Asset : Blueprints.Get())
 					{
 						OutermostPackagesToSave.Add(Asset->GetPackage());
 					}
@@ -216,7 +216,7 @@ void STooltipTool::Construct(const FArguments& InArgs)
 											.AutoWidth()
 											[
 												SNew(SImage)
-												.Image(FEditorStyle::GetBrush(TEXT("Icons.Error")))
+												.Image(FAppStyle::GetBrush(TEXT("Icons.Error")))
 												.Visibility_Lambda([Item] {return Item.IsValid() ? (Item->HasMetaData(FBlueprintMetadata::MD_Tooltip) && Item->GetMetaData(FBlueprintMetadata::MD_Tooltip).Len() > 0 ? EVisibility::Collapsed : EVisibility::HitTestInvisible) : EVisibility::Collapsed; })
 											]
 											+ SHorizontalBox::Slot()
@@ -340,7 +340,7 @@ void STooltipTool::Construct(const FArguments& InArgs)
 											.AutoWidth()
 											[
 												SNew(SImage)
-												.Image(FEditorStyle::GetBrush(TEXT("Icons.Error")))
+												.Image(FAppStyle::GetBrush(TEXT("Icons.Error")))
 												.Visibility_Lambda([Item] {return (Item.IsValid() && Item->FunctionEntryNode != nullptr&&  !Item->FunctionEntryNode->MetaData.ToolTip.IsEmptyOrWhitespace()) ? EVisibility::Collapsed : EVisibility::Visible; })
 											]
 											+ SHorizontalBox::Slot()
@@ -501,7 +501,7 @@ void STooltipTool::Construct(const FArguments& InArgs)
 													.AutoWidth()
 													[
 														SNew(SImage)
-														.Image(FEditorStyle::GetBrush(TEXT("Icons.Error")))
+														.Image(FAppStyle::GetBrush(TEXT("Icons.Error")))
 														.Visibility_Lambda([Item] {return (Item.IsValid() && !Item->Tooltip.IsEmptyOrWhitespace()) ? EVisibility::Collapsed : EVisibility::Visible; })
 													]
 													+ SHorizontalBox::Slot()
@@ -572,7 +572,7 @@ void STooltipTool::Construct(const FArguments& InArgs)
 													.AutoWidth()
 													[
 														SNew(SImage)
-														.Image(FEditorStyle::GetBrush(TEXT("Icons.Error")))
+														.Image(FAppStyle::GetBrush(TEXT("Icons.Error")))
 														.Visibility_Lambda([Item] {return (Item.IsValid() && !Item->Tooltip.IsEmptyOrWhitespace()) ? EVisibility::Collapsed : EVisibility::Visible; })
 													]
 													+ SHorizontalBox::Slot()
