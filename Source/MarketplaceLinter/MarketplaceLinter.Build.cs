@@ -7,7 +7,6 @@ public class MarketplaceLinter : ModuleRules
     public MarketplaceLinter(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-        bUseUnity = false;
 
 		PublicDependencyModuleNames.AddRange(
 			new string[]

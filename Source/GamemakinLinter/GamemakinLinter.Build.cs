@@ -7,7 +7,6 @@ public class GamemakinLinter : ModuleRules
     public GamemakinLinter(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-        bUseUnity = false;
 
 		PublicDependencyModuleNames.AddRange(
 			new string[]
