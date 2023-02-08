@@ -293,7 +293,7 @@ void SLintWizard::Construct(const FArguments& InArgs)
 												Redirectors.Add(Redirector);
 											}
 
-											ScopedSlowTask.EnterProgressFrame(0.25f, LOCTEXT("Linter.FixUpRedirects.LoadingRedirectors", "Fixing up redirectors..."));
+											ScopedSlowTask.EnterProgressFrame(0.25f, LOCTEXT("Linter.FixUpRedirects.FixingRedirectors", "Fixing up redirectors..."));
 
 											// Load the asset tools module
 											FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools"));
