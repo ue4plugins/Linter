@@ -1,7 +1,7 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
 
 #pragma once
-#include "CoreMinimal.h"
+
 #include "UObject/Object.h"
 #include "Templates/SharedPointer.h"
 #include "IDetailCustomization.h"

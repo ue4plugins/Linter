@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+
 #include "UObject/Object.h"
 #include "LintRuleSet.h"
 #include "LinterSettings.generated.h"

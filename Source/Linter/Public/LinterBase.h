@@ -2,7 +2,7 @@
 
 #pragma once
 #include "Internationalization/Regex.h"
-#include "CoreMinimal.h"
+
 #include "UObject/Object.h"
 
 /** Future Notes:
@@ -54,7 +54,7 @@ struct LINTER_API FLinterAssetErrorList
         , SuggestedAssetName(InSuggestedAssetName)
 		, Errors(InErrors)
 		, Warnings(InWarnings)
-		
+
 	{
 	}
 
@@ -78,7 +78,7 @@ struct LINTER_API FLinterAssetErrorList
 	}
 };
 
-/* Linter was originally built to store its data on a per-asset basis. 
+/* Linter was originally built to store its data on a per-asset basis.
  * After Epic's purchase, UI needed a way to store data on a per-rule basis.
  * The following structs help out the LinterManager populate a per-rule list after Linting is complete. */
 

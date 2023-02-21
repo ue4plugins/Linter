@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+
 #include "HAL/Runnable.h"
 
 struct FLintRuleList;

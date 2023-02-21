@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Internationalization/Regex.h"
-#include "CoreMinimal.h"
+
 
 /**
 * Helper struct for showing function tooltip widgets
