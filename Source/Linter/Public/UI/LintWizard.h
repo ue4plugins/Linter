@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/Workflow/SWizard.h"
 #include "UI/SStepWidget.h"
@@ -10,7 +10,7 @@
 #include "LintReport.h"
 
 /**
- * 
+ *
  */
 class LINTER_API SLintWizard : public SCompoundWidget
 {

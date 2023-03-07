@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+
 #include "LintRule.generated.h"
 
 class ULintRule;

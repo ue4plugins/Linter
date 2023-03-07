@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+
 #include "LintRule.h"
 #include "LintRule_Blueprint_Base.generated.h"
 
