@@ -7,24 +7,19 @@ public class GamemakinLinter : ModuleRules
     public GamemakinLinter(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-        bUseUnity = false;
 
 		PublicDependencyModuleNames.AddRange(
-			new string[]
+			new []
 			{
 				"Core",
 				"CoreUObject",
                 "Engine",
 				"Linter"
-			}
-		);
-
+			});
 
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
             {
-
-			}
-		);
+            });
     }
 }
