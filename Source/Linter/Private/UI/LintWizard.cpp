@@ -3,11 +3,11 @@
 
 #include "CoreGlobals.h"
 #include "Delegates/Delegate.h"
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "AssetToolsModule.h"
 #include "ContentBrowserModule.h"
 #include "DesktopPlatformModule.h"
-#include "IAssetRegistry.h"
+#include "AssetRegistry/IAssetRegistry.h"
 #include "SlateOptMacros.h"
 #include "Widgets/Layout/SSeparator.h"
 #include "Widgets/Text/SRichTextBlock.h"
@@ -19,22 +19,22 @@
 #include "FileHelpers.h"
 #include "Logging/MessageLog.h"
 #include "Logging/TokenizedMessage.h"
-#include "ContentBrowserModule.h"
-#include "DesktopPlatformModule.h"
-#include "AssetToolsModule.h"
 #include "Framework/Docking/TabManager.h"
 #include "Widgets/Input/SComboBox.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Misc/App.h"
 #include "Engine/World.h"
 #include "Misc/EngineVersionComparison.h"
-
 #include "LinterStyle.h"
 #include "LintRuleSet.h"
 #include "LinterSettings.h"
 #include "UI/SAssetLinkWidget.h"
 
 #define LOCTEXT_NAMESPACE "LintWizard"
+
+#if UE_VERSION_OLDER_THAN(5, 1, 0)
+using FAppStyle = FEditorStyle;
+#endif
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 void SLintWizard::Construct(const FArguments& InArgs)
@@ -53,7 +53,12 @@ void SLintWizard::Construct(const FArguments& InArgs)
 	const IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
 	TArray<FAssetData> FoundRuleSets;
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+	AssetRegistry.GetAssetsByClass(ULintRuleSet::StaticClass()->GetClassPathName(), FoundRuleSets, true);
+#else
 	AssetRegistry.GetAssetsByClass(ULintRuleSet::StaticClass()->GetFName(), FoundRuleSets, true);
+#endif
+	
 
 	// Attempt to get all RuleSets in memory so that linting tools are better aware of them
 	for (const FAssetData& RuleSetData : FoundRuleSets)
@@ -88,10 +93,10 @@ void SLintWizard::Construct(const FArguments& InArgs)
 				SAssignNew(MainWizard, SWizard)
 				.ShowPageList(false)
 				.ShowCancelButton(false)
-				.ButtonStyle(FEditorStyle::Get(), "FlatButton.Default")
-				.CancelButtonStyle(FEditorStyle::Get(), "FlatButton.Default")
-				.FinishButtonStyle(FEditorStyle::Get(), "FlatButton.Success")
-				.ButtonTextStyle(FEditorStyle::Get(), "LargeText")
+				.ButtonStyle(FAppStyle::Get(), "FlatButton.Default")
+				.CancelButtonStyle(FAppStyle::Get(), "FlatButton.Default")
+				.FinishButtonStyle(FAppStyle::Get(), "FlatButton.Success")
+				.ButtonTextStyle(FAppStyle::Get(), "LargeText")
 #if UE_VERSION_OLDER_THAN(5, 0, 0)
 				.ForegroundColor(FEditorStyle::Get().GetSlateColor("WhiteBrush"))
 #endif
@@ -281,7 +286,11 @@ void SLintWizard::Construct(const FArguments& InArgs)
 									FARFilter Filter;
 									Filter.bRecursivePaths = true;
 									Filter.PackagePaths.Add("/Game");
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+									Filter.ClassPaths.Add(FTopLevelAssetPath{"ObjectRedirector"});
+#else
 									Filter.ClassNames.Add("ObjectRedirector");
+#endif
 
 									// Query for a list of assets in the selected paths
 									TArray<FAssetData> AssetList;
@@ -292,7 +301,11 @@ void SLintWizard::Construct(const FArguments& InArgs)
 										TArray<FString> ObjectPaths;
 										for (const auto& Asset : AssetList)
 										{
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
 											ObjectPaths.Add(Asset.GetObjectPathString());
+#else
+											ObjectPaths.Add(Asset.ObjectPath.ToString());
+#endif
 										}
 
 										ScopedSlowTask.EnterProgressFrame(0.25f, LOCTEXT("Linter.FixUpRedirects.LoadingRedirectors", "Loading redirectors..."));
@@ -536,15 +549,11 @@ void SLintWizard::Construct(const FArguments& InArgs)
 																		LOCTEXT("ZipTaskShortName", "Zip Project Task"), FAppStyle::GetBrush(TEXT("MainFrame.CookContent")));
 																}
 
-<<<<<<< HEAD:Source/Linter/Private/UI/LintWizard.cpp
-																FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"))->RequestCloseTab();
-=======
 #if UE_VERSION_NEWER_THAN(4, 26, 0)
 																FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"))->RequestCloseTab();
 #else
 																FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"))->RequestCloseTab();
 #endif
->>>>>>> 7384b2d (Fix UE version check):Plugins/Linter/Source/Linter/Private/UI/LintWizard.cpp
 															}
 															return FReply::Handled();
 														})
@@ -570,7 +579,11 @@ void SLintWizard::Construct(const FArguments& InArgs)
 	FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
 	TArray<FAssetData> AssetDatas;
 	FARFilter Filter;
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
 	Filter.ClassPaths.Add(FTopLevelAssetPath(UWorld::StaticClass()));
+#else
+	Filter.ClassNames.Add(UWorld::StaticClass()->GetFName());
+#endif
 	Filter.bRecursivePaths = true;
 	Filter.PackagePaths.Add(TEXT("/Game"));
 	AssetRegistryModule.Get().GetAssets(Filter, AssetDatas);

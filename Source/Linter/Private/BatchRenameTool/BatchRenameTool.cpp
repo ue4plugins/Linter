@@ -16,8 +16,13 @@
 #include "Logging/MessageLog.h"
 #include "Logging/TokenizedMessage.h"
 #include "Widgets/Layout/SSeparator.h"
+#include "Misc/EngineVersionComparison.h"
 
 #define LOCTEXT_NAMESPACE "LinterBatchRenamer"
+
+#if UE_VERSION_OLDER_THAN(5, 1, 0)
+using FAppStyle = FEditorStyle;
+#endif
 
 FDlgBatchRenameTool::FDlgBatchRenameTool(const TArray<FAssetData> Assets)
 	: bRemovePrefix(false)
@@ -75,7 +80,11 @@ FDlgBatchRenameTool::EResult FDlgBatchRenameTool::ShowModal()
 			const FAssetData& Asset = *AssetIt;
 
 			// Early out on assets that can not be renamed
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+			if (!(!Asset.IsRedirector() && Asset.AssetClassPath.GetAssetName() != NAME_Class && !(Asset.PackageFlags & PKG_FilterEditorOnly)))
+#else
 			if (!(!Asset.IsRedirector() && Asset.AssetClass != NAME_Class && !(Asset.PackageFlags & PKG_FilterEditorOnly)))
+#endif
 			{
 				continue;
 			}

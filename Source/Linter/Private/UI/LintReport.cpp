@@ -4,7 +4,6 @@
 #include "LintRule.h"
 #include "Widgets/SBoxPanel.h"
 #include "LintRuleSet.h"
-#include "UI/LintReportAssetErrorList.h"
 #include "UI/LintReportAssetDetails.h"
 #include "AssetThumbnail.h"
 #include "Containers/Map.h"
@@ -279,7 +278,11 @@ void SLintReport::Rebuild(const ULintRuleSet* SelectedLintRuleSet)
 		{
 			AssetData = UniqueViolatorViolations[0]->ViolatorAssetData;
 			AssetJsonObject->SetStringField(TEXT("ViolatorAssetName"), AssetData.AssetName.ToString());
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+			AssetJsonObject->SetStringField(TEXT("ViolatorAssetPath"), AssetData.GetObjectPathString());
+#else
 			AssetJsonObject->SetStringField(TEXT("ViolatorAssetPath"), AssetData.ObjectPath.ToString());
+#endif
 			AssetJsonObject->SetStringField(TEXT("ViolatorFullName"), AssetData.GetFullName());
 			//@TODO: Thumbnail export?
 

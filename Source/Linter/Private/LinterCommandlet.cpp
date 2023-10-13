@@ -1,8 +1,7 @@
 // Copyright 2020 Gamemakin LLC. All Rights Reserved.
 
 #include "LinterCommandlet.h"
-#include "AssetRegistryModule.h"
-#include "Engine/ObjectLibrary.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Dom/JsonObject.h"
 #include "Dom/JsonValue.h"
 #include "Interfaces/IPluginManager.h"
@@ -56,7 +55,11 @@ int32 ULinterCommandlet::Main(const FString& InParams)
 		FLinterModule::TryToLoadAllLintRuleSets();
 
 		TArray<FAssetData> FoundRuleSets;
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+		AssetRegistryModule.Get().GetAssetsByClass(ULintRuleSet::StaticClass()->GetClassPathName(), FoundRuleSets, true);
+#else
 		AssetRegistryModule.Get().GetAssetsByClass(ULintRuleSet::StaticClass()->GetFName(), FoundRuleSets, true);
+#endif
 
 		for (const FAssetData& RuleSetData : FoundRuleSets)
 		{
@@ -128,7 +131,11 @@ int32 ULinterCommandlet::Main(const FString& InParams)
 				UniqueViolatorViolations[0].PopulateAssetData();
 				AssetData = UniqueViolatorViolations[0].ViolatorAssetData;
 				AssetJsonObject->SetStringField(TEXT("ViolatorAssetName"), AssetData.AssetName.ToString());
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+				AssetJsonObject->SetStringField(TEXT("ViolatorAssetPath"), AssetData.GetObjectPathString());
+#else
 				AssetJsonObject->SetStringField(TEXT("ViolatorAssetPath"), AssetData.ObjectPath.ToString());
+#endif
 				AssetJsonObject->SetStringField(TEXT("ViolatorFullName"), AssetData.GetFullName());
 				//@TODO: Thumbnail export?
 

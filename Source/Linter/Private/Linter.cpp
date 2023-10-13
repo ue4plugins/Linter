@@ -5,16 +5,14 @@
 #include "Framework/Docking/TabManager.h"
 #include "LevelEditor.h"
 #include "Styling/SlateStyle.h"
-#include "AssetRegistryModule.h"
-#include "IAssetRegistry.h"
 #include "PropertyEditorModule.h"
-
 #include "LinterStyle.h"
 #include "LinterContentBrowserExtensions.h"
 #include "LinterNamingConvention.h"
 #include "LinterSettings.h"
 #include "UI/LintWizard.h"
 #include "LintRuleSet.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 
 #define LOCTEXT_NAMESPACE "FLinterModule"
 
@@ -119,7 +117,11 @@ void FLinterModule::TryToLoadAllLintRuleSets()
 	const IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
 	TArray<FAssetData> FoundRuleSets;
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+	AssetRegistry.GetAssetsByClass(ULintRuleSet::StaticClass()->GetClassPathName(), FoundRuleSets, true);
+#else
 	AssetRegistry.GetAssetsByClass(ULintRuleSet::StaticClass()->GetFName(), FoundRuleSets, true);
+#endif
 
 	// Attempt to get all RuleSets in memory so that linting tools are better aware of them
 	for (const FAssetData& RuleSetData : FoundRuleSets)

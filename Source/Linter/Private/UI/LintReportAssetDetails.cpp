@@ -3,15 +3,12 @@
 #include "UI/LintReportAssetDetails.h"
 #include "LinterStyle.h"
 #include "Widgets/Layout/SBorder.h"
-#include "EditorStyleSet.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Layout/SExpandableArea.h"
 #include "ContentBrowserModule.h"
 #include "IContentBrowserSingleton.h"
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Widgets/Input/SHyperlink.h"
-#include "IAssetTools.h"
-#include "AssetToolsModule.h"
 #include "Internationalization/Internationalization.h"
 #include "Widgets/Text/STextBlock.h"
 #include "LintRule.h"
@@ -140,3 +137,5 @@ void SLintReportAssetDetails::Construct(const FArguments& Args)
 		]
 	];
 }
+
+#undef LOCTEXT_NAMESPACE

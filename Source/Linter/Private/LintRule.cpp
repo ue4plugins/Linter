@@ -7,7 +7,7 @@
 #include "Engine/Blueprint.h"
 #include "Modules/ModuleManager.h"
 #include "IAssetTools.h"
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Misc/EngineVersionComparison.h"
 
 
@@ -241,7 +241,11 @@ bool FLintRuleViolation::PopulateAssetData()
 
 	if (Violator.IsValid())
 	{
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+		ViolatorAssetData = AssetRegistry.GetAssetByObjectPath(Violator->GetPathName());
+#else
 		ViolatorAssetData = AssetRegistry.GetAssetByObjectPath(FName(*Violator->GetPathName()));
+#endif
 		return ViolatorAssetData.IsValid();
 	}
 

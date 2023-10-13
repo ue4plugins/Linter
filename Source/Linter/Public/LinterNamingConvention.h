@@ -70,8 +70,6 @@ public:
 
 	ULinterNamingConvention(const FObjectInitializer& ObjectInitializer);
 
-	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
-
 	UPROPERTY(EditAnywhere, Category="Conventions", meta = (AllowAbstract = ""))
 	TArray<FLinterNamingConventionInfo> ClassNamingConventions;
 
@@ -86,9 +84,5 @@ public:
 #else
 	virtual void PreSave(const class ITargetPlatform* TargetPlatform) override;
 #endif
-
-protected:
-
-	
 
 };

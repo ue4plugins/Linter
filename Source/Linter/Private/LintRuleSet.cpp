@@ -3,7 +3,7 @@
 #include "AnyObject_LinterDummyClass.h"
 #include "LintRunner.h"
 #include "Linter.h"
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Modules/ModuleManager.h"
 #include "HAL/RunnableThread.h"
 
@@ -82,7 +82,11 @@ TArray<FLintRuleViolation> ULintRuleSet::LintPath(TArray<FString> AssetPaths, FS
 		}
 		else
 		{
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+			Threads.Push(FRunnableThread::Create(Runner, *FString::Printf(TEXT("FLintRunner - %s"), *Asset.GetObjectPathString()), 0, TPri_Normal));
+#else
 			Threads.Push(FRunnableThread::Create(Runner, *FString::Printf(TEXT("FLintRunner - %s"), *Asset.ObjectPath.ToString()), 0, TPri_Normal));
+#endif
 			if (ParentScopedSlowTask != nullptr)
 			{
 				ParentScopedSlowTask->EnterProgressFrame(1.0f);

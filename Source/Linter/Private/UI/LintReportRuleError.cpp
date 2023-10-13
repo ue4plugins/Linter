@@ -10,6 +10,7 @@
 #include "Widgets/Input/SHyperlink.h"
 #include "LintRule.h"
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "Misc/EngineVersionComparison.h"
 
 #define LOCTEXT_NAMESPACE "LintReport"
 
@@ -40,7 +41,11 @@ void SLintReportRuleError::Construct(const FArguments& Args)
 					const FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
 					const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 					TArray<FAssetData> AssetDatas;
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+					AssetDatas.Push(AssetRegistryModule.Get().GetAssetByObjectPath(RuleViolation.Get()->ViolatorAssetData.GetSoftObjectPath()));
+#else
 					AssetDatas.Push(AssetRegistryModule.Get().GetAssetByObjectPath(RuleViolation.Get()->ViolatorAssetData.ObjectPath));
+#endif
 					ContentBrowserModule.Get().SyncBrowserToAssets(AssetDatas);
 				})
 			]
@@ -57,3 +62,5 @@ void SLintReportRuleError::Construct(const FArguments& Args)
 		]
 	];
 }
+
+#undef LOCTEXT_NAMESPACE

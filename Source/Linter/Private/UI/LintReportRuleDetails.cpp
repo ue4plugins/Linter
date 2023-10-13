@@ -2,20 +2,15 @@
 #include "UI/LintReportRuleDetails.h"
 #include "LinterStyle.h"
 #include "Widgets/Layout/SBorder.h"
-#include "EditorStyleSet.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Layout/SExpandableArea.h"
-#include "ContentBrowserModule.h"
-#include "IContentBrowserSingleton.h"
-#include "AssetRegistryModule.h"
-#include "Widgets/Input/SHyperlink.h"
-#include "IAssetTools.h"
-#include "AssetToolsModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Internationalization/Internationalization.h"
 #include "Widgets/Text/STextBlock.h"
-#include "UI/LintReportRuleErrorList.h"
 #include "LintRule.h"
 #include "AssetThumbnail.h"
+#include "LintReportRuleErrorList.h"
+#include "Misc/EngineVersionComparison.h"
 
 
 
@@ -57,7 +52,11 @@ void SLintReportRuleDetails::Construct(const FArguments& Args)
 	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 	const IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+	RuleAssetData = AssetRegistry.GetAssetByObjectPath(BrokenRule->GetPathName(), true);
+#else
 	RuleAssetData = AssetRegistry.GetAssetByObjectPath(FName(*BrokenRule->GetPathName()), true);
+#endif
 	FText RuleAssetPath;
 	if (RuleAssetData.IsValid())
 	{
@@ -202,3 +201,5 @@ void SLintReportRuleDetails::Construct(const FArguments& Args)
 		ThumbnailBox->SetContent(RuleThumbnail->MakeThumbnailWidget());
 	}
 }
+
+#undef LOCTEXT_NAMESPACE

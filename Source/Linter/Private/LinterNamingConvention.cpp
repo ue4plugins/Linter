@@ -1,12 +1,11 @@
-
 #include "LinterNamingConvention.h"
+
 #include "AnyObject_LinterDummyClass.h"
 #include "DetailLayoutBuilder.h"
 #include "PropertyCustomizationHelpers.h"
 #include "Templates/SharedPointer.h"
 #include "DetailCategoryBuilder.h"
 #include "IDetailChildrenBuilder.h"
-#include "UObject/ObjectSaveContext.h"
 
 TSharedRef<IDetailCustomization> FLinterNamingConventionDetails::MakeInstance()
 {
@@ -73,13 +72,6 @@ ULinterNamingConvention::ULinterNamingConvention(const FObjectInitializer& Objec
 	: Super(ObjectInitializer)
 {
 	ClassNamingConventions = TArray<FLinterNamingConventionInfo>();
-}
-
-void ULinterNamingConvention::PreSave(const FObjectPreSaveContext SaveContext)
-{
-	Super::PreSave(SaveContext);
-
-	SortConventions();
 }
 
 TArray<FLinterNamingConventionInfo> ULinterNamingConvention::GetNamingConventionsForClassVariant(const TSoftClassPtr<UObject> Class, FName Variant /*= NAME_None*/) const
