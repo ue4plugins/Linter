@@ -6,12 +6,9 @@
 #include "GamemakinNamingConvention.generated.h"
 
 UCLASS()
-class UGamemakinNamingConvention : public ULinterNamingConvention
-{
-	GENERATED_BODY()
+class UGamemakinNamingConvention : public ULinterNamingConvention {
+    GENERATED_BODY()
 
 public:
-
-	UGamemakinNamingConvention(const FObjectInitializer& ObjectInitializer);
-
+    UGamemakinNamingConvention(const FObjectInitializer& ObjectInitializer);
 };

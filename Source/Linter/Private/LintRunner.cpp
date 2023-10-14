@@ -8,81 +8,63 @@
 
 FCriticalSection FLintRunner::LintDataUpdateLock;
 
-FLintRunner::FLintRunner(UObject* InLoadedObject, const ULintRuleSet* LintRuleSet, TArray<FLintRuleViolation>* InpOutRuleViolations, FScopedSlowTask* InParentScopedSlowTask)
-	: LoadedObject(InLoadedObject)
-	, RuleSet(LintRuleSet)
-	, pOutRuleViolations(InpOutRuleViolations)
-	, pLoadedRuleList(LintRuleSet != nullptr ? LintRuleSet->GetLintRuleListForClass(InLoadedObject->GetClass()) : nullptr)
-	, ParentScopedSlowTask(InParentScopedSlowTask)
-{
+FLintRunner::FLintRunner(UObject* InLoadedObject, const ULintRuleSet* LintRuleSet, TArray<FLintRuleViolation>* InpOutRuleViolations, FScopedSlowTask* InParentScopedSlowTask) :
+    LoadedObject(InLoadedObject),
+    RuleSet(LintRuleSet),
+    pOutRuleViolations(InpOutRuleViolations),
+    pLoadedRuleList(LintRuleSet != nullptr ? LintRuleSet->GetLintRuleListForClass(InLoadedObject->GetClass()) : nullptr),
+    ParentScopedSlowTask(InParentScopedSlowTask) {}
+
+bool FLintRunner::RequiresGamethread() {
+    if (pLoadedRuleList != nullptr) {
+        return pLoadedRuleList->RequiresGameThread();
+    }
+
+    return false;
 }
 
-bool FLintRunner::RequiresGamethread()
-{
-	if (pLoadedRuleList != nullptr)
-	{
-		return pLoadedRuleList->RequiresGameThread();
-	}
+bool FLintRunner::Init() {
+    if (LoadedObject == nullptr) {
+        return false;
+    }
 
-	return false;
+    if (RuleSet == nullptr) {
+        return false;
+    }
+
+    if (pLoadedRuleList == nullptr) {
+        return false;
+    }
+
+    if (pOutRuleViolations == nullptr) {
+        return false;
+    }
+
+    return true;
 }
 
-bool FLintRunner::Init()
-{
-	if (LoadedObject == nullptr)
-	{
-		return false;
-	}
+uint32 FLintRunner::Run() {
+    if (LoadedObject == nullptr || pLoadedRuleList == nullptr || RuleSet == nullptr || pOutRuleViolations == nullptr) {
+        return 2;
+    }
 
-	if (RuleSet == nullptr)
-	{
-		return false;
-	}
+    const FString AssetPath = LoadedObject->GetPathName();
+    UE_LOG(LogLinter, Display, TEXT("Loaded '%s'..."), *AssetPath);
 
-	if (pLoadedRuleList == nullptr)
-	{
-		return false;
-	}
+    TArray<FLintRuleViolation> RuleViolations;
+    pLoadedRuleList->PassesRules(LoadedObject, RuleSet, RuleViolations);
 
-	if (pOutRuleViolations == nullptr)
-	{
-		return false;
-	}
+    if (RuleViolations.Num() > 0) {
+        FScopeLock Lock(&LintDataUpdateLock);
+        pOutRuleViolations->Append(RuleViolations);
+    }
 
-	return true;
+    UE_LOG(LogLinter, Display, TEXT("Finished '%s'..."), *AssetPath);
+    return 0;
 }
 
-uint32 FLintRunner::Run()
-{
-	if (LoadedObject == nullptr || pLoadedRuleList == nullptr || RuleSet == nullptr || pOutRuleViolations == nullptr)
-	{
-		return 2;
-	}
+void FLintRunner::Stop() {}
 
-	FString const AssetPath = LoadedObject->GetPathName();
-	UE_LOG(LogLinter, Display, TEXT("Loaded '%s'..."), *AssetPath);
-
-	TArray<FLintRuleViolation> RuleViolations;
-	pLoadedRuleList->PassesRules(LoadedObject, RuleSet, RuleViolations);
-
-	if (RuleViolations.Num() > 0)
-	{
-		FScopeLock Lock(&LintDataUpdateLock);
-		pOutRuleViolations->Append(RuleViolations);
-	}
-
-	UE_LOG(LogLinter, Display, TEXT("Finished '%s'..."), *AssetPath);
-	return 0;
-}
-
-void FLintRunner::Stop()
-{
-	return; // this runner doesn't have anything on-going so there is nothing to stop
-}
-
-void FLintRunner::Exit()
-{
-	return;
-}
+void FLintRunner::Exit() {}
 
 #undef LOCTEXT_NAMESPACE

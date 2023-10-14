@@ -2,45 +2,15 @@
 
 using UnrealBuildTool;
 
-public class MarketplaceLinter : ModuleRules
-{
-    public MarketplaceLinter(ReadOnlyTargetRules Target) : base(Target)
-    {
-        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+public class MarketplaceLinter : ModuleRules {
+	public MarketplaceLinter(ReadOnlyTargetRules Target) : base(Target) {
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(
-			new []
-			{
-				"Core",
-				"Linter"
-			}
-		);
-
-
-		PrivateDependencyModuleNames.AddRange(
-			new []
-            {
-                "CoreUObject",
-                "Engine",
-                "Slate",
-                "SlateCore",
-                "RenderCore",
-                "UnrealEd",
-                "GraphEditor",
-                "AssetTools",
-                "EditorStyle",
-                "Projects",
-                "BlueprintGraph",
-                "InputCore",
-                "StandaloneRenderer",
-                "PropertyEditor",
-                "LevelEditor",
-                "LauncherPlatform",
-                "AppFramework",
-                "DesktopPlatform",
-                "UATHelper"
-				// ... add private dependencies that you statically link with here ...
-			}
-		);
-    }
+		PublicDependencyModuleNames.AddRange(new[] { "Core", "Linter" });
+		PrivateDependencyModuleNames.AddRange(new[] {
+			"CoreUObject", "Engine", "Slate", "SlateCore", "RenderCore", "UnrealEd", "GraphEditor", "AssetTools", 
+			"EditorStyle", "Projects", "BlueprintGraph", "InputCore", "StandaloneRenderer", "PropertyEditor", 
+			"LevelEditor", "LauncherPlatform", "AppFramework", "DesktopPlatform", "UATHelper"
+		});
+	}
 }

@@ -7,59 +7,55 @@
 
 
 enum EStepStatus {
-	NoStatus,
-	Unknown,
-	InProgress,
-	NeedsUpdate,
-	Warning,
-	Error,
-	Success
+    NoStatus,
+    Unknown,
+    InProgress,
+    NeedsUpdate,
+    Warning,
+    Error,
+    Success
 };
 
 // Called when a step's action is invoked
 DECLARE_DELEGATE_OneParam(FOnStepPerformAction, FScopedSlowTask&);
 
 /* Widget that represents a 'step' or 'choice' in the PaCK wizard. */
-class SStepWidget : public SCompoundWidget
-{
+class SStepWidget : public SCompoundWidget {
 public:
+    SLATE_BEGIN_ARGS(SStepWidget) :
+            _StepStatus(NoStatus),
+            _ShowStepStatusIcon(true) { }
 
-	SLATE_BEGIN_ARGS(SStepWidget)
-		: _StepStatus(NoStatus)
-		, _ShowStepStatusIcon(true)
-	{
-	}
+        /** Name to display for this step. */
+        SLATE_ATTRIBUTE(FText, StepName)
 
-		/** Name to display for this step. */
-		SLATE_ATTRIBUTE(FText, StepName)
+        /** Description to display for this step. */
+        SLATE_ATTRIBUTE(FText, StepDesc)
 
-		/** Description to display for this step. */
-		SLATE_ATTRIBUTE(FText, StepDesc)
+        /** Text to display within the action button for this step. */
+        SLATE_ATTRIBUTE(FText, StepActionText)
 
-		/** Text to display within the action button for this step. */
-		SLATE_ATTRIBUTE(FText, StepActionText)
+        /** Slate Brush to use as the thumbnail icon for this step. */
+        SLATE_ATTRIBUTE(const FSlateBrush*, Icon)
 
-		/** Slate Brush to use as the thumbnail icon for this step. */
-		SLATE_ATTRIBUTE(const FSlateBrush*, Icon)
+        /** Current status for this step. */
+        SLATE_ATTRIBUTE(EStepStatus, StepStatus)
 
-		/** Current status for this step. */
-		SLATE_ATTRIBUTE(EStepStatus, StepStatus)
+        /** Current status for this step. */
+        SLATE_ATTRIBUTE(bool, ShowStepStatusIcon)
 
-		/** Current status for this step. */
-		SLATE_ATTRIBUTE(bool, ShowStepStatusIcon)
+        /** Delegate to fire when this step's action is invoked. */
+        SLATE_EVENT(FOnStepPerformAction, OnPerformAction)
 
-		/** Delegate to fire when this step's action is invoked. */
-		SLATE_EVENT(FOnStepPerformAction, OnPerformAction)
-
-	SLATE_END_ARGS()
+    SLATE_END_ARGS()
 
 public:
-	TAttribute<EStepStatus> StepStatus;
-	TAttribute<FText> StepActionText;
-	FOnStepPerformAction OnPerformAction;
-	TAttribute<bool> ShowStepStatusIcon;
+    TAttribute<EStepStatus> StepStatus;
+    TAttribute<FText> StepActionText;
+    FOnStepPerformAction OnPerformAction;
+    TAttribute<bool> ShowStepStatusIcon;
 
-	bool IsStepCompleted(bool bAllowWarning = true) const;
+    bool IsStepCompleted(bool bAllowWarning = true) const;
 
-	void Construct(const FArguments& Args);
+    void Construct(const FArguments& Args);
 };

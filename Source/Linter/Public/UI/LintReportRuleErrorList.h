@@ -6,20 +6,15 @@
 
 struct FLintRuleViolation;
 
-class SLintReportRuleErrorList : public SCompoundWidget
-{
+class SLintReportRuleErrorList : public SCompoundWidget {
 public:
+    SLATE_BEGIN_ARGS(SLintReportRuleErrorList) { }
+        SLATE_ATTRIBUTE(TArray<TSharedPtr<FLintRuleViolation>>, RuleViolations)
 
-	SLATE_BEGIN_ARGS(SLintReportRuleErrorList)
-	{
-	}
-	SLATE_ATTRIBUTE(TArray<TSharedPtr<FLintRuleViolation>>, RuleViolations)
+    SLATE_END_ARGS()
 
-	SLATE_END_ARGS()
-
-	TAttribute<TArray<TSharedPtr<FLintRuleViolation>>> RuleViolations;
+    TAttribute<TArray<TSharedPtr<FLintRuleViolation>>> RuleViolations;
 
 public:
-
-	void Construct(const FArguments& Args);
+    void Construct(const FArguments& Args);
 };

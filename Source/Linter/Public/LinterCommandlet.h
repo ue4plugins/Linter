@@ -5,13 +5,7 @@
 #include "LinterCommandlet.generated.h"
 
 UCLASS()
-class ULinterCommandlet : public UCommandlet
-{
-	GENERATED_UCLASS_BODY()
-	//~ Begin UCommandlet Interface
-	virtual int32 Main(const FString& Params) override;
-
-	//~ End UCommandlet Interface
+class ULinterCommandlet : public UCommandlet {
+    GENERATED_UCLASS_BODY()
+    virtual int32 Main(const FString& Params) override;
 };
-
-

@@ -7,12 +7,9 @@
 
 
 UCLASS()
-class UMarketplaceNamingConvention : public ULinterNamingConvention
-{
-	GENERATED_BODY()
+class UMarketplaceNamingConvention : public ULinterNamingConvention {
+    GENERATED_BODY()
 
 public:
-
-	UMarketplaceNamingConvention(const FObjectInitializer& ObjectInitializer);
-
+    UMarketplaceNamingConvention(const FObjectInitializer& ObjectInitializer);
 };

@@ -3,25 +3,19 @@
 #include "Widgets/SCompoundWidget.h"
 #include "LintRule.h"
 
-class SLintReportAssetDetails : public SCompoundWidget
-{
+class SLintReportAssetDetails : public SCompoundWidget {
 public:
+    SLATE_BEGIN_ARGS(SLintReportAssetDetails) { }
+        SLATE_ATTRIBUTE(FAssetData, AssetData)
+        SLATE_ATTRIBUTE(TArray<TSharedPtr<FLintRuleViolation>>, RuleViolations)
+        SLATE_ATTRIBUTE(TSharedPtr<FAssetThumbnailPool>, ThumbnailPool)
 
-	SLATE_BEGIN_ARGS(SLintReportAssetDetails)
-	{
-	}
-	SLATE_ATTRIBUTE(FAssetData, AssetData)
-	SLATE_ATTRIBUTE(TArray<TSharedPtr<FLintRuleViolation>>, RuleViolations)
-	SLATE_ATTRIBUTE(TSharedPtr<FAssetThumbnailPool>, ThumbnailPool)
-	
-	SLATE_END_ARGS()
+    SLATE_END_ARGS()
 
-	TAttribute<FAssetData> AssetData;
-	TAttribute<TArray<TSharedPtr<FLintRuleViolation>>> RuleViolations;
-	TAttribute<TSharedPtr<FAssetThumbnailPool>> ThumbnailPool;
-
+    TAttribute<FAssetData> AssetData;
+    TAttribute<TArray<TSharedPtr<FLintRuleViolation>>> RuleViolations;
+    TAttribute<TSharedPtr<FAssetThumbnailPool>> ThumbnailPool;
 
 public:
-	
-	void Construct(const FArguments& Args);
+    void Construct(const FArguments& Args);
 };

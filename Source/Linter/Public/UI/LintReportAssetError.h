@@ -3,21 +3,15 @@
 #include "Widgets/SCompoundWidget.h"
 #include "LintRule.h"
 
-class SLintReportAssetError : public SCompoundWidget
-{
+class SLintReportAssetError : public SCompoundWidget {
 public:
+    SLATE_BEGIN_ARGS(SLintReportAssetError) { }
+        SLATE_ATTRIBUTE(TSharedPtr<FLintRuleViolation>, RuleViolation)
 
-	SLATE_BEGIN_ARGS(SLintReportAssetError)
-	{
-	}
-	SLATE_ATTRIBUTE(TSharedPtr<FLintRuleViolation>, RuleViolation)
-	
-	SLATE_END_ARGS()
+    SLATE_END_ARGS()
 
-	TAttribute<TSharedPtr<FLintRuleViolation>> RuleViolation;
-
+    TAttribute<TSharedPtr<FLintRuleViolation>> RuleViolation;
 
 public:
-	
-	void Construct(const FArguments& Args);
+    void Construct(const FArguments& Args);
 };

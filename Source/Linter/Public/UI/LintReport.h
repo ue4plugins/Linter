@@ -7,35 +7,28 @@
 #include "LintRule.h"
 
 
-class SLintReport : public SCompoundWidget
-{
+class SLintReport : public SCompoundWidget {
 public:
+    SLATE_BEGIN_ARGS(SLintReport) { }
 
-	SLATE_BEGIN_ARGS(SLintReport)
-	{
-	}
-
-	SLATE_END_ARGS()
+    SLATE_END_ARGS()
 
 public:
-	
-	void Construct(const FArguments& Args);
-	void Rebuild(const ULintRuleSet* SelectedLintRuleSet);
-	TSharedRef<SWidget> GetViewButtonContent();
+    void Construct(const FArguments& Args);
+    void Rebuild(const ULintRuleSet* SelectedLintRuleSet);
+    TSharedRef<SWidget> GetViewButtonContent();
 
-	const ULintRuleSet* LastUsedRuleSet = nullptr;
+    const ULintRuleSet* LastUsedRuleSet = nullptr;
 
-	TSharedPtr<STextBlock> ResultsTextBlockPtr;
-	TArray<TSharedPtr<FLintRuleViolation>> RuleViolations;
-	TSharedPtr<class SComboButton> ViewOptionsComboButton;
-	TSharedPtr<SScrollBox> AssetDetailsScrollBoxPtr;
-	TSharedPtr<SScrollBox> RuleDetailsScrollBoxPtr;
-	FString JsonReport;
-	FString HTMLReport;
+    TSharedPtr<STextBlock> ResultsTextBlockPtr;
+    TArray<TSharedPtr<FLintRuleViolation>> RuleViolations;
+    TSharedPtr<class SComboButton> ViewOptionsComboButton;
+    TSharedPtr<SScrollBox> AssetDetailsScrollBoxPtr;
+    TSharedPtr<SScrollBox> RuleDetailsScrollBoxPtr;
+    FString JsonReport;
+    FString HTMLReport;
 
-	bool bHasRanReport = false;
-	int32 NumErrors = 0;
-	int32 NumWarnings = 0;
-
-	
+    bool bHasRanReport = false;
+    int32 NumErrors = 0;
+    int32 NumWarnings = 0;
 };

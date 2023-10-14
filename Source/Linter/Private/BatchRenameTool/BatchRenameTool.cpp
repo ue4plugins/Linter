@@ -11,6 +11,7 @@
 #include "AssetToolsModule.h"
 #include "Modules/ModuleManager.h"
 #include "IAssetTools.h"
+#include "SUniformGridPanel.h"
 #include "Widgets/Notifications/SNotificationList.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "Logging/MessageLog.h"
@@ -24,307 +25,289 @@
 using FAppStyle = FEditorStyle;
 #endif
 
-FDlgBatchRenameTool::FDlgBatchRenameTool(const TArray<FAssetData> Assets)
-	: bRemovePrefix(false)
-	, bRemoveSuffix(false)
-	, SelectedAssets(Assets)
-{
-	if (FSlateApplication::IsInitialized())
-	{
-		DialogWindow = SNew(SWindow)
+FDlgBatchRenameTool::FDlgBatchRenameTool(const TArray<FAssetData> Assets) :
+    bRemovePrefix(false),
+    bRemoveSuffix(false),
+    SelectedAssets(Assets) {
+    if (FSlateApplication::IsInitialized()) {
+        DialogWindow = SNew(SWindow)
 			.Title(LOCTEXT("BatchRenameToolDlgTitle", "Batch Rename Tool"))
 			.SupportsMinimize(false).SupportsMaximize(false)
 			.SaneWindowPlacement(true)
 			.AutoCenter(EAutoCenter::PreferredWorkArea)
 			.ClientSize(FVector2D(350, 165));
 
-		const TSharedPtr<SBorder> DialogWrapper =
-			SNew(SBorder)
+        const TSharedPtr<SBorder> DialogWrapper =
+            SNew(SBorder)
 			.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
 			.Padding(4.0f)
-			[
-				SAssignNew(DialogWidget, SDlgBatchRenameTool)
-				.ParentWindow(DialogWindow)
-			];
+            [
+                SAssignNew(DialogWidget, SDlgBatchRenameTool)
+                .ParentWindow(DialogWindow)
+            ];
 
-		DialogWindow->SetContent(DialogWrapper.ToSharedRef());
-	}
+        DialogWindow->SetContent(DialogWrapper.ToSharedRef());
+    }
 }
-FDlgBatchRenameTool::EResult FDlgBatchRenameTool::ShowModal()
-{
-	//Show Dialog
-	GEditor->EditorAddModalWindow(DialogWindow.ToSharedRef());
-	const EResult UserResponse = (EResult)DialogWidget->GetUserResponse();
 
-	if (UserResponse == Confirm)
-	{
-		Prefix = DialogWidget->PrefixTextBox->GetText().ToString();
-		Suffix = DialogWidget->SuffixTextBox->GetText().ToString();
-		bRemovePrefix = DialogWidget->PrefixRemoveBox->IsChecked();
-		bRemoveSuffix = DialogWidget->SuffixRemoveBox->IsChecked();
+FDlgBatchRenameTool::EResult FDlgBatchRenameTool::ShowModal() {
+    //Show Dialog
+    GEditor->EditorAddModalWindow(DialogWindow.ToSharedRef());
+    const EResult UserResponse = DialogWidget->GetUserResponse();
 
-		Find = DialogWidget->FindTextBox->GetText().ToString();
-		Replace = DialogWidget->ReplaceTextBox->GetText().ToString();
+    if (UserResponse == Confirm) {
+        Prefix = DialogWidget->PrefixTextBox->GetText().ToString();
+        Suffix = DialogWidget->SuffixTextBox->GetText().ToString();
+        bRemovePrefix = DialogWidget->PrefixRemoveBox->IsChecked();
+        bRemoveSuffix = DialogWidget->SuffixRemoveBox->IsChecked();
 
-		// If no information is given, treat as canceled
-		if (Prefix.IsEmpty() && Suffix.IsEmpty() && Find.IsEmpty())
-		{
-			return Cancel;
-		}
+        Find = DialogWidget->FindTextBox->GetText().ToString();
+        Replace = DialogWidget->ReplaceTextBox->GetText().ToString();
 
-		const FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
-		TArray<FAssetRenameData> AssetsAndNames;
+        // If no information is given, treat as canceled
+        if (Prefix.IsEmpty() && Suffix.IsEmpty() && Find.IsEmpty()) {
+            return Cancel;
+        }
 
-		for (auto AssetIt = SelectedAssets.CreateConstIterator(); AssetIt; ++AssetIt)
-		{
-			const FAssetData& Asset = *AssetIt;
+        const FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
+        TArray<FAssetRenameData> AssetsAndNames;
 
-			// Early out on assets that can not be renamed
+        for (auto AssetIt = SelectedAssets.CreateConstIterator(); AssetIt; ++AssetIt) {
+            const FAssetData& Asset = *AssetIt;
+
+            // Early out on assets that can not be renamed
 #if UE_VERSION_NEWER_THAN(5, 1, 0)
-			if (!(!Asset.IsRedirector() && Asset.AssetClassPath.GetAssetName() != NAME_Class && !(Asset.PackageFlags & PKG_FilterEditorOnly)))
+            if (!(!Asset.IsRedirector() && Asset.AssetClassPath.GetAssetName() != NAME_Class && !(Asset.PackageFlags & PKG_FilterEditorOnly)))
 #else
-			if (!(!Asset.IsRedirector() && Asset.AssetClass != NAME_Class && !(Asset.PackageFlags & PKG_FilterEditorOnly)))
+            if (!(!Asset.IsRedirector() && Asset.AssetClass != NAME_Class && !(Asset.PackageFlags & PKG_FilterEditorOnly)))
 #endif
-			{
-				continue;
-			}
+            {
+                continue;
+            }
 
-			// Work on a copy of the asset name and see if after name operations
-			// if the copy is different than the original before creating rename data
-			FString AssetNewName = Asset.AssetName.ToString();
+            // Work on a copy of the asset name and see if after name operations
+            // if the copy is different than the original before creating rename data
+            FString AssetNewName = Asset.AssetName.ToString();
 
-			if (!Find.IsEmpty())
-			{
-				AssetNewName.ReplaceInline(*Find, *Replace);
-			}
+            if (!Find.IsEmpty()) {
+                AssetNewName.ReplaceInline(*Find, *Replace);
+            }
 
-			if (!Prefix.IsEmpty())
-			{
-				if (bRemovePrefix)
-				{
-					AssetNewName.RemoveFromStart(Prefix, ESearchCase::CaseSensitive);
-				}
-				else
-				{
-					if (!AssetNewName.StartsWith(Prefix, ESearchCase::CaseSensitive))
-					{
-						AssetNewName.InsertAt(0, Prefix);
-					}
-				}
-			}
+            if (!Prefix.IsEmpty()) {
+                if (bRemovePrefix) {
+                    AssetNewName.RemoveFromStart(Prefix, ESearchCase::CaseSensitive);
+                } else {
+                    if (!AssetNewName.StartsWith(Prefix, ESearchCase::CaseSensitive)) {
+                        AssetNewName.InsertAt(0, Prefix);
+                    }
+                }
+            }
 
-			if (!Suffix.IsEmpty())
-			{
-				if (bRemoveSuffix)
-				{
-					AssetNewName.RemoveFromEnd(Suffix, ESearchCase::CaseSensitive);
-				}
-				else
-				{
-					if (!AssetNewName.EndsWith(Suffix, ESearchCase::CaseSensitive))
-					{
-						AssetNewName = AssetNewName.Append(Suffix);
-					}
-				}
-			}
+            if (!Suffix.IsEmpty()) {
+                if (bRemoveSuffix) {
+                    AssetNewName.RemoveFromEnd(Suffix, ESearchCase::CaseSensitive);
+                } else {
+                    if (!AssetNewName.EndsWith(Suffix, ESearchCase::CaseSensitive)) {
+                        AssetNewName = AssetNewName.Append(Suffix);
+                    }
+                }
+            }
 
-			if (AssetNewName != Asset.AssetName.ToString())
-			{
-				AssetsAndNames.Push(FAssetRenameData(Asset.GetAsset(), Asset.PackagePath.ToString(), AssetNewName));
-			}
-		}
+            if (AssetNewName != Asset.AssetName.ToString()) {
+                AssetsAndNames.Push(FAssetRenameData(Asset.GetAsset(), Asset.PackagePath.ToString(), AssetNewName));
+            }
+        }
 
-		if (!AssetToolsModule.Get().RenameAssets(AssetsAndNames))
-		{
-			FNotificationInfo NotificationInfo(LOCTEXT("BatchRenameFailed", "Batch Rename operation did not fully complete successfully. Maybe fix up redirectors? Check Output Log for details!"));
-			NotificationInfo.ExpireDuration = 6.0f;
-			NotificationInfo.Hyperlink = FSimpleDelegate::CreateStatic([]() { FMessageLog("LoadErrors").Open(EMessageSeverity::Info, true); });
-			NotificationInfo.HyperlinkText = LOCTEXT("LoadObjectHyperlink", "Show Message Log");
-			FSlateNotificationManager::Get().AddNotification(NotificationInfo);
-		}
-	}
-	return UserResponse;
+        if (!AssetToolsModule.Get().RenameAssets(AssetsAndNames)) {
+            FNotificationInfo NotificationInfo(LOCTEXT("BatchRenameFailed", "Batch Rename operation did not fully complete successfully. Maybe fix up redirectors? Check Output Log for details!"));
+            NotificationInfo.ExpireDuration = 6.0f;
+            NotificationInfo.Hyperlink = FSimpleDelegate::CreateStatic([]() {
+                FMessageLog("LoadErrors").Open(EMessageSeverity::Info, true);
+            });
+            NotificationInfo.HyperlinkText = LOCTEXT("LoadObjectHyperlink", "Show Message Log");
+            FSlateNotificationManager::Get().AddNotification(NotificationInfo);
+        }
+    }
+    return UserResponse;
 }
 
-void SDlgBatchRenameTool::Construct(const FArguments& InArgs)
-{
-	UserResponse = FDlgBatchRenameTool::Cancel;
-	ParentWindow = InArgs._ParentWindow.Get();
+void SDlgBatchRenameTool::Construct(const FArguments& InArgs) {
+    UserResponse = FDlgBatchRenameTool::Cancel;
+    ParentWindow = InArgs._ParentWindow.Get();
 
-	this->ChildSlot[
-		SNew(SVerticalBox)
-			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.Padding(8.0f, 4.0f, 8.0f, 4.0f)
-			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				.VAlign(VAlign_Center)
-				.HAlign(HAlign_Right)
-				.Padding(0.0f, 0.0f, 8.0f, 0.0f)
-				[
-					SNew(SBox)
-					.WidthOverride(48.0f)
-					[
-						SNew(STextBlock)
+    this->ChildSlot[
+        SNew(SVerticalBox)
+        + SVerticalBox::Slot()
+          .AutoHeight()
+          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        [
+            SNew(SHorizontalBox)
+            + SHorizontalBox::Slot()
+              .AutoWidth()
+              .VAlign(VAlign_Center)
+              .HAlign(HAlign_Right)
+              .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+            [
+                SNew(SBox)
+                .WidthOverride(48.0f)
+                [
+                    SNew(STextBlock)
 						.Text(LOCTEXT("BatchRenameToolDlgPrefix", "Prefix"))
 					.Justification(ETextJustify::Right)
-					]
-				]
-			+ SHorizontalBox::Slot()
-				.FillWidth(1.0f)
-				.Padding(0.0f, 0.0f, 8.0f, 0.0f)
-				[
-					SAssignNew(PrefixTextBox, SEditableTextBox)
-				]
-			+ SHorizontalBox::Slot()
-				.AutoWidth()
-				.Padding(0.0f, 0.0f, 0.0f, 0.0f)
-				[
-					SAssignNew(PrefixRemoveBox, SCheckBox)
-				]
-			+ SHorizontalBox::Slot()
-				.AutoWidth()
-				.VAlign(VAlign_Center)
-				.Padding(0.0f, 0.0f, 8.0f, 0.0f)
-				[
-					SNew(STextBlock)
-					.Text(LOCTEXT("BatchRenameToolDlgRemove", "Remove"))
-				]
-			]
-			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.Padding(8.0f, 4.0f, 8.0f, 4.0f)
-			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				.VAlign(VAlign_Center)
-				.HAlign(HAlign_Right)
-				.Padding(0.0f, 0.0f, 8.0f, 0.0f)
-				[
-					SNew(SBox)
-					.WidthOverride(48.0f)
-					[
-						SNew(STextBlock)
+                ]
+            ]
+            + SHorizontalBox::Slot()
+              .FillWidth(1.0f)
+              .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+            [
+                SAssignNew(PrefixTextBox, SEditableTextBox)
+            ]
+            + SHorizontalBox::Slot()
+              .AutoWidth()
+              .Padding(0.0f, 0.0f, 0.0f, 0.0f)
+            [
+                SAssignNew(PrefixRemoveBox, SCheckBox)
+            ]
+            + SHorizontalBox::Slot()
+              .AutoWidth()
+              .VAlign(VAlign_Center)
+              .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+            [
+                SNew(STextBlock)
+                .Text(LOCTEXT("BatchRenameToolDlgRemove", "Remove"))
+            ]
+        ]
+        + SVerticalBox::Slot()
+          .AutoHeight()
+          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        [
+            SNew(SHorizontalBox)
+            + SHorizontalBox::Slot()
+              .AutoWidth()
+              .VAlign(VAlign_Center)
+              .HAlign(HAlign_Right)
+              .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+            [
+                SNew(SBox)
+                .WidthOverride(48.0f)
+                [
+                    SNew(STextBlock)
 						.Text(LOCTEXT("BatchRenameToolDlgSuffix", "Suffix"))
 					.Justification(ETextJustify::Right)
-					]
-				]
-				+ SHorizontalBox::Slot()
-				.FillWidth(1.0f)
-				.Padding(0.0f, 0.0f, 8.0f, 0.0f)
-				[
-					SAssignNew(SuffixTextBox, SEditableTextBox)
-				]
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				.Padding(0.0f, 0.0f, 0.0f, 0.0f)
-				[
-					SAssignNew(SuffixRemoveBox, SCheckBox)
-				]
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				.VAlign(VAlign_Center)
-				.Padding(0.0f, 0.0f, 8.0f, 0.0f)
-				[
-					SNew(STextBlock)
-					.Text(LOCTEXT("BatchRenameToolDlgRemove", "Remove"))
-				]
-			]
-			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.Padding(8.0f, 4.0f, 8.0f, 4.0f)
-			[
-				SNew(SSeparator)
-			]
-			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.Padding(8.0f, 4.0f, 8.0f, 4.0f)
-			[
-				SNew(SHorizontalBox)
-				+ SHorizontalBox::Slot()
-				.AutoWidth()
-				.Padding(0.0f, 0.0f, 8.0f, 0.0f)
-				[
-					SNew(SBox)
-					.WidthOverride(48.0f)
-				[
-					SNew(STextBlock)
+                ]
+            ]
+            + SHorizontalBox::Slot()
+              .FillWidth(1.0f)
+              .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+            [
+                SAssignNew(SuffixTextBox, SEditableTextBox)
+            ]
+            + SHorizontalBox::Slot()
+              .AutoWidth()
+              .Padding(0.0f, 0.0f, 0.0f, 0.0f)
+            [
+                SAssignNew(SuffixRemoveBox, SCheckBox)
+            ]
+            + SHorizontalBox::Slot()
+              .AutoWidth()
+              .VAlign(VAlign_Center)
+              .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+            [
+                SNew(STextBlock)
+                .Text(LOCTEXT("BatchRenameToolDlgRemove", "Remove"))
+            ]
+        ]
+        + SVerticalBox::Slot()
+          .AutoHeight()
+          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        [
+            SNew(SSeparator)
+        ]
+        + SVerticalBox::Slot()
+          .AutoHeight()
+          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        [
+            SNew(SHorizontalBox)
+            + SHorizontalBox::Slot()
+              .AutoWidth()
+              .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+            [
+                SNew(SBox)
+                .WidthOverride(48.0f)
+                [
+                    SNew(STextBlock)
 					.Text(LOCTEXT("BatchRenameToolDlgFind", "Find"))
 					.Justification(ETextJustify::Right)
-				]
-			]
-			+ SHorizontalBox::Slot()
-			.FillWidth(1.0f)
-			.Padding(0.0f, 0.0f, 8.0f, 0.0f)
-			[
-				SAssignNew(FindTextBox, SEditableTextBox)
-			]
-		]
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		.Padding(8.0f, 4.0f, 8.0f, 4.0f)
-		[
-			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot()
-			.AutoWidth()
-			.Padding(0.0f, 0.0f, 8.0f, 0.0f)
-			[
-				SNew(SBox)
-				.WidthOverride(48.0f)
-				[
-					SNew(STextBlock)
+                ]
+            ]
+            + SHorizontalBox::Slot()
+              .FillWidth(1.0f)
+              .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+            [
+                SAssignNew(FindTextBox, SEditableTextBox)
+            ]
+        ]
+        + SVerticalBox::Slot()
+          .AutoHeight()
+          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        [
+            SNew(SHorizontalBox)
+            + SHorizontalBox::Slot()
+              .AutoWidth()
+              .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+            [
+                SNew(SBox)
+                .WidthOverride(48.0f)
+                [
+                    SNew(STextBlock)
 					.Text(LOCTEXT("BatchRenameToolDlgReplace", "Replace"))
 					.Justification(ETextJustify::Right)
-				]
-			]
-			+ SHorizontalBox::Slot()
-			.FillWidth(1.0f)
-			.Padding(0.0f, 0.0f, 8.0f, 0.0f)
-			[
-				SAssignNew(ReplaceTextBox, SEditableTextBox)
-			]
-		]
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		.Padding(8.0f, 4.0f, 8.0f, 4.0f)
-		[
-			SNew(SSeparator)
-		]
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		.HAlign(HAlign_Right)
-		.Padding(8.0f, 4.0f, 8.0f, 4.0f)
-		[
-			SNew(SUniformGridPanel)
+                ]
+            ]
+            + SHorizontalBox::Slot()
+              .FillWidth(1.0f)
+              .Padding(0.0f, 0.0f, 8.0f, 0.0f)
+            [
+                SAssignNew(ReplaceTextBox, SEditableTextBox)
+            ]
+        ]
+        + SVerticalBox::Slot()
+          .AutoHeight()
+          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        [
+            SNew(SSeparator)
+        ]
+        + SVerticalBox::Slot()
+          .AutoHeight()
+          .HAlign(HAlign_Right)
+          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        [
+            SNew(SUniformGridPanel)
 			.SlotPadding(FAppStyle::GetMargin("StandardDialog.SlotPadding"))
 			.MinDesiredSlotWidth(FAppStyle::GetFloat("StandardDialog.MinDesiredSlotWidth"))
 			.MinDesiredSlotHeight(FAppStyle::GetFloat("StandardDialog.MinDesiredSlotHeight"))
-			+ SUniformGridPanel::Slot(0, 0)
-			[
-				SNew(SButton)
+            + SUniformGridPanel::Slot(0, 0)
+            [
+                SNew(SButton)
 				.HAlign(HAlign_Center)
 				.ContentPadding(FAppStyle::GetMargin("StandardDialog.ContentPadding"))
 				.OnClicked(this, &SDlgBatchRenameTool::OnButtonClick, FDlgBatchRenameTool::Confirm)
 				.Text(LOCTEXT("SkeletonMergeOk", "OK"))
-			]
-			+ SUniformGridPanel::Slot(1, 0)
-			[
-				SNew(SButton)
+            ]
+            + SUniformGridPanel::Slot(1, 0)
+            [
+                SNew(SButton)
 				.HAlign(HAlign_Center)
 				.ContentPadding(FAppStyle::GetMargin("StandardDialog.ContentPadding"))
 				.OnClicked(this, &SDlgBatchRenameTool::OnButtonClick, FDlgBatchRenameTool::Cancel)
 				.Text(LOCTEXT("SkeletonMergeCancel", "Cancel"))
-			]
-		]
-	];
+            ]
+        ]
+    ];
 }
 
-FDlgBatchRenameTool::EResult SDlgBatchRenameTool::GetUserResponse() const
-{
-	return UserResponse;
+FDlgBatchRenameTool::EResult SDlgBatchRenameTool::GetUserResponse() const {
+    return UserResponse;
 }
 
 #undef LOCTEXT_NAMESPACE

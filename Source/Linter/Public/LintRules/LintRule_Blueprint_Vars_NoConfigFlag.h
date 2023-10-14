@@ -8,14 +8,12 @@
 #include "LintRule_Blueprint_Vars_NoConfigFlag.generated.h"
 
 UCLASS(BlueprintType, Blueprintable, Abstract)
-class LINTER_API ULintRule_Blueprint_Vars_NoConfigFlag : public ULintRule_Blueprint_Base
-{
-	GENERATED_BODY()
+class LINTER_API ULintRule_Blueprint_Vars_NoConfigFlag : public ULintRule_Blueprint_Base {
+    GENERATED_BODY()
 
 public:
-	ULintRule_Blueprint_Vars_NoConfigFlag(const FObjectInitializer& ObjectInitializer);
+    ULintRule_Blueprint_Vars_NoConfigFlag(const FObjectInitializer& ObjectInitializer);
 
 protected:
-	virtual bool PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const override;
-
+    virtual bool PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const override;
 };

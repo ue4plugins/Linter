@@ -4,17 +4,17 @@
 #include "CoreTypes.h"
 #include "Styling/ISlateStyle.h"
 
-class FLinterStyle
-{
+class FLinterStyle {
 public:
-	static void Initialize();
+    static void Initialize();
 
-	static void Shutdown();
+    static void Shutdown();
 
-	static TSharedPtr< class ISlateStyle > Get();
-	static TSharedPtr< class FSlateStyleSet > StyleSet;
+    static TSharedPtr<class ISlateStyle> Get();
+    static TSharedPtr<class FSlateStyleSet> StyleSet;
 
-	static FName GetStyleSetName();
+    static FName GetStyleSetName();
+
 private:
-	static FString InContent(const FString& RelativePath, const ANSICHAR* Extension);
+    static FString InContent(const FString& RelativePath, const ANSICHAR* Extension);
 };

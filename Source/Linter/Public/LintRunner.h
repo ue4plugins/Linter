@@ -9,27 +9,24 @@ struct FLintRuleList;
 struct FLintRuleViolation;
 class ULintRuleSet;
 
-class FLintRunner : public FRunnable
-{
-
+class FLintRunner : public FRunnable {
 public:
+    FLintRunner(UObject* InLoadedObject, const ULintRuleSet* LintRuleSet, TArray<FLintRuleViolation>* InpOutRuleViolations, FScopedSlowTask* InParentScopedSlowTask);
 
-	FLintRunner(UObject* InLoadedObject, const ULintRuleSet* LintRuleSet, TArray<FLintRuleViolation>* InpOutRuleViolations, FScopedSlowTask* InParentScopedSlowTask);
+    virtual bool RequiresGamethread();
 
-	virtual bool RequiresGamethread();
-
-	virtual bool Init() override;
-	virtual uint32 Run() override;
-	virtual void Stop() override;
-	virtual void Exit() override;
+    virtual bool Init() override;
+    virtual uint32 Run() override;
+    virtual void Stop() override;
+    virtual void Exit() override;
 
 protected:
-	UObject* LoadedObject = nullptr;
-	const ULintRuleSet* RuleSet = nullptr;
-	TArray<FLintRuleViolation>* pOutRuleViolations;
+    UObject* LoadedObject = nullptr;
+    const ULintRuleSet* RuleSet = nullptr;
+    TArray<FLintRuleViolation>* pOutRuleViolations;
 
-	const FLintRuleList* pLoadedRuleList;
-	static FCriticalSection LintDataUpdateLock;
+    const FLintRuleList* pLoadedRuleList;
+    static FCriticalSection LintDataUpdateLock;
 
-	FScopedSlowTask* ParentScopedSlowTask;
+    FScopedSlowTask* ParentScopedSlowTask;
 };

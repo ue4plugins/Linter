@@ -6,34 +6,27 @@
 /**
 * Helper struct for showing function tooltip widgets
 **/
-struct FBPFunctionArgumentDescription
-{
-	FText ArgumentName;
-	FText Tooltip;
-	FText ArgumentType;
+struct FBPFunctionArgumentDescription {
+    FText ArgumentName;
+    FText Tooltip;
+    FText ArgumentType;
 
-	FBPFunctionArgumentDescription()
-	{
-	}
+    FBPFunctionArgumentDescription() { }
 
-	FBPFunctionArgumentDescription(FText InArgumentName, FText InTooltip, FText InArgumentType = FText::GetEmpty())
-		: ArgumentName(InArgumentName)
-		, Tooltip(InTooltip)
-		, ArgumentType(InArgumentType)
-	{
-	}
+    FBPFunctionArgumentDescription(FText InArgumentName, FText InTooltip, FText InArgumentType = FText::GetEmpty()) :
+        ArgumentName(InArgumentName),
+        Tooltip(InTooltip),
+        ArgumentType(InArgumentType) { }
 
-	FText GetToolTipTextRef()
-	{
-		return Tooltip;
-	}
+    FText GetToolTipTextRef() {
+        return Tooltip;
+    }
 };
 
-class FTooltipStringHelper
-{
+class FTooltipStringHelper {
 public:
-	static FText ParseFunctionRawTooltipGetDescription(FString RawTooltip, bool bRemoveNewlines = false);
-	static bool ParseFunctionRawTooltip(FString RawTooltip, FText& OutFunctionDescription, TArray<TSharedPtr<FBPFunctionArgumentDescription>>& Inputs, TArray<TSharedPtr<FBPFunctionArgumentDescription>>& Outputs, FText& OutReturnText);
-	static FString ConvertTooltipDataToRawTooltip(FText FunctionDescription, TArray<TSharedPtr<FBPFunctionArgumentDescription>> Inputs, TArray<TSharedPtr<FBPFunctionArgumentDescription>> Outputs);
-	static bool FindAndUpdateArgumentTooltip(FText ArgumentName, FText Tooltip, TArray<TSharedPtr<FBPFunctionArgumentDescription>>& Arguments);
+    static FText ParseFunctionRawTooltipGetDescription(FString RawTooltip, bool bRemoveNewlines = false);
+    static bool ParseFunctionRawTooltip(FString RawTooltip, FText& OutFunctionDescription, TArray<TSharedPtr<FBPFunctionArgumentDescription>>& Inputs, TArray<TSharedPtr<FBPFunctionArgumentDescription>>& Outputs, FText& OutReturnText);
+    static FString ConvertTooltipDataToRawTooltip(FText FunctionDescription, TArray<TSharedPtr<FBPFunctionArgumentDescription>> Inputs, TArray<TSharedPtr<FBPFunctionArgumentDescription>> Outputs);
+    static bool FindAndUpdateArgumentTooltip(FText ArgumentName, FText Tooltip, TArray<TSharedPtr<FBPFunctionArgumentDescription>>& Arguments);
 };

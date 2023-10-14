@@ -7,17 +7,15 @@
 #include "LintRule_Path_IsNotTooLong.generated.h"
 
 UCLASS(BlueprintType, Blueprintable, Abstract)
-class LINTER_API ULintRule_Path_IsNotTooLong : public ULintRule
-{
-	GENERATED_BODY()
+class LINTER_API ULintRule_Path_IsNotTooLong : public ULintRule {
+    GENERATED_BODY()
 
 public:
-	ULintRule_Path_IsNotTooLong(const FObjectInitializer& ObjectInitializer);
+    ULintRule_Path_IsNotTooLong(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditDefaultsOnly, Category = "Settings")
-	int32 MaxPathLimit = 140;
+    UPROPERTY(EditDefaultsOnly, Category = "Settings")
+    int32 MaxPathLimit = 140;
 
 protected:
-	virtual bool PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const override;
-
+    virtual bool PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const override;
 };

@@ -5,12 +5,10 @@
 #include "LintRuleSet.h"
 
 
-ULinterSettings::ULinterSettings(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{
-	if (DefaultLintRuleSet.IsNull())
-	{
-		static ConstructorHelpers::FObjectFinder<ULintRuleSet> DefaultMarketplaceRuleSetRef(TEXT("LintRuleSet'/Linter/MarketplaceLinter/MarketplaceLintRuleSet.MarketplaceLintRuleSet'"));
-		DefaultLintRuleSet = DefaultMarketplaceRuleSetRef.Object;
-	}
+ULinterSettings::ULinterSettings(const FObjectInitializer& ObjectInitializer) :
+    Super(ObjectInitializer) {
+    if (DefaultLintRuleSet.IsNull()) {
+        static ConstructorHelpers::FObjectFinder<ULintRuleSet> DefaultMarketplaceRuleSetRef(TEXT("LintRuleSet'/Linter/MarketplaceLinter/MarketplaceLintRuleSet.MarketplaceLintRuleSet'"));
+        DefaultLintRuleSet = DefaultMarketplaceRuleSetRef.Object;
+    }
 }

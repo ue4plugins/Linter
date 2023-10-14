@@ -8,48 +8,44 @@
 class FLinterManagerBase;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogLinter, Verbose, All);
+
 DECLARE_LOG_CATEGORY_EXTERN(LogCommandlet, All, All);
 
-class LINTER_API FLinterModule : public IModuleInterface
-{
+class LINTER_API FLinterModule : public IModuleInterface {
 public:
+    /** IModuleInterface implementation */
+    virtual void StartupModule() override;
+    virtual void ShutdownModule() override;
 
-	/** IModuleInterface implementation */
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
+    static TSharedRef<SDockTab> SpawnTab(const FSpawnTabArgs& TabSpawnArgs, TSharedPtr<FSlateStyleSet> StyleSet);
 
-	static TSharedRef<SDockTab> SpawnTab(const FSpawnTabArgs& TabSpawnArgs, TSharedPtr<FSlateStyleSet> StyleSet);
+    virtual bool SupportsDynamicReloading() override {
+        return false;
+    }
 
-	virtual bool SupportsDynamicReloading() override
-	{
-		return false;
-	}
+    virtual TArray<FString> GetDesiredLintPaths() {
+        if (DesiredLintPaths.Num() == 0) {
+            DesiredLintPaths.Push(TEXT("/Game"));
+        }
 
-	virtual TArray<FString> GetDesiredLintPaths()
-	{
-		if (DesiredLintPaths.Num() == 0)
-		{
-			DesiredLintPaths.Push(TEXT("/Game"));
-		}
+        return DesiredLintPaths;
+    }
 
-		return DesiredLintPaths;
-	}
-	virtual void SetDesiredLintPaths(TArray<FString> LintPaths)
-	{
-		DesiredLintPaths = LintPaths;
-		if (DesiredLintPaths.Num() == 0)
-		{
-			DesiredLintPaths.Push(TEXT("/Game"));
-		}
-	}
+    virtual void SetDesiredLintPaths(TArray<FString> LintPaths) {
+        DesiredLintPaths = LintPaths;
+        if (DesiredLintPaths.Num() == 0) {
+            DesiredLintPaths.Push(TEXT("/Game"));
+        }
+    }
 
 private:
-	FDelegateHandle LevelEditorTabManagerChangedHandle;
-	FDelegateHandle ContentBrowserExtenderDelegateHandle;
-	FDelegateHandle AssetExtenderDelegateHandle;
+    FDelegateHandle LevelEditorTabManagerChangedHandle;
+    FDelegateHandle ContentBrowserExtenderDelegateHandle;
+    FDelegateHandle AssetExtenderDelegateHandle;
 
-	TArray<FString> DesiredLintPaths;
+    TArray<FString> DesiredLintPaths;
+
 public:
-	void OnInitialAssetRegistrySearchComplete();
-	static void TryToLoadAllLintRuleSets();
+    void OnInitialAssetRegistrySearchComplete();
+    static void TryToLoadAllLintRuleSets();
 };

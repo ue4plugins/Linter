@@ -7,17 +7,15 @@
 #include "LintRule_Collection.generated.h"
 
 UCLASS(BlueprintType, Blueprintable, Abstract)
-class LINTER_API ULintRule_Collection : public ULintRule
-{
-	GENERATED_BODY()
+class LINTER_API ULintRule_Collection : public ULintRule {
+    GENERATED_BODY()
 
 public:
-	ULintRule_Collection(const FObjectInitializer& ObjectInitializer);
+    ULintRule_Collection(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditDefaultsOnly, Category = "Settings")
-	TArray<TSubclassOf<ULintRule>> SubRules;
+    UPROPERTY(EditDefaultsOnly, Category = "Settings")
+    TArray<TSubclassOf<ULintRule>> SubRules;
 
 protected:
-	virtual bool PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const override;
-
+    virtual bool PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const override;
 };

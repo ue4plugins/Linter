@@ -11,15 +11,12 @@
 * Implements the settings for the Linter plugin.
 */
 UCLASS(config = Linter, defaultconfig)
-class ULinterSettings : public UObject
-{
-	GENERATED_BODY()
+class ULinterSettings : public UObject {
+    GENERATED_BODY()
 
-	ULinterSettings(const FObjectInitializer& ObjectInitializer);
+    ULinterSettings(const FObjectInitializer& ObjectInitializer);
 
 public:
-
-	UPROPERTY(EditAnywhere, config, Category = Settings)
-	TSoftObjectPtr<ULintRuleSet> DefaultLintRuleSet;
-
+    UPROPERTY(EditAnywhere, config, Category = Settings)
+    TSoftObjectPtr<ULintRuleSet> DefaultLintRuleSet;
 };

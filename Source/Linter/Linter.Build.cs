@@ -2,49 +2,21 @@
 
 using UnrealBuildTool;
 
-public class Linter : ModuleRules
-{
-    public Linter(ReadOnlyTargetRules Target) : base(Target)
-    {
-        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+public class Linter : ModuleRules {
+	public Linter(ReadOnlyTargetRules Target) : base(Target) {
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(
-			new []
-			{
-				"Core"
-			}
-		);
+		PublicDependencyModuleNames.AddRange(new[] { "Core" });
+		PrivateDependencyModuleNames.AddRange(new[] {
+			"CoreUObject", "Engine", "Slate", "SlateCore", "AppFramework",
+			"InputCore", "UnrealEd", "GraphEditor", "AssetTools", "EditorStyle", "BlueprintGraph", "PropertyEditor",
+			"LauncherPlatform", "Projects", "DesktopPlatform", "Json", "UATHelper"
+		});
 
-
-		PrivateDependencyModuleNames.AddRange(
-			new []
-            {
-                "CoreUObject",
-                "Engine",
-                "Slate",
-                "SlateCore",
-				"AppFramework",
-				"InputCore",
-                "UnrealEd",
-                "GraphEditor",
-                "AssetTools",
-                "EditorStyle",
-                "BlueprintGraph",
-                "PropertyEditor",
-                "LauncherPlatform",
-                "Projects",
-				"DesktopPlatform",
-				"Json",
-                "UATHelper"
-				// ... add private dependencies that you statically link with here ...
-			}
-		);
-
-        PublicIncludePathModuleNames.Add("Launch");
+		PublicIncludePathModuleNames.Add("Launch");
 
 #if UE_4_20_OR_LATER
 		PublicDefinitions.Add("UE_4_20_OR_LATER=1");
 #endif
-
-    }
+	}
 }

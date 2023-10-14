@@ -2,24 +2,10 @@
 
 using UnrealBuildTool;
 
-public class GamemakinLinter : ModuleRules
-{
-    public GamemakinLinter(ReadOnlyTargetRules Target) : base(Target)
-    {
-        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+public class GamemakinLinter : ModuleRules {
+	public GamemakinLinter(ReadOnlyTargetRules Target) : base(Target) {
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(
-			new []
-			{
-				"Core",
-				"CoreUObject",
-                "Engine",
-				"Linter"
-			});
-
-		PrivateDependencyModuleNames.AddRange(
-			new string[]
-            {
-            });
-    }
+		PublicDependencyModuleNames.AddRange(new[] { "Core", "CoreUObject", "Engine", "Linter" });
+	}
 }

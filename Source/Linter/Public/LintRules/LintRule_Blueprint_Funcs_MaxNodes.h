@@ -8,19 +8,17 @@
 #include "LintRule_Blueprint_Funcs_MaxNodes.generated.h"
 
 UCLASS(BlueprintType, Blueprintable, Abstract)
-class LINTER_API ULintRule_Blueprint_Funcs_MaxNodes : public ULintRule_Blueprint_Base
-{
-	GENERATED_BODY()
+class LINTER_API ULintRule_Blueprint_Funcs_MaxNodes : public ULintRule_Blueprint_Base {
+    GENERATED_BODY()
 
 public:
-	ULintRule_Blueprint_Funcs_MaxNodes(const FObjectInitializer& ObjectInitializer);
+    ULintRule_Blueprint_Funcs_MaxNodes(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditDefaultsOnly, Category = "Settings")
-	int32 MaxExpectedNonTrivialNodes = 50;
+    UPROPERTY(EditDefaultsOnly, Category = "Settings")
+    int32 MaxExpectedNonTrivialNodes = 50;
 
-	static bool IsNodeTrivial(const UEdGraphNode* Node);
+    static bool IsNodeTrivial(const UEdGraphNode* Node);
 
 protected:
-	virtual bool PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const override;
-
+    virtual bool PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const override;
 };
