@@ -1,14 +1,14 @@
 #include "LinterNamingConvention.h"
 
 #include "AnyObject_LinterDummyClass.h"
-#include "DetailLayoutBuilder.h"
-#include "PropertyCustomizationHelpers.h"
-#include "Templates/SharedPointer.h"
 #include "DetailCategoryBuilder.h"
+#include "DetailLayoutBuilder.h"
 #include "IDetailChildrenBuilder.h"
+#include "PropertyCustomizationHelpers.h"
 #include "Misc/EngineVersionComparison.h"
+#include "Templates/SharedPointer.h"
 #if UE_VERSION_NEWER_THAN(5, 0, 0)
-#include "ObjectSaveContext.h"
+#include "UObject/ObjectSaveContext.h"
 #endif
 
 TSharedRef<IDetailCustomization> FLinterNamingConventionDetails::MakeInstance() {
