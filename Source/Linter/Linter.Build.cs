@@ -10,7 +10,7 @@ public class Linter : ModuleRules {
 		PrivateDependencyModuleNames.AddRange(new[] {
 			"CoreUObject", "Engine", "Slate", "SlateCore", "AppFramework",
 			"InputCore", "UnrealEd", "GraphEditor", "AssetTools", "EditorStyle", "BlueprintGraph", "PropertyEditor",
-			"LauncherPlatform", "Projects", "DesktopPlatform", "Json", "UATHelper"
+			"LauncherPlatform", "Projects", "DesktopPlatform", "Json", "UATHelper", "ToolMenus", "ContentBrowser", "ContentBrowserData"
 		});
 
 		PublicIncludePathModuleNames.Add("Launch");

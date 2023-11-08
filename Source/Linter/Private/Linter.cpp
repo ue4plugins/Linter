@@ -3,7 +3,6 @@
 #include "Linter.h"
 #include "ISettingsModule.h"
 #include "Framework/Docking/TabManager.h"
-#include "LevelEditor.h"
 #include "Styling/SlateStyle.h"
 #include "PropertyEditorModule.h"
 #include "LinterStyle.h"
@@ -16,7 +15,9 @@
 
 #define LOCTEXT_NAMESPACE "FLinterModule"
 
+
 static const FName LinterTabName = "LinterTab";
+
 
 void FLinterModule::StartupModule() {
     // Load the asset registry module
@@ -43,12 +44,10 @@ void FLinterModule::StartupModule() {
         }
 
         // Install UI Hooks
-        FLinterContentBrowserExtensions::InstallHooks(this, &ContentBrowserExtenderDelegateHandle, &AssetExtenderDelegateHandle);
+        FLinterContentBrowserExtensions::InstallHooks();
 
         //Register our UI
-        FGlobalTabmanager::Get()->RegisterNomadTabSpawner(
-                                    LinterTabName,
-                                    FOnSpawnTab::CreateStatic(&FLinterModule::SpawnTab, StyleSetPtr))
+        FGlobalTabmanager::Get()->RegisterNomadTabSpawner(LinterTabName, FOnSpawnTab::CreateStatic(&FLinterModule::SpawnTab, StyleSetPtr))
                                 .SetDisplayName(LOCTEXT("LinterTabName", "Linter"))
                                 .SetTooltipText(LOCTEXT("LinterTabToolTip", "Linter"))
                                 .SetMenuType(ETabSpawnerMenuType::Hidden);
@@ -67,13 +66,8 @@ void FLinterModule::ShutdownModule() {
         FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
         PropertyModule.UnregisterCustomClassLayout(ULinterNamingConvention::StaticClass()->GetFName());
 
-        FLinterContentBrowserExtensions::RemoveHooks(this, &ContentBrowserExtenderDelegateHandle, &AssetExtenderDelegateHandle);
-
-        if (FModuleManager::Get().IsModuleLoaded(TEXT("LevelEditor"))) {
-            FLevelEditorModule& LevelEditorModule = FModuleManager::GetModuleChecked<FLevelEditorModule>(TEXT("LevelEditor"));
-            LevelEditorModule.OnTabManagerChanged().Remove(LevelEditorTabManagerChangedHandle);
-        }
-
+        // Remove Hooks and Tabs
+        FLinterContentBrowserExtensions::RemoveHooks();
         FGlobalTabmanager::Get()->UnregisterTabSpawner(LinterTabName);
 
         // Unregister slate style overrides
@@ -113,7 +107,7 @@ void FLinterModule::TryToLoadAllLintRuleSets() {
     // Attempt to get all RuleSets in memory so that linting tools are better aware of them
     for (const FAssetData& RuleSetData : FoundRuleSets) {
         if (!RuleSetData.IsAssetLoaded()) {
-            RuleSetData.GetAsset();
+            (void)RuleSetData.GetAsset();
         }
     }
 }

@@ -5,11 +5,13 @@
 #include "Widgets/Docking/SDockTab.h"
 #include "Styling/SlateStyle.h"
 
+
 class FLinterManagerBase;
 
-DECLARE_LOG_CATEGORY_EXTERN(LogLinter, Verbose, All);
 
+DECLARE_LOG_CATEGORY_EXTERN(LogLinter, Verbose, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogCommandlet, All, All);
+
 
 class LINTER_API FLinterModule : public IModuleInterface {
 public:
@@ -39,10 +41,6 @@ public:
     }
 
 private:
-    FDelegateHandle LevelEditorTabManagerChangedHandle;
-    FDelegateHandle ContentBrowserExtenderDelegateHandle;
-    FDelegateHandle AssetExtenderDelegateHandle;
-
     TArray<FString> DesiredLintPaths;
 
 public:

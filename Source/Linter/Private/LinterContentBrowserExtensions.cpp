@@ -1,178 +1,138 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
 #include "LinterContentBrowserExtensions.h"
-#include "Modules/ModuleManager.h"
-#include "Framework/MultiBox/MultiBoxBuilder.h"
 #include "LinterStyle.h"
 #include "ContentBrowserModule.h"
 #include "Linter.h"
 #include "BatchRenameTool/BatchRenameTool.h"
-#include "Framework/MultiBox/MultiBoxExtender.h"
-#include "Framework/Commands/UIAction.h"
-#include "Delegates/IDelegateInstance.h"
 #include "TooltipEditor/TooltipTool.h"
 #include "Misc/EngineVersionComparison.h"
+
 
 #define LOCTEXT_NAMESPACE "Linter"
 
 DEFINE_LOG_CATEGORY_STATIC(LinterContentBrowserExtensions, Log, All);
 
-void FLinterContentBrowserExtensions::InstallHooks(FLinterModule* LinterModule, FDelegateHandle* pContentBrowserExtenderDelegateHandle, class FDelegateHandle* pAssetExtenderDelegateHandle) {
-    struct Local {
-        // Path extensions
 
-        static TSharedRef<FExtender> OnExtendContentBrowserAssetSelectionMenu(const TArray<FString>& SelectedPaths) {
-            TSharedRef<FExtender> Extender = MakeShared<FExtender>();
-            Extender->AddMenuExtension(
-                "PathContextSourceControl",
-                EExtensionHook::After,
-                TSharedPtr<FUICommandList>(),
-                FMenuExtensionDelegate::CreateStatic(&Local::ContentBrowserExtenderFunc, SelectedPaths)
-                );
-            return Extender;
-        }
+namespace {
 
-        static void ContentBrowserExtenderFunc(FMenuBuilder& MenuBuilder, const TArray<FString> SelectedPaths) {
-            MenuBuilder.BeginSection("LinterContentBrowserContext", LOCTEXT("CB_LinterHeader", "Linter"));
-            {
-                MenuBuilder.AddMenuEntry(
-                    LOCTEXT("CB_ScanProjectWithLinter", "Scan with Linter"),
-                    LOCTEXT("CB_ScanProjectWithLinter_Tooltip", "Scan project content with Linter"),
-                    FSlateIcon(FLinterStyle::GetStyleSetName(), "Linter.Toolbar.Icon"),
-                    FUIAction(FExecuteAction::CreateLambda([SelectedPaths]() {
-                        if (FLinterModule* Linter = FModuleManager::GetModulePtr<FLinterModule>("Linter")) {
-                            if (Linter != nullptr) {
-                                Linter->SetDesiredLintPaths(SelectedPaths);
-                            }
+void RunLinterForAssets(const TArray<FString>& SelectedPaths) {
+    // Set Paths to Linter
+    if (FLinterModule* Linter = FModuleManager::GetModulePtr<FLinterModule>("Linter")) {
+        Linter->SetDesiredLintPaths(SelectedPaths);
+    }
+
+    // Execute Linter
 #if UE_VERSION_NEWER_THAN(4, 26, 0)
-                            FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"));
+    FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"));
 #else
-							FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"));
+    FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"));
 #endif
-                        }
-                    })),
-                    NAME_None,
-                    EUserInterfaceActionType::Button);
-            }
-            MenuBuilder.EndSection();
-        }
-
-        // Asset extensions
-
-        static TSharedRef<FExtender> OnExtendAssetSelectionMenu(const TArray<FAssetData>& SelectedAssets) {
-            TSharedRef<FExtender> Extender = MakeShared<FExtender>();
-            Extender->AddMenuExtension(
-                "CommonAssetActions",
-                EExtensionHook::After,
-                nullptr,
-                FMenuExtensionDelegate::CreateStatic(&Local::AssetExtenderFunc, SelectedAssets)
-                );
-            return Extender;
-        }
-
-        static void AssetExtenderFunc(FMenuBuilder& MenuBuilder, const TArray<FAssetData> SelectedAssets) {
-            MenuBuilder.BeginSection("LinterAssetContext", LOCTEXT("CB_LinterHeader", "Linter"));
-            {
-                // Run through the assets to determine if any are blueprints
-                bool bAnyBlueprintsSelected = false;
-                for (auto AssetIt = SelectedAssets.CreateConstIterator(); AssetIt; ++AssetIt) {
-                    const FAssetData& Asset = *AssetIt;
-                    // Cannot rename redirectors or classes or cooked packages
-#if UE_VERSION_NEWER_THAN(5, 1, 0)
-                    if (!Asset.IsRedirector() && Asset.AssetClassPath.GetAssetName() != NAME_Class && !(Asset.PackageFlags & PKG_FilterEditorOnly))
-#else
-                    if (!Asset.IsRedirector() && Asset.AssetClass != NAME_Class && !(Asset.PackageFlags & PKG_FilterEditorOnly))
-#endif
-                    {
-                        if (Asset.GetClass()->IsChildOf(UBlueprint::StaticClass())) {
-                            bAnyBlueprintsSelected = true;
-                            break;
-                        }
-                    }
-                }
-
-                // If we have blueprints selected, enable blueprint tools
-                if (bAnyBlueprintsSelected) {
-                    // Add Tooltip Editor
-                    MenuBuilder.AddMenuEntry(
-                        LOCTEXT("CB_EditBlueprintTooltips", "Edit Blueprint Tooltips (Experimental)"),
-                        LOCTEXT("CB_EditBlueprintTooltips_Tooltip", "Edit selected blueprints' templates definitions"),
-                        FSlateIcon(FLinterStyle::GetStyleSetName(), "Linter.Toolbar.Icon"),
-                        FUIAction(FExecuteAction::CreateLambda([SelectedAssets]() {
-                            UE_LOG(LinterContentBrowserExtensions, Display, TEXT("Opening Tooltip Tool window."));
-                            FTooltipTool AssetDlg(SelectedAssets);
-                            if (AssetDlg.ShowModal() == FTooltipTool::Confirm) {
-                                UE_LOG(LinterContentBrowserExtensions, Display, TEXT("Tooltip Tool did the thing."));
-                            }
-                        })),
-                        NAME_None,
-                        EUserInterfaceActionType::Button);
-                }
-
-                // Run through the assets to see if any can be renamed
-                bool bAnyAssetCanBeRenamed = false;
-                for (auto AssetIt = SelectedAssets.CreateConstIterator(); AssetIt; ++AssetIt) {
-                    const FAssetData& Asset = *AssetIt;
-                    // Cannot rename redirectors or classes or cooked packages
-#if UE_VERSION_NEWER_THAN(5, 1, 0)
-                    if (!Asset.IsRedirector() && Asset.AssetClassPath.GetAssetName() != NAME_Class && !(Asset.PackageFlags & PKG_FilterEditorOnly))
-#else
-                    if (!Asset.IsRedirector() && Asset.AssetClass != NAME_Class && !(Asset.PackageFlags & PKG_FilterEditorOnly))
-#endif
-                    {
-                        bAnyAssetCanBeRenamed = true;
-                        break;
-                    }
-                }
-
-                if (bAnyAssetCanBeRenamed) {
-                    // Add Tooltip Editor
-                    MenuBuilder.AddMenuEntry(
-                        LOCTEXT("CB_BatchRenameAssets", "Batch Rename Assets (Experimental)"),
-                        LOCTEXT("CB_BatchRenameAssets_Tooltip", "Perform a bulk rename operation on all of the selected assets"),
-                        FSlateIcon(FLinterStyle::GetStyleSetName(), "Linter.Toolbar.Icon"),
-                        FUIAction(FExecuteAction::CreateLambda([SelectedAssets]() {
-                            UE_LOG(LinterContentBrowserExtensions, Display, TEXT("Starting batch rename."));
-                            FDlgBatchRenameTool AssetDlg(SelectedAssets);
-                            AssetDlg.ShowModal();
-                        })),
-                        NAME_None,
-                        EUserInterfaceActionType::Button);
-                }
-            }
-            MenuBuilder.EndSection();
-        }
-    };
-
-    FContentBrowserModule& ContentBrowserModule = FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
-
-    // Path view extenders
-    TArray<FContentBrowserMenuExtender_SelectedPaths>& CBMenuPathExtenderDelegates = ContentBrowserModule.GetAllPathViewContextMenuExtenders();
-    CBMenuPathExtenderDelegates.Add(FContentBrowserMenuExtender_SelectedPaths::CreateStatic(&Local::OnExtendContentBrowserAssetSelectionMenu));
-    *pContentBrowserExtenderDelegateHandle = CBMenuPathExtenderDelegates.Last().GetHandle();
-
-    // Asset extenders
-    TArray<FContentBrowserMenuExtender_SelectedAssets>& CBMenuAssetExtenderDelegates = ContentBrowserModule.GetAllAssetViewContextMenuExtenders();
-    CBMenuAssetExtenderDelegates.Add(FContentBrowserMenuExtender_SelectedAssets::CreateStatic(&Local::OnExtendAssetSelectionMenu));
-    *pAssetExtenderDelegateHandle = CBMenuAssetExtenderDelegates.Last().GetHandle();
 }
 
-void FLinterContentBrowserExtensions::RemoveHooks(FLinterModule* LinterModule, FDelegateHandle* pContentBrowserExtenderDelegateHandle, FDelegateHandle* pAssetExtenderDelegateHandle) {
-    if (FModuleManager::Get().IsModuleLoaded("ContentBrowser")) {
-        FContentBrowserModule& ContentBrowserModule = FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
+void EditBlueprintTooltips(const TArray<FAssetData> SelectedAssets) {
+    UE_LOG(LinterContentBrowserExtensions, Display, TEXT("Opening Tooltip Tool window."));
+    FTooltipTool{SelectedAssets}.ShowModal();
+}
 
-        // Path view extenders
-        TArray<FContentBrowserMenuExtender_SelectedPaths>& CBMenuExtenderDelegates = ContentBrowserModule.GetAllAssetContextMenuExtenders();
-        CBMenuExtenderDelegates.RemoveAll([pContentBrowserExtenderDelegateHandle](const FContentBrowserMenuExtender_SelectedPaths& Delegate) {
-            return Delegate.GetHandle() == *pContentBrowserExtenderDelegateHandle;
-        });
+void BatchRenameAssets(const TArray<FAssetData> SelectedAssets) {
+    UE_LOG(LinterContentBrowserExtensions, Display, TEXT("Starting batch rename."));
+    FDlgBatchRenameTool{SelectedAssets}.ShowModal();
+}
 
-        // Asset extenders
-        TArray<FContentBrowserMenuExtender_SelectedAssets>& CBMenuAssetExtenderDelegates = ContentBrowserModule.GetAllAssetViewContextMenuExtenders();
-        CBMenuAssetExtenderDelegates.RemoveAll([pAssetExtenderDelegateHandle](const FContentBrowserMenuExtender_SelectedAssets& Delegate) {
-            return Delegate.GetHandle() == *pAssetExtenderDelegateHandle;
-        });
+// Asset Context Menu is dynamic -> some options will only be displayed if
+// you have certain types of Blueprints or Assets selected
+void CreateDynamicAssetSelectionMenu(UToolMenu* InMenu) {
+    const auto* Context = InMenu->FindContext<UContentBrowserDataMenuContext_FileMenu>();
+    FToolMenuSection& Section = InMenu->AddSection("Linter", LOCTEXT("LinterSection", "Linter"));
+
+    // Convert BrowserItems to their AssetData
+    TArray<FAssetData> Assets;
+    for (const auto& Asset : Context->SelectedItems) {
+        FAssetData AssetData;
+        Asset.Legacy_TryGetAssetData(AssetData);
+        Assets.Add(AssetData);
     }
+    
+    // Run through the assets to determine if any are blueprints or can be renamed
+    bool bAnyBlueprintsSelected = false;
+    bool bAnyAssetCanBeRenamed = false;
+    
+    for (const auto& Asset : Assets) {
+        // Cannot rename redirectors or classes or cooked packages
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+        if (!Asset.IsRedirector() && Asset.AssetClassPath.GetAssetName() != NAME_Class && !(Asset.PackageFlags & PKG_FilterEditorOnly))
+#else
+        if (!Asset.IsRedirector() && Asset.AssetClass != NAME_Class && !(Asset.PackageFlags & PKG_FilterEditorOnly))
+#endif
+        {
+            bAnyAssetCanBeRenamed = true;
+            
+            if (Asset.GetClass()->IsChildOf(UBlueprint::StaticClass())) {
+                bAnyBlueprintsSelected = true;
+                break;
+            }
+        }
+    }
+
+    // If we have blueprints selected, add Tooltip Editor
+    if (bAnyBlueprintsSelected) {
+        Section.AddMenuEntry(
+            "EditBlueprintTooltips",
+            LOCTEXT("EditBlueprintTooltips", "Edit Blueprint Tooltips (Experimental)"),
+            LOCTEXT("EditBlueprintTooltips_Tooltip", "Edit selected blueprints' templates definitions"),
+            FSlateIcon(FLinterStyle::GetStyleSetName(), "Linter.Toolbar.Icon"),
+            FExecuteAction::CreateStatic(&EditBlueprintTooltips, Assets)
+        );
+    }
+
+    // If blueprints can be renamed, add the batch rename option
+    if (bAnyAssetCanBeRenamed) {
+        Section.AddMenuEntry(
+            "BatchRename",
+            LOCTEXT("BatchRenameAssets", "Batch Rename Assets (Experimental)"),
+            LOCTEXT("BatchRenameAssets_Tooltip", "Perform a bulk rename operation on all of the selected assets"),
+            FSlateIcon(FLinterStyle::GetStyleSetName(), "Linter.Toolbar.Icon"),
+            FExecuteAction::CreateStatic(&BatchRenameAssets, Assets)
+        );
+    }
+}
+
+}
+
+
+void FLinterContentBrowserExtensions::InstallHooks() {
+    // Run Linter on Selected Folder(s)
+    UToolMenu* ContentBrowserMenu = UToolMenus::Get()->ExtendMenu("ContentBrowser.FolderContextMenu");
+    ContentBrowserMenu->AddSection("Linter", LOCTEXT("LinterSection", "Linter"))
+    .AddMenuEntry(
+        "LintAssets",
+        LOCTEXT("ScanWithLinter", "Scan with Linter"),
+        LOCTEXT("ScanWithLinter_Tooltip", "Scan project content with Linter"),
+        FSlateIcon(FLinterStyle::GetStyleSetName(), "Linter.Toolbar.Icon"),
+        FToolMenuExecuteAction::CreateLambda([](const FToolMenuContext& InContext) {
+            if (const UContentBrowserDataMenuContext_FolderMenu* Context = InContext.FindContext<UContentBrowserDataMenuContext_FolderMenu>()) {
+                TArray<FString> SelectedPaths;
+                for (const auto& Asset : Context->SelectedItems) {
+                    SelectedPaths.Add(Asset.GetVirtualPath().ToString());
+                }
+                
+                RunLinterForAssets(SelectedPaths);
+            }
+        })
+    );
+
+    // BatchRename and TooltipEditor
+    UToolMenu* AssetMenu = UToolMenus::Get()->ExtendMenu("ContentBrowser.AssetContextMenu");
+    AssetMenu->AddDynamicSection("Linter", FNewToolMenuDelegate::CreateStatic(&CreateDynamicAssetSelectionMenu), {"AssetContextExploreMenuOptions", EToolMenuInsertType::After});
+}
+
+void FLinterContentBrowserExtensions::RemoveHooks() {
+    UToolMenu* ContentBrowserMenu = UToolMenus::Get()->ExtendMenu("ContentBrowser.FolderContextMenu");
+    ContentBrowserMenu->RemoveSection("Linter");
+
+    UToolMenu* AssetMenu = UToolMenus::Get()->ExtendMenu("ContentBrowser.AssetContextMenu");
+    AssetMenu->RemoveSection("Linter");
 }
 
 #undef LOCTEXT_NAMESPACE
