@@ -36,6 +36,8 @@ void FLinterNamingConventionDetails::OnGenerateElementForDetails(const TSharedRe
         }
         ));
 
+    // clang-format off
+    // @formatter:off
     ChildrenBuilder.AddCustomRow(FText::GetEmpty())
     [
         SNew(SHorizontalBox)
@@ -66,6 +68,8 @@ void FLinterNamingConventionDetails::OnGenerateElementForDetails(const TSharedRe
             SNew(SProperty, StructProperty->GetChildHandle("Suffix"))
         ]
     ];
+    // clang-format on
+    // @formatter:on
 }
 
 ULinterNamingConvention::ULinterNamingConvention(const FObjectInitializer& ObjectInitializer) :

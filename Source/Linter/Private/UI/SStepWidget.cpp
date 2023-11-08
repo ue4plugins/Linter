@@ -51,49 +51,51 @@ void SStepWidget::Construct(const FArguments& Args) {
         return false;
     };
 
+    // clang-format off
+    // @formatter:off
     ChildSlot
     [
         SNew(SBorder)
-		.BorderImage(FAppStyle::GetBrush("NoBorder"))
-		.Padding(PaddingAmount)
+        .BorderImage(FAppStyle::GetBrush("NoBorder"))
+        .Padding(PaddingAmount)
         [
             SNew(SBorder)
-			.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
-			.Padding(PaddingAmount)
+	    .BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
+	    .Padding(PaddingAmount)
             [
                 SNew(SHorizontalBox)
                 // Status Image
                 + SHorizontalBox::Slot()
-                  .Padding(PaddingAmount)
-                  .AutoWidth()
+                .Padding(PaddingAmount)
+                .AutoWidth()
                 [
                     SNew(SImage)
-					.Visibility_Lambda([&]() {
-                                    return StepStatus.Get(NoStatus) == NoStatus || !ShowStepStatusIcon.Get(true) ? EVisibility::Collapsed : EVisibility::Visible;
-                                })
-					.Image_Lambda([&]() {
-                                    switch (StepStatus.Get(NoStatus)) {
-                                        case NoStatus:
-                                        case Unknown: return FLinterStyle::Get()->GetBrush("Linter.Step.Unknown");
-                                        case InProgress:
-                                        case NeedsUpdate: return FLinterStyle::Get()->GetBrush("Linter.Step.Working");
-                                        case Warning: return FLinterStyle::Get()->GetBrush("Linter.Step.Warning");
-                                        case Error: return FLinterStyle::Get()->GetBrush("Linter.Step.Error");
-                                        case Success: return FLinterStyle::Get()->GetBrush("Linter.Step.Good");
-                                    }
+		    .Visibility_Lambda([&]() {
+                        return StepStatus.Get(NoStatus) == NoStatus || !ShowStepStatusIcon.Get(true) ? EVisibility::Collapsed : EVisibility::Visible;
+                    })
+		    .Image_Lambda([&]() {
+                        switch (StepStatus.Get(NoStatus)) {
+                            case NoStatus:
+                            case Unknown: return FLinterStyle::Get()->GetBrush("Linter.Step.Unknown");
+                            case InProgress:
+                            case NeedsUpdate: return FLinterStyle::Get()->GetBrush("Linter.Step.Working");
+                            case Warning: return FLinterStyle::Get()->GetBrush("Linter.Step.Warning");
+                            case Error: return FLinterStyle::Get()->GetBrush("Linter.Step.Error");
+                            case Success: return FLinterStyle::Get()->GetBrush("Linter.Step.Good");
+                        }
 
-                                    return FLinterStyle::Get()->GetBrush("Linter.Step.Unknown");
-                                })
+                        return FLinterStyle::Get()->GetBrush("Linter.Step.Unknown");
+                    })
                 ]
                 // Template thumbnail image
                 + SHorizontalBox::Slot()
-                  .Padding(4.0)
-                  .AutoWidth()
-                  .VAlign(VAlign_Top)
+                .Padding(4.0)
+                .AutoWidth()
+                .VAlign(VAlign_Top)
                 [
                     SNew(SImage)
-					.Visibility(Args._Icon.IsSet() ? EVisibility::SelfHitTestInvisible : EVisibility::Collapsed)
-					.Image(Args._Icon)
+		    .Visibility(Args._Icon.IsSet() ? EVisibility::SelfHitTestInvisible : EVisibility::Collapsed)
+		    .Image(Args._Icon)
                 ]
                 // Template name and description
                 + SHorizontalBox::Slot()
@@ -101,43 +103,43 @@ void SStepWidget::Construct(const FArguments& Args) {
                     SNew(SVerticalBox)
 
                     + SVerticalBox::Slot()
-                      .AutoHeight()
-                      .Padding(PaddingAmount)
+                    .AutoHeight()
+                    .Padding(PaddingAmount)
                     [
                         SNew(STextBlock)
-						.Text(Args._StepName)
-						.TextStyle(FLinterStyle::Get(), "Linter.Report.RuleTitle")
+			.Text(Args._StepName)
+			.TextStyle(FLinterStyle::Get(), "Linter.Report.RuleTitle")
                     ]
 
                     + SVerticalBox::Slot()
-                      .AutoHeight()
-                      .Padding(PaddingAmount)
+                    .AutoHeight()
+                    .Padding(PaddingAmount)
                     [
                         SNew(SRichTextBlock)
-						.Text(Args._StepDesc)
-						.TextStyle(FLinterStyle::Get(), "Linter.Report.DescriptionText")
-						.AutoWrapText(true)
+			.Text(Args._StepDesc)
+			.TextStyle(FLinterStyle::Get(), "Linter.Report.DescriptionText")
+			.AutoWrapText(true)
                     ]
                     + SVerticalBox::Slot()
-                      .AutoHeight()
-                      .Padding(PaddingAmount)
+                    .AutoHeight()
+                    .Padding(PaddingAmount)
                     [
                         SNew(SHorizontalBox)
                         + SHorizontalBox::Slot()
                         .AutoWidth()
                         [
                             SNew(SButton)
-							.IsEnabled_Lambda(EnabledBasedOnStepStatus)
-							.Visibility_Lambda([&]() {
-                                             return StepStatus.Get(NoStatus) == NoStatus ? EVisibility::Collapsed : EVisibility::Visible;
-                                         })
-							.OnClicked_Lambda([&]() {
-                                             FScopedSlowTask SlowTask(1.0f, StepActionText.Get(FText()));
-                                             SlowTask.MakeDialog();
+			    .IsEnabled_Lambda(EnabledBasedOnStepStatus)
+			    .Visibility_Lambda([&]() {
+                                return StepStatus.Get(NoStatus) == NoStatus ? EVisibility::Collapsed : EVisibility::Visible;
+                            })
+			    .OnClicked_Lambda([&]() {
+                                FScopedSlowTask SlowTask(1.0f, StepActionText.Get(FText()));
+                                SlowTask.MakeDialog();
 
-                                             OnPerformAction.ExecuteIfBound(SlowTask);
-                                             return FReply::Handled();
-                                         })
+                                OnPerformAction.ExecuteIfBound(SlowTask);
+                                return FReply::Handled();
+                            })
                             [
                                 SNew(STextBlock)
                                 .Text(StepActionText)
@@ -154,4 +156,6 @@ void SStepWidget::Construct(const FArguments& Args) {
             ]
         ]
     ];
+    // clang-format off
+    // @formatter:off
 }

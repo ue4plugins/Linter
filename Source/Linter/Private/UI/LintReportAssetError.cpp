@@ -30,79 +30,83 @@ void SLintReportAssetError::Construct(const FArguments& Args) {
         //case ELintRuleSeverity::Ignore:
         default: break;
     }
-
+    
+    // clang-format off
+    // @formatter:off
     ChildSlot
     [
         SNew(SVerticalBox)
         + SVerticalBox::Slot()
-          .AutoHeight()
-          .VAlign(VAlign_Center)
-          .Padding(PaddingAmount)
+        .AutoHeight()
+        .VAlign(VAlign_Center)
+        .Padding(PaddingAmount)
         [
             SNew(SHorizontalBox)
             + SHorizontalBox::Slot()
-              .Padding(PaddingAmount)
-              .AutoWidth()
-              .VAlign(VAlign_Center)
-              .HAlign(HAlign_Left)
+            .Padding(PaddingAmount)
+            .AutoWidth()
+            .VAlign(VAlign_Center)
+            .HAlign(HAlign_Left)
             [
                 SNew(SBox)
-				.WidthOverride(14.0f)
-				.HeightOverride(14.0f)
+		.WidthOverride(14.0f)
+		.HeightOverride(14.0f)
                 [
                     SNew(SImage)
                     .Image(RuleIcon)
                 ]
             ]
             + SHorizontalBox::Slot()
-              .Padding(PaddingAmount)
-              .AutoWidth()
-              .HAlign(HAlign_Left)
-              .VAlign(VAlign_Center)
+            .Padding(PaddingAmount)
+            .AutoWidth()
+            .HAlign(HAlign_Left)
+            .VAlign(VAlign_Center)
             [
                 SNew(STextBlock)
-				.Text(LintRule->RuleTitle)
-				.TextStyle(FLinterStyle::Get(), "Linter.Report.RuleTitle")
+		.Text(LintRule->RuleTitle)
+		.TextStyle(FLinterStyle::Get(), "Linter.Report.RuleTitle")
             ]
             + SHorizontalBox::Slot()
-              .AutoWidth()
-              .HAlign(HAlign_Left)
-              .VAlign(VAlign_Center)
+            .AutoWidth()
+            .HAlign(HAlign_Left)
+            .VAlign(VAlign_Center)
             [
                 SNew(SBox)
-				.WidthOverride(16.0f)
-				.HeightOverride(16.0f)
+		.WidthOverride(16.0f)
+		.HeightOverride(16.0f)
                 [
                     SNew(SImage)
-					.Cursor(EMouseCursor::Hand)
-					.Visibility(bHasURL ? EVisibility::Visible : EVisibility::Collapsed)
-					.OnMouseButtonDown_Lambda([&](const FGeometry& Geo, const FPointerEvent& Event) {
-                                    FPlatformProcess::LaunchURL(*RuleViolation.Get()->ViolatedRule.Get()->GetDefaultObject<ULintRule>()->RuleURL, nullptr, nullptr);
-                                    return FReply::Handled();
-                                })
-					.Image(FLinterStyle::Get()->GetBrush("Linter.Report.Link"))
+		    .Cursor(EMouseCursor::Hand)
+		    .Visibility(bHasURL ? EVisibility::Visible : EVisibility::Collapsed)
+		    .OnMouseButtonDown_Lambda([&](const FGeometry& Geo, const FPointerEvent& Event) {
+                        FPlatformProcess::LaunchURL(*RuleViolation.Get()->ViolatedRule.Get()->GetDefaultObject<ULintRule>()->RuleURL, nullptr, nullptr);
+                        return FReply::Handled();
+                    })
+		    .Image(FLinterStyle::Get()->GetBrush("Linter.Report.Link"))
                 ]
             ]
         ]
         + SVerticalBox::Slot()
-          .AutoHeight()
-          .VAlign(VAlign_Top)
-          .Padding(20.0f, PaddingAmount, PaddingAmount, PaddingAmount)
+        .AutoHeight()
+        .VAlign(VAlign_Top)
+        .Padding(20.0f, PaddingAmount, PaddingAmount, PaddingAmount)
         [
             SNew(STextBlock)
-			.AutoWrapText(true)
-			.Text(LintRule->RuleDescription)
+	    .AutoWrapText(true)
+	    .Text(LintRule->RuleDescription)
         ]
         + SVerticalBox::Slot()
-          .AutoHeight()
-          .VAlign(VAlign_Top)
-          .Padding(20.0f, PaddingAmount, PaddingAmount, PaddingAmount)
+        .AutoHeight()
+        .VAlign(VAlign_Top)
+        .Padding(20.0f, PaddingAmount, PaddingAmount, PaddingAmount)
         [
             SNew(STextBlock)
-			.AutoWrapText(true)
-			.Text(RuleViolation.Get()->RecommendedAction)
+	    .AutoWrapText(true)
+	    .Text(RuleViolation.Get()->RecommendedAction)
         ]
     ];
+    // clang-format on
+    // @formatter:on
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -37,24 +37,28 @@ FTooltipTool::FTooltipTool(const TArray<FAssetData> Assets) {
     }
 
     if (FSlateApplication::IsInitialized()) {
+        // clang-format off
+        // @formatter:off
         DialogWindow = SNew(SWindow)
-			.Title(LOCTEXT("TooltipToolDlgTitle", "Blueprint Member Tooltip Tool"))
-			.SupportsMinimize(false).SupportsMaximize(false)
-			.SaneWindowPlacement(true)
-			.AutoCenter(EAutoCenter::PreferredWorkArea)
-			.MinWidth(400.0f)
-			.MaxWidth(400.0f)
-			.SizingRule(ESizingRule::Autosized);
+	    .Title(LOCTEXT("TooltipToolDlgTitle", "Blueprint Member Tooltip Tool"))
+	    .SupportsMinimize(false).SupportsMaximize(false)
+	    .SaneWindowPlacement(true)
+	    .AutoCenter(EAutoCenter::PreferredWorkArea)
+	    .MinWidth(400.0f)
+	    .MaxWidth(400.0f)
+	    .SizingRule(ESizingRule::Autosized);
 
         const TSharedPtr<SBorder> DialogWrapper =
             SNew(SBorder)
-			.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
-			.Padding(4.0f)
+	        .BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
+	        .Padding(4.0f)
             [
                 SAssignNew(DialogWidget, STooltipTool)
-				.ParentWindow(DialogWindow)
-				.Blueprints(Blueprints)
+		    .ParentWindow(DialogWindow)
+		    .Blueprints(Blueprints)
             ];
+        // clang-format on
+        // @formatter:on
 
         DialogWindow->SetContent(DialogWrapper.ToSharedRef());
     }
@@ -75,11 +79,13 @@ void STooltipTool::Construct(const FArguments& InArgs) {
     Blueprints = InArgs._Blueprints;
     check(Blueprints.IsSet() && Blueprints.Get().Num() > 0);
 
+    // clang-format off
+    // @formatter:off
     this->ChildSlot[
         SNew(SVerticalBox)
         + SVerticalBox::Slot()
-          .AutoHeight()
-          .Padding(8.0f, 4.0f, 8.0f, 0.0f)
+        .AutoHeight()
+        .Padding(8.0f, 4.0f, 8.0f, 0.0f)
         [
             SNew(SHeader)
             [
@@ -88,44 +94,42 @@ void STooltipTool::Construct(const FArguments& InArgs) {
             ]
         ]
         + SVerticalBox::Slot()
-          .AutoHeight()
-          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        .AutoHeight()
+        .Padding(8.0f, 4.0f, 8.0f, 4.0f)
         [
             SAssignNew(BlueprintComboBox, SComboBox<TSharedPtr<FAssetData>>)
-			.OptionsSource(&Blueprints.Get())
-			.InitiallySelectedItem(Blueprints.Get()[0])
-			.OnGenerateWidget_Lambda(
-                                                                                [](const TSharedPtr<FAssetData> Item) {
-                                                                                    return SNew(STextBlock)
-					.Text(FText::FromName(Item->AssetName))
-					.ToolTipText(FText::FromString(Item->GetFullName()));
-                                                                                })
-			.OnSelectionChanged_Lambda(
-                                                                                [&](TSharedPtr<FAssetData> Item, ESelectInfo::Type SelectInfo) {
-                                                                                    VariableTooltipEditableTextBox->SetEnabled(false);
-                                                                                    RebuildMemberList();
-                                                                                })
+	    .OptionsSource(&Blueprints.Get())
+	    .InitiallySelectedItem(Blueprints.Get()[0])
+	    .OnGenerateWidget_Lambda([](const TSharedPtr<FAssetData> Item) {
+                return
+	            SNew(STextBlock)
+		    .Text(FText::FromName(Item->AssetName))
+		    .ToolTipText(FText::FromString(Item->GetFullName()));
+            })
+	    .OnSelectionChanged_Lambda([&](TSharedPtr<FAssetData> Item, ESelectInfo::Type SelectInfo) {
+                VariableTooltipEditableTextBox->SetEnabled(false);
+                RebuildMemberList();
+            })
             [
                 SNew(STextBlock)
                 .Text(this, &STooltipTool::GetSelectedBlueprintText)
             ]
         ]
         + SVerticalBox::Slot()
-          .AutoHeight()
-          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        .AutoHeight()
+        .Padding(8.0f, 4.0f, 8.0f, 4.0f)
         [
             SNew(SHorizontalBox)
             + SHorizontalBox::Slot()
             .FillWidth(1.0f)
             [
                 SNew(SButton)
-                .OnClicked_Lambda(
-                    [&] {
-                        int32 Index = Blueprints.Get().Find(BlueprintComboBox->GetSelectedItem());
-                        Index = (Blueprints.Get().Num() + Index - 1) % Blueprints.Get().Num();
-                        BlueprintComboBox->SetSelectedItem(Blueprints.Get()[Index]);
-                        return FReply::Handled();
-                    })
+                .OnClicked_Lambda([&]() {
+                    int32 Index = Blueprints.Get().Find(BlueprintComboBox->GetSelectedItem());
+                    Index = (Blueprints.Get().Num() + Index - 1) % Blueprints.Get().Num();
+                    BlueprintComboBox->SetSelectedItem(Blueprints.Get()[Index]);
+                    return FReply::Handled();
+                })
                 [
                     SNew(STextBlock)
                     .Text(LOCTEXT("TooltipToolBlueprintsPrevious", "Previous"))
@@ -135,13 +139,12 @@ void STooltipTool::Construct(const FArguments& InArgs) {
             .FillWidth(1.0f)
             [
                 SNew(SButton)
-                .OnClicked_Lambda(
-                    [&] {
-                        int32 Index = Blueprints.Get().Find(BlueprintComboBox->GetSelectedItem());
-                        Index = (Index + 1) % Blueprints.Get().Num();
-                        BlueprintComboBox->SetSelectedItem(Blueprints.Get()[Index]);
-                        return FReply::Handled();
-                    })
+                .OnClicked_Lambda([&]() {
+                    int32 Index = Blueprints.Get().Find(BlueprintComboBox->GetSelectedItem());
+                    Index = (Index + 1) % Blueprints.Get().Num();
+                    BlueprintComboBox->SetSelectedItem(Blueprints.Get()[Index]);
+                    return FReply::Handled();
+                })
                 [
                     SNew(STextBlock)
                     .Text(LOCTEXT("TooltipToolBlueprintsNext", "Next"))
@@ -150,104 +153,102 @@ void STooltipTool::Construct(const FArguments& InArgs) {
 
         ]
         + SVerticalBox::Slot()
-          .AutoHeight()
-          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        .AutoHeight()
+        .Padding(8.0f, 4.0f, 8.0f, 4.0f)
         [
             SNew(SButton)
-            .OnClicked_Lambda(
-                [&] {
-                    // Save package here if SCC is enabled because the user can use SCC to revert a change
-                    TArray<UPackage*> OutermostPackagesToSave;
-                    for (auto&& Asset : Blueprints.Get()) {
-                        OutermostPackagesToSave.Add(Asset->GetPackage());
-                    }
-                    FEditorFileUtils::PromptForCheckoutAndSave(OutermostPackagesToSave, true, false);
-                    return FReply::Handled();
-                })
+            .OnClicked_Lambda([&]() {
+                // Save package here if SCC is enabled because the user can use SCC to revert a change
+                TArray<UPackage*> OutermostPackagesToSave;
+                for (auto&& Asset : Blueprints.Get()) {
+                    OutermostPackagesToSave.Add(Asset->GetPackage());
+                }
+                FEditorFileUtils::PromptForCheckoutAndSave(OutermostPackagesToSave, true, false);
+                return FReply::Handled();
+            })
             [
                 SNew(STextBlock)
                 .Text(LOCTEXT("TooltipToolBlueprintsSaveButtonLabel", "Save All Blueprints"))
             ]
         ]
         + SVerticalBox::Slot()
-          .AutoHeight()
-          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        .AutoHeight()
+        .Padding(8.0f, 4.0f, 8.0f, 4.0f)
         [
             SNew(SExpandableArea)
-			.InitiallyCollapsed(true)
-			.AreaTitle(LOCTEXT("TooltipToolVariablesExpandableTitle", "Variables"))
-			.BodyContent()
+	    .InitiallyCollapsed(true)
+	    .AreaTitle(LOCTEXT("TooltipToolVariablesExpandableTitle", "Variables"))
+	    .BodyContent()
             [
                 SNew(SVerticalBox)
                 + SVerticalBox::Slot()
-                  .AutoHeight()
-                  .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+                .AutoHeight()
+                .Padding(8.0f, 4.0f, 8.0f, 4.0f)
                 [
                     SNew(SBox)
                     .HeightOverride(100.0f)
                     [
                         SNew(SBorder)
-						.BorderImage(FCoreStyle::Get().GetBrush("ToolPanel.GroupBorder"))
-						.Padding(0.0f)
+			.BorderImage(FCoreStyle::Get().GetBrush("ToolPanel.GroupBorder"))
+			.Padding(0.0f)
                         [
                             SNew(SScrollBox)
                             .ScrollBarAlwaysVisible(true)
                             + SScrollBox::Slot()
                             [
                                 SAssignNew(MemberListView, SListView<TSharedPtr<FBPVariableDescription>>)
-								.SelectionMode(ESelectionMode::Single)
-								.ListItemsSource(&Members)
-								.OnGenerateRow_Lambda(
-                                                                                                             [](TSharedPtr<FBPVariableDescription> Item, const TSharedRef<STableViewBase>& OwnerTable) {
-                                                                                                                 return SNew(STableRow<TSharedPtr<FBPVariableDescription>>, OwnerTable)
-                                                                                                                 [
-                                                                                                                     SNew(SHorizontalBox)
-                                                                                                                     + SHorizontalBox::Slot()
-                                                                                                                     .AutoWidth()
-                                                                                                                     [
-                                                                                                                         SNew(SImage)
-												.Image(FAppStyle::GetBrush(TEXT("Icons.Error")))
-												.Visibility_Lambda([Item] {
-                                                                                                                                         return Item.IsValid() ? (Item->HasMetaData(FBlueprintMetadata::MD_Tooltip) && Item->GetMetaData(FBlueprintMetadata::MD_Tooltip).Len() > 0 ? EVisibility::Collapsed : EVisibility::HitTestInvisible) : EVisibility::Collapsed;
-                                                                                                                                     })
-                                                                                                                     ]
-                                                                                                                     + SHorizontalBox::Slot()
-                                                                                                                     .AutoWidth()
-                                                                                                                     [
-                                                                                                                         SNew(STextBlock)
-                                                                                                                         .Text(FText::FromString(Item->FriendlyName))
-                                                                                                                     ]
-                                                                                                                     + SHorizontalBox::Slot()
-                                                                                                                     .FillWidth(1.0f)
-                                                                                                                     [
-                                                                                                                         SNew(STextBlock)
-												.Text(UEdGraphSchema_K2::TypeToText(Item->VarType))
-												.Justification(ETextJustify::Right)
-                                                                                                                     ]
-                                                                                                                 ];
-                                                                                                             })
-							.OnSelectionChanged_Lambda(
-                                                                                                             [&](const TSharedPtr<FBPVariableDescription> Item, ESelectInfo::Type SelectInfo) {
-                                                                                                                 if (!Item.IsValid()) {
-                                                                                                                     VariableTooltipEditableTextBox->SetEnabled(false);
-                                                                                                                     VariableTooltipEditableTextBox->SetText(FText::GetEmpty());
-                                                                                                                     return;
-                                                                                                                 }
+				.SelectionMode(ESelectionMode::Single)
+				.ListItemsSource(&Members)
+				.OnGenerateRow_Lambda([](TSharedPtr<FBPVariableDescription> Item, const TSharedRef<STableViewBase>& OwnerTable) {
+				    return
+				        SNew(STableRow<TSharedPtr<FBPVariableDescription>>, OwnerTable)
+				        [
+                                            SNew(SHorizontalBox)
+                                            + SHorizontalBox::Slot()
+                                            .AutoWidth()
+                                            [
+                                                SNew(SImage)
+		                                .Image(FAppStyle::GetBrush(TEXT("Icons.Error")))
+		                                .Visibility_Lambda([Item] {
+                                                    return Item.IsValid() ? (Item->HasMetaData(FBlueprintMetadata::MD_Tooltip) && Item->GetMetaData(FBlueprintMetadata::MD_Tooltip).Len() > 0 ? EVisibility::Collapsed : EVisibility::HitTestInvisible) : EVisibility::Collapsed;
+                                                })
+                                            ]
+                                            + SHorizontalBox::Slot()
+                                            .AutoWidth()
+                                            [
+                                                SNew(STextBlock)
+                                                .Text(FText::FromString(Item->FriendlyName))
+                                            ]
+                                            + SHorizontalBox::Slot()
+                                            .FillWidth(1.0f)
+                                            [
+                                                SNew(STextBlock)
+		                                .Text(UEdGraphSchema_K2::TypeToText(Item->VarType))
+		                                .Justification(ETextJustify::Right)
+                                            ]
+                                        ];
+                                 })
+				.OnSelectionChanged_Lambda([&](const TSharedPtr<FBPVariableDescription> Item, ESelectInfo::Type SelectInfo) {
+                                    if (!Item.IsValid()) {
+                                        VariableTooltipEditableTextBox->SetEnabled(false);
+                                        VariableTooltipEditableTextBox->SetText(FText::GetEmpty());
+                                        return;
+                                    }
 
-                                                                                                                 VariableTooltipEditableTextBox->SetEnabled(true);
-                                                                                                                 if (Item->HasMetaData(FBlueprintMetadata::MD_Tooltip)) {
-                                                                                                                     VariableTooltipEditableTextBox->SetText(FText::FromString(Item->GetMetaData(FBlueprintMetadata::MD_Tooltip)));
-                                                                                                                 } else {
-                                                                                                                     VariableTooltipEditableTextBox->SetText(FText::GetEmpty());
-                                                                                                                 }
-                                                                                                             })
+                                    VariableTooltipEditableTextBox->SetEnabled(true);
+                                    if (Item->HasMetaData(FBlueprintMetadata::MD_Tooltip)) {
+                                        VariableTooltipEditableTextBox->SetText(FText::FromString(Item->GetMetaData(FBlueprintMetadata::MD_Tooltip)));
+                                    } else {
+                                        VariableTooltipEditableTextBox->SetText(FText::GetEmpty());
+                                    }
+                               })
                             ]
                         ]
                     ]
                 ]
                 + SVerticalBox::Slot()
-                  .AutoHeight()
-                  .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+                .AutoHeight()
+                .Padding(8.0f, 4.0f, 8.0f, 4.0f)
                 [
                     SNew(SHeader)
                     [
@@ -256,35 +257,34 @@ void STooltipTool::Construct(const FArguments& InArgs) {
                     ]
                 ]
                 + SVerticalBox::Slot()
-                  .AutoHeight()
-                  .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+                .AutoHeight()
+                .Padding(8.0f, 4.0f, 8.0f, 4.0f)
                 [
                     SNew(SBox)
                     .HeightOverride(100.0f)
                     [
                         SAssignNew(VariableTooltipEditableTextBox, SMultiLineEditableTextBox)
-						.AutoWrapText(true)
-						.IsEnabled(false)
-						.OnTextChanged_Lambda(
-                                                                                                 [&](const FText& NewText) {
-                                                                                                     if (CommitOnTextChangeCheckBox->IsChecked()) {
-                                                                                                         UpdateVariableTooltipText(NewText);
-                                                                                                     }
-                                                                                                 })
+			.AutoWrapText(true)
+			.IsEnabled(false)
+			.OnTextChanged_Lambda([&](const FText& NewText) {
+                            if (CommitOnTextChangeCheckBox->IsChecked()) {
+                                UpdateVariableTooltipText(NewText);
+                            }
+                        })
                     ]
                 ]
                 + SVerticalBox::Slot()
-                  .AutoHeight()
-                  .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+                .AutoHeight()
+                .Padding(8.0f, 4.0f, 8.0f, 4.0f)
                 [
                     SAssignNew(CommitTextButton, SButton)
-					.OnClicked_Lambda([&] {
-                                                             /**UpdateVariableTooltipText(TooltipEditableTextBox->GetText());**/
-                                                             return FReply::Handled();
-                                                         })
-					.Visibility_Lambda([&] {
-                                                             return CommitOnTextChangeCheckBox->IsChecked() ? EVisibility::Collapsed : EVisibility::Visible;
-                                                         })
+		    .OnClicked_Lambda([&]() {
+                        /**UpdateVariableTooltipText(TooltipEditableTextBox->GetText());**/
+                        return FReply::Handled();
+                    })
+		    .Visibility_Lambda([&]() {
+		        return CommitOnTextChangeCheckBox->IsChecked() ? EVisibility::Collapsed : EVisibility::Visible;
+                    })
                     [
                         SNew(STextBlock)
                         .Text(LOCTEXT("TooltipToolCommitTextButtonLabel", "Commit Text"))
@@ -293,120 +293,119 @@ void STooltipTool::Construct(const FArguments& InArgs) {
             ]
         ]
         + SVerticalBox::Slot()
-          .AutoHeight()
-          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        .AutoHeight()
+        .Padding(8.0f, 4.0f, 8.0f, 4.0f)
         [
             SNew(SExpandableArea)
-			.InitiallyCollapsed(true)
-			.AreaTitle(LOCTEXT("TooltipToolFunctionExpandableTitle", "Functions"))
-			.BodyContent()
+	    .InitiallyCollapsed(true)
+	    .AreaTitle(LOCTEXT("TooltipToolFunctionExpandableTitle", "Functions"))
+	    .BodyContent()
             [
                 SNew(SVerticalBox)
                 + SVerticalBox::Slot()
-                  .AutoHeight()
-                  .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+                .AutoHeight()
+                .Padding(8.0f, 4.0f, 8.0f, 4.0f)
                 [
                     SNew(SBox)
                     .HeightOverride(100.0f)
                     [
                         SNew(SBorder)
-						.BorderImage(FCoreStyle::Get().GetBrush("ToolPanel.GroupBorder"))
-						.Padding(0.0f)
+			.BorderImage(FCoreStyle::Get().GetBrush("ToolPanel.GroupBorder"))
+			.Padding(0.0f)
                         [
                             SNew(SScrollBox)
                             .ScrollBarAlwaysVisible(true)
                             + SScrollBox::Slot()
                             [
                                 SAssignNew(FunctionListView, SListView<TSharedPtr<FBPFunctionPointers>>)
-								.SelectionMode(ESelectionMode::Single)
-								.ListItemsSource(&FunctionPointers)
-								.OnGenerateRow_Lambda(
-                                                                                                            [](TSharedPtr<FBPFunctionPointers> Item, const TSharedRef<STableViewBase>& OwnerTable) {
-                                                                                                                return SNew(STableRow<TSharedPtr<FBPFunctionPointers>>, OwnerTable)
-                                                                                                                [
-                                                                                                                    SNew(SHorizontalBox)
-                                                                                                                    + SHorizontalBox::Slot()
-                                                                                                                    .AutoWidth()
-                                                                                                                    [
-                                                                                                                        SNew(SImage)
-												.Image(FAppStyle::GetBrush(TEXT("Icons.Error")))
-												.Visibility_Lambda([Item] {
-                                                                                                                                        return (Item.IsValid() && Item->FunctionEntryNode != nullptr && !Item->FunctionEntryNode->MetaData.ToolTip.IsEmptyOrWhitespace()) ? EVisibility::Collapsed : EVisibility::Visible;
-                                                                                                                                    })
-                                                                                                                    ]
-                                                                                                                    + SHorizontalBox::Slot()
-                                                                                                                    .AutoWidth()
-                                                                                                                    [
-                                                                                                                        SNew(STextBlock)
-                                                                                                                        .Text(FText::FromName(Item->FunctionName))
-                                                                                                                    ]
-                                                                                                                ];
-                                                                                                            })
-							.OnSelectionChanged_Lambda(
-                                                                                                            [&](const TSharedPtr<FBPFunctionPointers> Item, ESelectInfo::Type SelectInfo) {
-                                                                                                                FunctionArgumentDescriptions.Empty();
-                                                                                                                FunctionOutputDescriptions.Empty();
+				.SelectionMode(ESelectionMode::Single)
+				.ListItemsSource(&FunctionPointers)
+				.OnGenerateRow_Lambda([](TSharedPtr<FBPFunctionPointers> Item, const TSharedRef<STableViewBase>& OwnerTable) {
+                                    return
+				        SNew(STableRow<TSharedPtr<FBPFunctionPointers>>, OwnerTable)
+                                        [
+                                            SNew(SHorizontalBox)
+                                            + SHorizontalBox::Slot()
+                                            .AutoWidth()
+                                            [
+                                                SNew(SImage)
+		                                .Image(FAppStyle::GetBrush(TEXT("Icons.Error")))
+		                                .Visibility_Lambda([Item] {
+                                                    return (Item.IsValid() && Item->FunctionEntryNode != nullptr && !Item->FunctionEntryNode->MetaData.ToolTip.IsEmptyOrWhitespace()) ? EVisibility::Collapsed : EVisibility::Visible;
+                                                })
+                                            ]
+                                            + SHorizontalBox::Slot()
+                                            .AutoWidth()
+                                            [
+                                                SNew(STextBlock)
+                                                .Text(FText::FromName(Item->FunctionName))
+                                            ]
+                                        ];
+                                })
+				.OnSelectionChanged_Lambda([&](const TSharedPtr<FBPFunctionPointers> Item, ESelectInfo::Type SelectInfo) {
+                                    FunctionArgumentDescriptions.Empty();
+                                    FunctionOutputDescriptions.Empty();
 
-                                                                                                                if (!Item.IsValid()) {
-                                                                                                                    FunctionArgumentListView->RebuildList();
-                                                                                                                    FunctionOutputListView->RebuildList();
+                                    if (!Item.IsValid()) {
+                                        FunctionArgumentListView->RebuildList();
+                                        FunctionOutputListView->RebuildList();
 
-                                                                                                                    FunctionDescriptionTooltipBox->SetEnabled(false);
-                                                                                                                    FunctionArgumentListView->SetEnabled(false);
-                                                                                                                    FunctionOutputListView->SetEnabled(false);
-                                                                                                                    FunctionDescriptionTooltipBox->SetText(FText::GetEmpty());
+                                        FunctionDescriptionTooltipBox->SetEnabled(false);
+                                        FunctionArgumentListView->SetEnabled(false);
+                                        FunctionOutputListView->SetEnabled(false);
+                                        FunctionDescriptionTooltipBox->SetText(FText::GetEmpty());
 
-                                                                                                                    return;
-                                                                                                                }
+                                        return;
+                                    }
 
-                                                                                                                check(Item->FunctionEntryNode);
-                                                                                                                TArray<UEdGraphPin*> InputPins = Item->FunctionEntryNode->GetAllPins();
-                                                                                                                for (const UEdGraphPin* Pin : InputPins) {
-                                                                                                                    if (Pin->Direction == EGPD_Output) {
-                                                                                                                        if (Pin->PinType.PinCategory != UEdGraphSchema_K2::PC_Exec) {
-                                                                                                                            FunctionArgumentDescriptions.Add(MakeShared<FBPFunctionArgumentDescription>(FText::FromString(Pin->GetName()), FText::GetEmpty(), UEdGraphSchema_K2::TypeToText(Pin->PinType)));
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                }
+                                    check(Item->FunctionEntryNode);
+                                    TArray<UEdGraphPin*> InputPins = Item->FunctionEntryNode->GetAllPins();
+                                    for (const UEdGraphPin* Pin : InputPins) {
+                                        if (Pin->Direction == EGPD_Output) {
+                                            if (Pin->PinType.PinCategory != UEdGraphSchema_K2::PC_Exec) {
+                                                FunctionArgumentDescriptions.Add(MakeShared<FBPFunctionArgumentDescription>(FText::FromString(Pin->GetName()), FText::GetEmpty(), UEdGraphSchema_K2::TypeToText(Pin->PinType)));
+                                            }
+                                        }
+                                    }
 
-                                                                                                                if (Item->FunctionResultNode != nullptr) {
-                                                                                                                    TArray<UEdGraphPin*> OutputPins = Item->FunctionResultNode->GetAllPins();
-                                                                                                                    for (const UEdGraphPin* Pin : OutputPins) {
-                                                                                                                        if (Pin->Direction == EGPD_Input) {
-                                                                                                                            if (Pin->PinType.PinCategory != UEdGraphSchema_K2::PC_Exec) {
-                                                                                                                                FunctionOutputDescriptions.Add(MakeShared<FBPFunctionArgumentDescription>(FText::FromString(Pin->GetName()), FText::GetEmpty(), UEdGraphSchema_K2::TypeToText(Pin->PinType)));
-                                                                                                                            }
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                }
+                                    if (Item->FunctionResultNode != nullptr) {
+                                        TArray<UEdGraphPin*> OutputPins = Item->FunctionResultNode->GetAllPins();
+                                        for (const UEdGraphPin* Pin : OutputPins) {
+                                            if (Pin->Direction == EGPD_Input) {
+                                                if (Pin->PinType.PinCategory != UEdGraphSchema_K2::PC_Exec) {
+                                                    FunctionOutputDescriptions.Add(MakeShared<FBPFunctionArgumentDescription>(FText::FromString(Pin->GetName()), FText::GetEmpty(), UEdGraphSchema_K2::TypeToText(Pin->PinType)));
+                                                }
+                                            }
+                                        }
+                                    }
 
-                                                                                                                FunctionDescriptionTooltipBox->SetEnabled(true);
-                                                                                                                FunctionArgumentListView->SetEnabled(true);
-                                                                                                                FunctionOutputListView->SetEnabled(true);
+                                    FunctionDescriptionTooltipBox->SetEnabled(true);
+                                    FunctionArgumentListView->SetEnabled(true);
+                                    FunctionOutputListView->SetEnabled(true);
 
-                                                                                                                FText FunctionDescription;
-                                                                                                                FText ReturnText;
+                                    FText FunctionDescription;
+                                    FText ReturnText;
 
-                                                                                                                if (!FTooltipStringHelper::ParseFunctionRawTooltip(Item->FunctionEntryNode->MetaData.ToolTip.ToString(), CurrentFunctionDescription, FunctionArgumentDescriptions, FunctionOutputDescriptions, ReturnText)) {
-                                                                                                                    CurrentFunctionDescription = FText::GetEmpty();
-                                                                                                                }
+                                    if (!FTooltipStringHelper::ParseFunctionRawTooltip(Item->FunctionEntryNode->MetaData.ToolTip.ToString(), CurrentFunctionDescription, FunctionArgumentDescriptions, FunctionOutputDescriptions, ReturnText)) {
+                                        CurrentFunctionDescription = FText::GetEmpty();
+                                    }
 
-                                                                                                                if (!ReturnText.IsEmptyOrWhitespace() && FunctionOutputDescriptions.Num() > 0) {
-                                                                                                                    FunctionOutputDescriptions[FunctionOutputDescriptions.Num() - 1]->Tooltip = ReturnText;
-                                                                                                                }
+                                    if (!ReturnText.IsEmptyOrWhitespace() && FunctionOutputDescriptions.Num() > 0) {
+                                        FunctionOutputDescriptions[FunctionOutputDescriptions.Num() - 1]->Tooltip = ReturnText;
+                                    }
 
-                                                                                                                FunctionArgumentListView->RebuildList();
-                                                                                                                FunctionOutputListView->RebuildList();
+                                    FunctionArgumentListView->RebuildList();
+                                    FunctionOutputListView->RebuildList();
 
-                                                                                                                FunctionDescriptionTooltipBox->SetText(CurrentFunctionDescription);
-                                                                                                            })
+                                    FunctionDescriptionTooltipBox->SetText(CurrentFunctionDescription);
+                                })
                             ]
                         ]
                     ]
                 ]
                 + SVerticalBox::Slot()
-                  .AutoHeight()
-                  .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+                .AutoHeight()
+                .Padding(8.0f, 4.0f, 8.0f, 4.0f)
                 [
                     SNew(SVerticalBox)
                     + SVerticalBox::Slot()
@@ -425,16 +424,15 @@ void STooltipTool::Construct(const FArguments& InArgs) {
                         .HeightOverride(60.0f)
                         [
                             SAssignNew(FunctionDescriptionTooltipBox, SMultiLineEditableTextBox)
-							.AutoWrapText(true)
-							.IsEnabled(false)
-							.OnTextChanged_Lambda(
-                                                                                                    [&](const FText& NewText) {
-                                                                                                        if (CommitOnTextChangeCheckBox->IsChecked()) {
-                                                                                                            if (!NewText.EqualTo(CurrentFunctionDescription)) {
-                                                                                                                UpdateCurrentFunctionTooltipText();
-                                                                                                            }
-                                                                                                        }
-                                                                                                    })
+			        .AutoWrapText(true)
+			        .IsEnabled(false)
+			        .OnTextChanged_Lambda([&](const FText& NewText) {
+                                    if (CommitOnTextChangeCheckBox->IsChecked()) {
+                                        if (!NewText.EqualTo(CurrentFunctionDescription)) {
+                                            UpdateCurrentFunctionTooltipText();
+                                        }
+                                    }
+                                })
                         ]
                     ]
                     + SVerticalBox::Slot()
@@ -450,58 +448,56 @@ void STooltipTool::Construct(const FArguments& InArgs) {
                     .AutoHeight()
                     [
                         SNew(SBox)
-						.MinDesiredHeight(20.0f)
-						.MaxDesiredHeight(100.0f)
+			.MinDesiredHeight(20.0f)
+			.MaxDesiredHeight(100.0f)
                         [
                             SNew(SBorder)
-							.BorderImage(FCoreStyle::Get().GetBrush("ToolPanel.GroupBorder"))
-							.Padding(0.0f)
+			    .BorderImage(FCoreStyle::Get().GetBrush("ToolPanel.GroupBorder"))
+			    .Padding(0.0f)
                             [
                                 SNew(SScrollBox)
                                 .ScrollBarAlwaysVisible(true)
                                 + SScrollBox::Slot()
                                 [
                                     SAssignNew(FunctionArgumentListView, SListView<TSharedPtr<FBPFunctionArgumentDescription>>)
-									.SelectionMode(ESelectionMode::None)
-									.ListItemsSource(&FunctionArgumentDescriptions)
-									.OnGenerateRow_Lambda(
-                                                                                                                                   [&](TSharedPtr<FBPFunctionArgumentDescription> Item, const TSharedRef<STableViewBase>& OwnerTable) {
-                                                                                                                                       return SNew(STableRow<TSharedPtr<FBPFunctionArgumentDescription>>, OwnerTable)
-                                                                                                                                       [
-                                                                                                                                           SNew(SVerticalBox)
-                                                                                                                                           + SVerticalBox::Slot()
-                                                                                                                                           [
-                                                                                                                                               SNew(SHorizontalBox)
-                                                                                                                                               + SHorizontalBox::Slot()
-                                                                                                                                               .AutoWidth()
-                                                                                                                                               [
-                                                                                                                                                   SNew(SImage)
-														.Image(FAppStyle::GetBrush(TEXT("Icons.Error")))
-														.Visibility_Lambda([Item] {
-                                                                                                                                                                   return (Item.IsValid() && !Item->Tooltip.IsEmptyOrWhitespace()) ? EVisibility::Collapsed : EVisibility::Visible;
-                                                                                                                                                               })
-                                                                                                                                               ]
-                                                                                                                                               + SHorizontalBox::Slot()
-                                                                                                                                               .AutoWidth()
-                                                                                                                                               [
-                                                                                                                                                   SNew(STextBlock)
-                                                                                                                                                   .Text(FText::FromString(FString::Printf(TEXT("%s (%s)"), *Item->ArgumentName.ToString(), *Item->ArgumentType.ToString())))
-                                                                                                                                               ]
-                                                                                                                                           ]
-                                                                                                                                           + SVerticalBox::Slot()
-                                                                                                                                           .Padding(0.0f, 4.0f, 0.0f, 4.0f)
-                                                                                                                                           [
-                                                                                                                                               SNew(SEditableTextBox)
-													.Text(Item->Tooltip)
-													.OnTextChanged_Lambda(
-                                                                                                                                                                         [&](const FText& NewText) {
-                                                                                                                                                                             if (CommitOnTextChangeCheckBox->IsChecked()) {
-                                                                                                                                                                                 UpdateCurrentFunctionTooltipText();
-                                                                                                                                                                             }
-                                                                                                                                                                         })
-                                                                                                                                           ]
-                                                                                                                                       ];
-                                                                                                                                   })
+				    .SelectionMode(ESelectionMode::None)
+				    .ListItemsSource(&FunctionArgumentDescriptions)
+				    .OnGenerateRow_Lambda([&](TSharedPtr<FBPFunctionArgumentDescription> Item, const TSharedRef<STableViewBase>& OwnerTable) {
+                                        return SNew(STableRow<TSharedPtr<FBPFunctionArgumentDescription>>, OwnerTable)
+                                        [
+                                            SNew(SVerticalBox)
+                                            + SVerticalBox::Slot()
+                                            [
+                                                SNew(SHorizontalBox)
+                                                + SHorizontalBox::Slot()
+                                                .AutoWidth()
+                                                [
+                                                    SNew(SImage)
+                                                    .Image(FAppStyle::GetBrush(TEXT("Icons.Error")))
+	                                            .Visibility_Lambda([Item] {
+                                                        return (Item.IsValid() && !Item->Tooltip.IsEmptyOrWhitespace()) ? EVisibility::Collapsed : EVisibility::Visible;
+                                                    })
+                                                ]
+                                                + SHorizontalBox::Slot()
+                                                .AutoWidth()
+                                                [
+                                                    SNew(STextBlock)
+                                                    .Text(FText::FromString(FString::Printf(TEXT("%s (%s)"), *Item->ArgumentName.ToString(), *Item->ArgumentType.ToString())))
+                                                ]
+                                            ]
+                                            + SVerticalBox::Slot()
+                                            .Padding(0.0f, 4.0f, 0.0f, 4.0f)
+                                            [
+                                                SNew(SEditableTextBox)
+                                                .Text(Item->Tooltip)
+                                                .OnTextChanged_Lambda([&](const FText& NewText) {
+                                                    if (CommitOnTextChangeCheckBox->IsChecked()) {
+                                                        UpdateCurrentFunctionTooltipText();
+                                                    }
+                                                })
+                                           ]
+                                       ];
+                                   })
                                 ]
                             ]
                         ]
@@ -520,75 +516,73 @@ void STooltipTool::Construct(const FArguments& InArgs) {
                     .AutoHeight()
                     [
                         SNew(SBox)
-						.MinDesiredHeight(20.0f)
-						.MaxDesiredHeight(100.0f)
+		        .MinDesiredHeight(20.0f)
+		        .MaxDesiredHeight(100.0f)
                         [
                             SNew(SBorder)
-							.BorderImage(FCoreStyle::Get().GetBrush("ToolPanel.GroupBorder"))
-							.Padding(0.0f)
+			    .BorderImage(FCoreStyle::Get().GetBrush("ToolPanel.GroupBorder"))
+			    .Padding(0.0f)
                             [
                                 SNew(SScrollBox)
                                 .ScrollBarAlwaysVisible(true)
                                 + SScrollBox::Slot()
                                 [
                                     SAssignNew(FunctionOutputListView, SListView<TSharedPtr<FBPFunctionArgumentDescription>>)
-									.SelectionMode(ESelectionMode::None)
-									.ListItemsSource(&FunctionOutputDescriptions)
-									.OnGenerateRow_Lambda(
-                                                                                                                                 [&](TSharedPtr<FBPFunctionArgumentDescription> Item, const TSharedRef<STableViewBase>& OwnerTable) {
-                                                                                                                                     return SNew(STableRow<TSharedPtr<FBPFunctionArgumentDescription>>, OwnerTable)
-                                                                                                                                     [
-                                                                                                                                         SNew(SVerticalBox)
-                                                                                                                                         + SVerticalBox::Slot()
-                                                                                                                                         [
-                                                                                                                                             SNew(SHorizontalBox)
-                                                                                                                                             + SHorizontalBox::Slot()
-                                                                                                                                             .AutoWidth()
-                                                                                                                                             [
-                                                                                                                                                 SNew(SImage)
-														.Image(FAppStyle::GetBrush(TEXT("Icons.Error")))
-														.Visibility_Lambda([Item] {
-                                                                                                                                                                 return (Item.IsValid() && !Item->Tooltip.IsEmptyOrWhitespace()) ? EVisibility::Collapsed : EVisibility::Visible;
-                                                                                                                                                             })
-                                                                                                                                             ]
-                                                                                                                                             + SHorizontalBox::Slot()
-                                                                                                                                             .AutoWidth()
-                                                                                                                                             [
-                                                                                                                                                 SNew(STextBlock)
-                                                                                                                                                 .Text(FText::FromString(FString::Printf(TEXT("%s (%s)"), *Item->ArgumentName.ToString(), *Item->ArgumentType.ToString())))
-                                                                                                                                             ]
-                                                                                                                                         ]
-                                                                                                                                         + SVerticalBox::Slot()
-                                                                                                                                         .Padding(0.0f, 4.0f, 0.0f, 4.0f)
-                                                                                                                                         [
-                                                                                                                                             SNew(SEditableTextBox)
-													.Text(Item->Tooltip)
-													.OnTextChanged_Lambda(
-                                                                                                                                                                       [&](const FText& NewText) {
-                                                                                                                                                                           if (CommitOnTextChangeCheckBox->IsChecked()) {
-                                                                                                                                                                               UpdateCurrentFunctionTooltipText();
-                                                                                                                                                                           }
-                                                                                                                                                                       })
-                                                                                                                                         ]
-                                                                                                                                     ];
-                                                                                                                                 })
+					.SelectionMode(ESelectionMode::None)
+					.ListItemsSource(&FunctionOutputDescriptions)
+					.OnGenerateRow_Lambda([&](TSharedPtr<FBPFunctionArgumentDescription> Item, const TSharedRef<STableViewBase>& OwnerTable) {
+                                            return SNew(STableRow<TSharedPtr<FBPFunctionArgumentDescription>>, OwnerTable)
+                                            [
+                                                SNew(SVerticalBox)
+                                                + SVerticalBox::Slot()
+                                                [
+                                                    SNew(SHorizontalBox)
+                                                    + SHorizontalBox::Slot()
+                                                    .AutoWidth()
+                                                    [
+                                                        SNew(SImage)
+		                                        .Image(FAppStyle::GetBrush(TEXT("Icons.Error")))
+		                                        .Visibility_Lambda([Item] {
+		                                            return (Item.IsValid() && !Item->Tooltip.IsEmptyOrWhitespace()) ? EVisibility::Collapsed : EVisibility::Visible;
+                                                        })
+                                                    ]
+                                                    + SHorizontalBox::Slot()
+                                                    .AutoWidth()
+                                                    [
+                                                        SNew(STextBlock)
+                                                        .Text(FText::FromString(FString::Printf(TEXT("%s (%s)"), *Item->ArgumentName.ToString(), *Item->ArgumentType.ToString())))
+                                                    ]
+                                                ]
+                                                + SVerticalBox::Slot()
+                                                .Padding(0.0f, 4.0f, 0.0f, 4.0f)
+                                                [
+                                                    SNew(SEditableTextBox)
+	                                            .Text(Item->Tooltip)
+	                                            .OnTextChanged_Lambda([&](const FText& NewText) {
+                                                        if (CommitOnTextChangeCheckBox->IsChecked()) {
+                                                            UpdateCurrentFunctionTooltipText();
+                                                        }
+                                                    })
+                                                ]
+                                            ];
+                                     })
                                 ]
                             ]
                         ]
                     ]
                 ]
                 + SVerticalBox::Slot()
-                  .AutoHeight()
-                  .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+                .AutoHeight()
+                .Padding(8.0f, 4.0f, 8.0f, 4.0f)
                 [
                     SAssignNew(CommitTextButton, SButton)
-					.OnClicked_Lambda([&] {
-                                                             UpdateVariableTooltipText(VariableTooltipEditableTextBox->GetText());
-                                                             return FReply::Handled();
-                                                         })
-					.Visibility_Lambda([&] {
-                                                             return CommitOnTextChangeCheckBox->IsChecked() ? EVisibility::Collapsed : EVisibility::Visible;
-                                                         })
+		    .OnClicked_Lambda([&] {
+                        UpdateVariableTooltipText(VariableTooltipEditableTextBox->GetText());
+                        return FReply::Handled();
+                    })
+		    .Visibility_Lambda([&] {
+                        return CommitOnTextChangeCheckBox->IsChecked() ? EVisibility::Collapsed : EVisibility::Visible;
+                    })
                     [
                         SNew(STextBlock)
                         .Text(LOCTEXT("TooltipToolCommitTextButtonLabel", "Commit Text"))
@@ -597,19 +591,19 @@ void STooltipTool::Construct(const FArguments& InArgs) {
             ]
         ]
         + SVerticalBox::Slot()
-          .AutoHeight()
-          .Padding(8.0f, 4.0f, 8.0f, 4.0f)
+        .AutoHeight()
+        .Padding(8.0f, 4.0f, 8.0f, 4.0f)
         [
             SNew(SSeparator)
         ]
         + SVerticalBox::Slot()
-          .AutoHeight()
-          .Padding(8.0f, 4.0f, 8.0f, 0.0f)
+        .AutoHeight()
+        .Padding(8.0f, 4.0f, 8.0f, 0.0f)
         [
             SNew(SExpandableArea)
-			.InitiallyCollapsed(true)
-			.AreaTitle(LOCTEXT("TooltipToolBehaviorExpandableTitle", "Tool Behavior"))
-			.BodyContent()
+	    .InitiallyCollapsed(true)
+	    .AreaTitle(LOCTEXT("TooltipToolBehaviorExpandableTitle", "Tool Behavior"))
+	    .BodyContent()
             [
                 SAssignNew(CommitOnTextChangeCheckBox, SCheckBox)
                 .IsChecked(ECheckBoxState::Checked)
@@ -620,6 +614,8 @@ void STooltipTool::Construct(const FArguments& InArgs) {
             ]
         ]
     ];
+    // clang-format on
+    // @formatter:on
 
     RebuildMemberList();
 }

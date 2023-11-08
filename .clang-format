@@ -2,7 +2,7 @@
 Language: Cpp
 BasedOnStyle: Google
 AccessModifierOffset: -4
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: BlockIndent
 AlignConsecutiveMacros: None
 AlignConsecutiveAssignments: None
 AlignConsecutiveDeclarations: None
@@ -82,8 +82,10 @@ IndentPPDirectives: None
 IndentWidth: 4
 IndentWrappedFunctionNames: false
 KeepEmptyLinesAtTheStartOfBlocks: false
+LambdaBodyIndentation: OuterScope
 MaxEmptyLinesToKeep: 3
 NamespaceIndentation: None
+PackConstructorInitializers: CurrentLine
 PenaltyBreakAssignment: 2
 PenaltyBreakBeforeFirstCallParameter: 1
 PenaltyBreakComment: 300
@@ -93,6 +95,7 @@ PenaltyBreakTemplateDeclaration: 10
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 200
 PointerAlignment: Left
+QualifierAlignment: Left
 RawStringFormats:
   - Language: Cpp
     Delimiters:
@@ -107,6 +110,7 @@ RawStringFormats:
     BasedOnStyle: google
 ReferenceAlignment: Left
 ReflowComments: true
+SeparateDefinitionBlocks: Always
 SortIncludes: Never
 SortUsingDeclarations: false
 SpaceAfterCStyleCast: false

@@ -33,189 +33,193 @@ using FAppStyle = FEditorStyle;
 void SLintReport::Construct(const FArguments& Args) {
     const float PaddingAmount = FLinterStyle::Get()->GetFloat("Linter.Padding");
 
+    // clang-format off
+    // @formatter:off
     ChildSlot
     [
         SNew(SVerticalBox)
         + SVerticalBox::Slot()
-          .VAlign(VAlign_Fill)
-          .AutoHeight()
+        .VAlign(VAlign_Fill)
+        .AutoHeight()
         [
             SNew(SHorizontalBox)
             + SHorizontalBox::Slot()
-              .HAlign(HAlign_Left)
-              .AutoWidth()
-              .Padding(PaddingAmount)
+            .HAlign(HAlign_Left)
+            .AutoWidth()
+            .Padding(PaddingAmount)
             [
                 SNew(SButton)
-				.Text(LOCTEXT("Rescan", "Rescan"))
-				.OnClicked_Lambda([this]() -> FReply {
-                                 Rebuild(LastUsedRuleSet);
-                                 return FReply::Handled();
-                             })
+		.Text(LOCTEXT("Rescan", "Rescan"))
+		.OnClicked_Lambda([this]() -> FReply {
+                    Rebuild(LastUsedRuleSet);
+                    return FReply::Handled();
+                })
             ]
             + SHorizontalBox::Slot()
-              .HAlign(HAlign_Left)
-              .VAlign(VAlign_Center)
-              .AutoWidth()
-              .Padding(PaddingAmount)
+            .HAlign(HAlign_Left)
+            .VAlign(VAlign_Center)
+            .AutoWidth()
+            .Padding(PaddingAmount)
             [
                 SAssignNew(ResultsTextBlockPtr, STextBlock)
             ]
             + SHorizontalBox::Slot()
-              .HAlign(HAlign_Fill)
-              .VAlign(VAlign_Center)
-              .FillWidth(1.0f)
-              .Padding(PaddingAmount)
+            .HAlign(HAlign_Fill)
+            .VAlign(VAlign_Center)
+            .FillWidth(1.0f)
+            .Padding(PaddingAmount)
             [
                 SNew(SSpacer)
             ]
             + SHorizontalBox::Slot()
-              .HAlign(HAlign_Right)
-              .AutoWidth()
-              .Padding(PaddingAmount)
+            .HAlign(HAlign_Right)
+            .AutoWidth()
+            .Padding(PaddingAmount)
             [
                 SNew(SButton)
-				.Text(LOCTEXT("ExportToJSON", "Export To JSON"))
-				.OnClicked_Lambda([this]() -> FReply {
-                                 IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+		.Text(LOCTEXT("ExportToJSON", "Export To JSON"))
+		.OnClicked_Lambda([this]() -> FReply {
+                    IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
 
-                                 const void* ParentWindowWindowHandle = FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr);
+                    const void* ParentWindowWindowHandle = FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr);
 
-                                 const FText Title = LOCTEXT("ExportToJsonTitle", "Export Lint Report as JSON");
-                                 const FString FileTypes = TEXT("Json (*.json)|*.json");
+                    const FText Title = LOCTEXT("ExportToJsonTitle", "Export Lint Report as JSON");
+                    const FString FileTypes = TEXT("Json (*.json)|*.json");
 
-                                 const FDateTime Now = FDateTime::Now();
-                                 const FString Output = TEXT("lint-report-") + Now.ToString() + TEXT(".json");
+                    const FDateTime Now = FDateTime::Now();
+                    const FString Output = TEXT("lint-report-") + Now.ToString() + TEXT(".json");
 
-                                 FString DefaultPath = FPaths::ProjectSavedDir() / TEXT("LintReports");
-                                 DefaultPath = FPaths::ConvertRelativePathToFull(DefaultPath);
-                                 IFileManager::Get().MakeDirectory(*DefaultPath, true);
+                    FString DefaultPath = FPaths::ProjectSavedDir() / TEXT("LintReports");
+                    DefaultPath = FPaths::ConvertRelativePathToFull(DefaultPath);
+                    IFileManager::Get().MakeDirectory(*DefaultPath, true);
 
-                                 TArray<FString> OutFilenames;
-                                 DesktopPlatform->SaveFileDialog(
-                                     ParentWindowWindowHandle,
-                                     Title.ToString(),
-                                     DefaultPath,
-                                     Output,
-                                     FileTypes,
-                                     EFileDialogFlags::None,
-                                     OutFilenames
-                                     );
+                    TArray<FString> OutFilenames;
+                    DesktopPlatform->SaveFileDialog(
+                        ParentWindowWindowHandle,
+                        Title.ToString(),
+                        DefaultPath,
+                        Output,
+                        FileTypes,
+                        EFileDialogFlags::None,
+                        OutFilenames
+                    );
 
-                                 if (OutFilenames.Num() > 0) {
-                                     const FString WritePath = FPaths::ConvertRelativePathToFull(OutFilenames[0]);
-                                     FFileHelper::SaveStringToFile(JsonReport, *WritePath);
-                                     FPlatformProcess::LaunchURL(*WritePath, TEXT(""), nullptr);
-                                 }
+                    if (OutFilenames.Num() > 0) {
+                        const FString WritePath = FPaths::ConvertRelativePathToFull(OutFilenames[0]);
+                        FFileHelper::SaveStringToFile(JsonReport, *WritePath);
+                        FPlatformProcess::LaunchURL(*WritePath, TEXT(""), nullptr);
+                    }
 
-                                 return FReply::Handled();
-                             })
+                    return FReply::Handled();
+                })
             ]
             + SHorizontalBox::Slot()
-              .HAlign(HAlign_Right)
-              .AutoWidth()
-              .Padding(PaddingAmount)
+            .HAlign(HAlign_Right)
+            .AutoWidth()
+            .Padding(PaddingAmount)
             [
                 SNew(SButton)
-				.Text(LOCTEXT("ExportToHTML", "Export To HTML"))
-				.OnClicked_Lambda([this]() -> FReply {
-                                 IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
+		.Text(LOCTEXT("ExportToHTML", "Export To HTML"))
+		.OnClicked_Lambda([this]() -> FReply {
+                    IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
 
-                                 const void* ParentWindowWindowHandle = FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr);
+                    const void* ParentWindowWindowHandle = FSlateApplication::Get().FindBestParentWindowHandleForDialogs(nullptr);
 
-                                 const FText Title = LOCTEXT("ExportToHTMLTitle", "Export Lint Report as HTML");
-                                 const FString FileTypes = TEXT("HTML (*.html)|*.html");
+                    const FText Title = LOCTEXT("ExportToHTMLTitle", "Export Lint Report as HTML");
+                    const FString FileTypes = TEXT("HTML (*.html)|*.html");
 
-                                 const FDateTime Now = FDateTime::Now();
-                                 const FString Output = TEXT("lint-report-") + Now.ToString() + TEXT(".html");
+                    const FDateTime Now = FDateTime::Now();
+                    const FString Output = TEXT("lint-report-") + Now.ToString() + TEXT(".html");
 
-                                 FString DefaultPath = FPaths::ProjectSavedDir() / TEXT("LintReports");
-                                 DefaultPath = FPaths::ConvertRelativePathToFull(DefaultPath);
-                                 IFileManager::Get().MakeDirectory(*DefaultPath, true);
+                    FString DefaultPath = FPaths::ProjectSavedDir() / TEXT("LintReports");
+                    DefaultPath = FPaths::ConvertRelativePathToFull(DefaultPath);
+                    IFileManager::Get().MakeDirectory(*DefaultPath, true);
 
-                                 TArray<FString> OutFilenames;
-                                 DesktopPlatform->SaveFileDialog(
-                                     ParentWindowWindowHandle,
-                                     Title.ToString(),
-                                     DefaultPath,
-                                     Output,
-                                     FileTypes,
-                                     EFileDialogFlags::None,
-                                     OutFilenames
-                                     );
+                    TArray<FString> OutFilenames;
+                    DesktopPlatform->SaveFileDialog(
+                        ParentWindowWindowHandle,
+                        Title.ToString(),
+                        DefaultPath,
+                        Output,
+                        FileTypes,
+                        EFileDialogFlags::None,
+                        OutFilenames
+                    );
 
-                                 if (OutFilenames.Num() > 0) {
-                                     const FString WritePath = FPaths::ConvertRelativePathToFull(OutFilenames[0]);
-                                     FFileHelper::SaveStringToFile(HTMLReport, *WritePath);
-                                     FPlatformProcess::LaunchURL(*WritePath, TEXT(""), nullptr);
-                                 }
+                    if (OutFilenames.Num() > 0) {
+                         const FString WritePath = FPaths::ConvertRelativePathToFull(OutFilenames[0]);
+                         FFileHelper::SaveStringToFile(HTMLReport, *WritePath);
+                         FPlatformProcess::LaunchURL(*WritePath, TEXT(""), nullptr);
+                    }
 
-                                 return FReply::Handled();
-                             })
+                    return FReply::Handled();
+                })
             ]
         ]
         + SVerticalBox::Slot()
-          .VAlign(VAlign_Fill)
-          .FillHeight(1.0f)
-          .Padding(PaddingAmount)
+        .VAlign(VAlign_Fill)
+        .FillHeight(1.0f)
+        .Padding(PaddingAmount)
         [
             SAssignNew(AssetDetailsScrollBoxPtr, SScrollBox)
             .ScrollBarAlwaysVisible(true)
         ]
         + SVerticalBox::Slot()
-          .VAlign(VAlign_Fill)
-          .FillHeight(1.0f)
-          .Padding(PaddingAmount)
+        .VAlign(VAlign_Fill)
+        .FillHeight(1.0f)
+        .Padding(PaddingAmount)
         [
             SAssignNew(RuleDetailsScrollBoxPtr, SScrollBox)
-			.ScrollBarAlwaysVisible(true)
-			.Visibility(EVisibility::Collapsed)
+	    .ScrollBarAlwaysVisible(true)
+	    .Visibility(EVisibility::Collapsed)
         ]
         // Bottom panel
         + SVerticalBox::Slot()
-          .AutoHeight()
-          .VAlign(VAlign_Top)
+        .AutoHeight()
+        .VAlign(VAlign_Top)
         [
             SNew(SBorder)
-			.BorderImage(FAppStyle::GetBrush("NoBorder"))
-			.Padding(FMargin(4.0f, 0.0f, 4.0f, 2.0f))
-            //.Visibility_Lambda([&]() { return AssetErrorLists.Num() > 0 ? EVisibility::SelfHitTestInvisible : EVisibility::Collapsed; })
+	    .BorderImage(FAppStyle::GetBrush("NoBorder"))
+	    .Padding(FMargin(4.0f, 0.0f, 4.0f, 2.0f))
+            // .Visibility_Lambda([&]() { return AssetErrorLists.Num() > 0 ? EVisibility::SelfHitTestInvisible : EVisibility::Collapsed; })
             [
                 SNew(SBorder)
-				.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
-				.Padding(FMargin(2.0f, 0.0f, 2.0f, 2.0f))
+		.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
+		.Padding(FMargin(2.0f, 0.0f, 2.0f, 2.0f))
                 [
 
                     SNew(SHorizontalBox)
                     // View mode combo button
                     + SHorizontalBox::Slot()
-                      .FillWidth(1.f)
-                      .VAlign(VAlign_Center)
-                      .HAlign(HAlign_Right)
+                    .FillWidth(1.f)
+                    .VAlign(VAlign_Center)
+                    .HAlign(HAlign_Right)
                     [
                         SAssignNew(ViewOptionsComboButton, SComboButton)
-						.ContentPadding(0)
-						.ForegroundColor_Lambda([&]() {
-                                                                            return ViewOptionsComboButton->IsHovered() ? FAppStyle::GetSlateColor("InvertedForeground") : FAppStyle::GetSlateColor("DefaultForeground");
-                                                                        })
-						.ButtonStyle(FAppStyle::Get(), "ToggleButton") // Use the tool bar item style for this button
-						.OnGetMenuContent(this, &SLintReport::GetViewButtonContent)
-						.ButtonContent()
+			.ContentPadding(0)
+			.ForegroundColor_Lambda([&]() {
+                            return ViewOptionsComboButton->IsHovered() ? FAppStyle::GetSlateColor("InvertedForeground") : FAppStyle::GetSlateColor("DefaultForeground");
+                        })
+			.ButtonStyle(FAppStyle::Get(), "ToggleButton") // Use the tool bar item style for this button
+			.OnGetMenuContent(this, &SLintReport::GetViewButtonContent)
+			.ButtonContent()
                         [
                             SNew(SHorizontalBox)
                             + SHorizontalBox::Slot()
-                              .AutoWidth()
-                              .VAlign(VAlign_Center)
+                            .AutoWidth()
+                            .VAlign(VAlign_Center)
                             [
-                                SNew(SImage).Image(FAppStyle::GetBrush("GenericViewButton"))
+                                SNew(SImage)
+                                .Image(FAppStyle::GetBrush("GenericViewButton"))
                             ]
 
                             + SHorizontalBox::Slot()
-                              .AutoWidth()
-                              .Padding(2, 0, 0, 0)
-                              .VAlign(VAlign_Center)
+                            .AutoWidth()
+                            .Padding(2, 0, 0, 0)
+                            .VAlign(VAlign_Center)
                             [
-                                SNew(STextBlock).Text(LOCTEXT("ViewButton", "View Options"))
+                                SNew(STextBlock)
+                                .Text(LOCTEXT("ViewButton", "View Options"))
                             ]
                         ]
                     ]
@@ -223,6 +227,8 @@ void SLintReport::Construct(const FArguments& Args) {
             ]
         ]
     ];
+    // clang-format on
+    // @formatter:on
 }
 
 void SLintReport::Rebuild(const ULintRuleSet* SelectedLintRuleSet) {
@@ -303,16 +309,20 @@ void SLintReport::Rebuild(const ULintRuleSet* SelectedLintRuleSet) {
 
         ViolatorJsonObjects.Add(MakeShareable(new FJsonValueObject(AssetJsonObject)));
 
+        // clang-format off
+        // @formatter:off
         AssetDetailsScrollBoxPtr.Get()->AddSlot()
-                                .HAlign(HAlign_Fill)
-                                .VAlign(VAlign_Fill)
-                                .Padding(PaddingAmount)
-        [
-            SNew(SLintReportAssetDetails)
-			.AssetData(AssetData)
-			.RuleViolations(UniqueViolatorViolations)
-			.ThumbnailPool(ThumbnailPool)
-        ];
+            .HAlign(HAlign_Fill)
+            .VAlign(VAlign_Fill)
+            .Padding(PaddingAmount)
+            [
+                SNew(SLintReportAssetDetails)
+	        .AssetData(AssetData)
+	        .RuleViolations(UniqueViolatorViolations)
+	        .ThumbnailPool(ThumbnailPool)
+            ];
+        // clang-format on
+        // @formatter:on
     }
 
     TMultiMap<const ULintRule*, TSharedPtr<FLintRuleViolation>> ViolationsMappedByRule = FLintRuleViolation::AllRuleViolationsMappedByViolatedLintRuleShared(RuleViolations);
@@ -326,15 +336,19 @@ void SLintReport::Rebuild(const ULintRuleSet* SelectedLintRuleSet) {
         ViolationsMappedByRule.MultiFind(BrokenRule, ViolatorsOfBrokenRule);
 
         if (ViolatorsOfBrokenRule.Num() > 0) {
+            // clang-format off
+            // @formatter:off
             RuleDetailsScrollBoxPtr.Get()->AddSlot()
-                                   .HAlign(HAlign_Fill)
-                                   .VAlign(VAlign_Fill)
-                                   .Padding(PaddingAmount)
-            [
-                SNew(SLintReportRuleDetails)
-				.RuleViolations(ViolatorsOfBrokenRule)
-				.ThumbnailPool(RuleThumbnailPool)
-            ];
+               .HAlign(HAlign_Fill)
+               .VAlign(VAlign_Fill)
+               .Padding(PaddingAmount)
+                [
+                    SNew(SLintReportRuleDetails)
+		    .RuleViolations(ViolatorsOfBrokenRule)
+		    .ThumbnailPool(RuleThumbnailPool)
+                ];
+            // clang-format on
+            // @formatter:on
         }
     }
 

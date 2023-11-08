@@ -79,9 +79,13 @@ void FLinterModule::ShutdownModule() {
 TSharedRef<SDockTab> FLinterModule::SpawnTab(const FSpawnTabArgs& TabSpawnArgs, TSharedPtr<FSlateStyleSet> StyleSet) {
     const FSlateBrush* IconBrush = StyleSet->GetBrush("Linter.Toolbar.Icon");
 
+    // clang-format off
+    // @formatter:off
     const TSharedRef<SDockTab> MajorTab =
         SNew(SDockTab)
         .TabRole(ETabRole::MajorTab);
+    // clang-format on
+    // @formatter:on
 
     MajorTab->SetContent(SNew(SLintWizard));
     MajorTab->SetTabIcon(IconBrush);

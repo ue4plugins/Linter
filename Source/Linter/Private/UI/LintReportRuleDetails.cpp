@@ -62,50 +62,50 @@ void SLintReportRuleDetails::Construct(const FArguments& Args) {
     if (RuleAssetData.IsValid()) {
         RuleAssetPath = FText::FromName(RuleAssetData.PackagePath);
     }
-
-
-
+    
+    // clang-format off
+    // @formatter:off
     ChildSlot
     [
         SNew(SBorder)
-		.BorderImage(FAppStyle::GetBrush("NoBorder"))
-		.Padding(PaddingAmount)
+	.BorderImage(FAppStyle::GetBrush("NoBorder"))
+	.Padding(PaddingAmount)
         [
             SNew(SBorder)
-			.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
-			.Padding(PaddingAmount)
+	    .BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
+	    .Padding(PaddingAmount)
             [
                 SNew(SVerticalBox)
                 + SVerticalBox::Slot()
-                  .AutoHeight()
-                  .Padding(PaddingAmount)
+                .AutoHeight()
+                .Padding(PaddingAmount)
                 [
                     SNew(SExpandableArea)
-					.InitiallyCollapsed(false)
-					.HeaderContent()
+		    .InitiallyCollapsed(false)
+		    .HeaderContent()
                     [
                         SNew(SHorizontalBox)
                         // Rule Thumbnail
                         + SHorizontalBox::Slot()
-                          .AutoWidth()
-                          .VAlign(VAlign_Top)
-                          .Padding(PaddingAmount)
+                        .AutoWidth()
+                        .VAlign(VAlign_Top)
+                        .Padding(PaddingAmount)
                         [
                             SAssignNew(ThumbnailBox, SBox)
-							.WidthOverride(96.0f)
-							.HeightOverride(96.0f)
-							.Visibility(RuleAssetData.IsValid() ? EVisibility::HitTestInvisible : EVisibility::Collapsed)
+			    .WidthOverride(96.0f)
+			    .HeightOverride(96.0f)
+			    .Visibility(RuleAssetData.IsValid() ? EVisibility::HitTestInvisible : EVisibility::Collapsed)
                         ]
                         // Rule Icon
                         + SHorizontalBox::Slot()
-                          .Padding(PaddingAmount)
-                          .AutoWidth()
-                          .VAlign(VAlign_Center)
-                          .HAlign(HAlign_Left)
+                        .Padding(PaddingAmount)
+                        .AutoWidth()
+                        .VAlign(VAlign_Center)
+                        .HAlign(HAlign_Left)
                         [
                             SNew(SBox)
-							.WidthOverride(14.0f)
-							.HeightOverride(14.0f)
+			    .WidthOverride(14.0f)
+			    .HeightOverride(14.0f)
                             [
                                 SNew(SImage)
                                 .Image(RuleIcon)
@@ -116,75 +116,75 @@ void SLintReportRuleDetails::Construct(const FArguments& Args) {
                         .AutoWidth()
                         [
                             SNew(STextBlock)
-							.Text(RuleName)
-							.TextStyle(FLinterStyle::Get(), "Linter.Report.AssetName")
+			    .Text(RuleName)
+			    .TextStyle(FLinterStyle::Get(), "Linter.Report.AssetName")
                         ]
                         // Link to Rule URL
                         + SHorizontalBox::Slot()
-                          .AutoWidth()
-                          .Padding(8.0f, 0.0)
+                        .AutoWidth()
+                        .Padding(8.0f, 0.0)
                         [
                             SNew(SImage)
-							.Image(FLinterStyle::Get()->GetBrush("Linter.Report.Link"))
-							.Cursor(EMouseCursor::Hand)
-							.Visibility(RuleURL.IsEmpty() ? EVisibility::Collapsed : EVisibility::Visible)
-							.OnMouseButtonDown_Lambda([&](const FGeometry& Geo, const FPointerEvent& Event) {
-                                            FPlatformProcess::LaunchURL(*RuleURL, nullptr, nullptr);
-                                            return FReply::Handled();
-                                        })
+			    .Image(FLinterStyle::Get()->GetBrush("Linter.Report.Link"))
+			    .Cursor(EMouseCursor::Hand)
+			    .Visibility(RuleURL.IsEmpty() ? EVisibility::Collapsed : EVisibility::Visible)
+			    .OnMouseButtonDown_Lambda([&](const FGeometry& Geo, const FPointerEvent& Event) {
+                                FPlatformProcess::LaunchURL(*RuleURL, nullptr, nullptr);
+                                return FReply::Handled();
+                            })
                         ]
                         // Link to Rule Definition Asset
                         + SHorizontalBox::Slot()
-                          .AutoWidth()
-                          .Padding(8.0f, 0.0)
+                        .AutoWidth()
+                        .Padding(8.0f, 0.0)
                         [
                             SNew(SImage)
-							.Image(FLinterStyle::Get()->GetBrush("Linter.Report.Link"))
-							.Cursor(EMouseCursor::Hand)
-							.Visibility(EVisibility::Collapsed)
-							.OnMouseButtonDown_Lambda([&](const FGeometry& Geo, const FPointerEvent& Event) {
-                                            const FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
-                                            ContentBrowserModule.Get().SyncBrowserToAssets(TArray<FAssetData>({RuleAssetData}));
-                                            return FReply::Handled();
-                                        })
+			    .Image(FLinterStyle::Get()->GetBrush("Linter.Report.Link"))
+			    .Cursor(EMouseCursor::Hand)
+			    .Visibility(EVisibility::Collapsed)
+			    .OnMouseButtonDown_Lambda([&](const FGeometry& Geo, const FPointerEvent& Event) {
+                                const FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
+                                ContentBrowserModule.Get().SyncBrowserToAssets(TArray<FAssetData>({RuleAssetData}));
+                                return FReply::Handled();
+                            })
                         ]
                         // Asset Count
                         + SHorizontalBox::Slot()
-                          .VAlign(VAlign_Center)
-                          .AutoWidth()
-                          .Padding(8.0f, 0.0)
+                        .VAlign(VAlign_Center)
+                        .AutoWidth()
+                        .Padding(8.0f, 0.0)
                         [
                             SNew(SHyperlink)
-							.Text(FText::FormatNamed(LOCTEXT("AssetCountDisplay", "{NumAssets} {NumAssets}|plural(one=Asset,other=Assets)"), TEXT("NumAssets"), RuleViolations.Get().Num()))
-							.OnNavigate_Lambda([&]() {
-                                                const FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
-                                                TArray<FAssetData> AssetDatas;
+			    .Text(FText::FormatNamed(LOCTEXT("AssetCountDisplay", "{NumAssets} {NumAssets}|plural(one=Asset,other=Assets)"), TEXT("NumAssets"), RuleViolations.Get().Num()))
+			    .OnNavigate_Lambda([&]() {
+                                const FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
+                                TArray<FAssetData> AssetDatas;
 
-                                                for (const TSharedPtr<FLintRuleViolation>& RuleViolation : RuleViolations.Get()) {
-                                                    AssetDatas.Push(RuleViolation->ViolatorAssetData);
-                                                }
+                                for (const TSharedPtr<FLintRuleViolation>& RuleViolation : RuleViolations.Get()) {
+                                    AssetDatas.Push(RuleViolation->ViolatorAssetData);
+                                }
 
-                                                ContentBrowserModule.Get().SyncBrowserToAssets(AssetDatas);
-                                            })
+                                ContentBrowserModule.Get().SyncBrowserToAssets(AssetDatas);
+                            })
                         ]
                     ]
                     .BodyContent()
                     [
                         SNew(SVerticalBox)
                         + SVerticalBox::Slot()
-                          .Padding(PaddingAmount)
-                          .HAlign(HAlign_Left)
-                          .AutoHeight()
+                        .Padding(PaddingAmount)
+                        .HAlign(HAlign_Left)
+                        .AutoHeight()
                         [
                             SNew(STextBlock)
-							.Text(RuleDesc)
-							.AutoWrapText(true)
-							.TextStyle(FLinterStyle::Get(), "Linter.Report.AssetName")
+			    .Text(RuleDesc)
+			    .AutoWrapText(true)
+			    .TextStyle(FLinterStyle::Get(), "Linter.Report.AssetName")
                         ]
                         + SVerticalBox::Slot()
-                          .Padding(PaddingAmount)
-                          .HAlign(HAlign_Left)
-                          .AutoHeight()
+                        .Padding(PaddingAmount)
+                        .HAlign(HAlign_Left)
+                        .AutoHeight()
                         [
                             SNew(SLintReportRuleErrorList)
                             .RuleViolations(RuleViolations)
@@ -194,6 +194,8 @@ void SLintReportRuleDetails::Construct(const FArguments& Args) {
             ]
         ]
     ];
+    // clang-format on
+    // @formatter:on
 
     if (RuleAssetData.IsValid()) {
         const TSharedPtr<FAssetThumbnail> RuleThumbnail = MakeShareable(new FAssetThumbnail(RuleAssetData, 96, 96, ThumbnailPool.Get()));

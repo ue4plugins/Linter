@@ -30,11 +30,13 @@
 #include "LinterSettings.h"
 #include "UI/SAssetLinkWidget.h"
 
+
 #define LOCTEXT_NAMESPACE "LintWizard"
 
 #if UE_VERSION_OLDER_THAN(5, 1, 0)
 using FAppStyle = FEditorStyle;
 #endif
+
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
@@ -77,22 +79,24 @@ void SLintWizard::Construct(const FArguments& InArgs) {
         SelectedRuleSet = RuleSets[0];
     }
 
+    // clang-format off
+    // @formatter:off
     ChildSlot
     [
         SNew(SBorder)
-		.Padding(18)
-		.BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
+        .Padding(18)
+        .BorderImage(FAppStyle::GetBrush("Docking.Tab.ContentAreaBrush"))
         [
             SNew(SVerticalBox)
             + SVerticalBox::Slot()
             [
                 SAssignNew(MainWizard, SWizard)
-				.ShowPageList(false)
-				.ShowCancelButton(false)
-				.ButtonStyle(FAppStyle::Get(), "FlatButton.Default")
-				.CancelButtonStyle(FAppStyle::Get(), "FlatButton.Default")
-				.FinishButtonStyle(FAppStyle::Get(), "FlatButton.Success")
-				.ButtonTextStyle(FAppStyle::Get(), "LargeText")
+                .ShowPageList(false)
+                .ShowCancelButton(false)
+                .ButtonStyle(FAppStyle::Get(), "FlatButton.Default")
+                .CancelButtonStyle(FAppStyle::Get(), "FlatButton.Default")
+                .FinishButtonStyle(FAppStyle::Get(), "FlatButton.Success")
+                .ButtonTextStyle(FAppStyle::Get(), "LargeText")
 #if UE_VERSION_OLDER_THAN(5, 0, 0)
                 .ForegroundColor(FEditorStyle::Get().GetSlateColor("WhiteBrush"))
 #endif
@@ -102,7 +106,7 @@ void SLintWizard::Construct(const FArguments& InArgs) {
 #if UE_VERSION_NEWER_THAN(4, 26, 0)
                     FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"))->RequestCloseTab();
 #else
-					FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"))->RequestCloseTab();
+                    FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"))->RequestCloseTab();
 #endif
                 })
                 + SWizard::Page()
@@ -113,40 +117,45 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                     SNew(SVerticalBox)
                     // Title
                     + SVerticalBox::Slot()
-                      .AutoHeight()
-                      .Padding(0)
+                    .AutoHeight()
+                    .Padding(0)
                     [
                         SNew(STextBlock)
-						.Font(FAppStyle::Get().GetFontStyle("HeadingSmall"))
-						.Text(LOCTEXT("LinterSelectionTitle", "Linter Rule Set Selection"))
+                        .Font(FAppStyle::Get().GetFontStyle("HeadingSmall"))
+                        .Text(LOCTEXT("LinterSelectionTitle", "Linter Rule Set Selection"))
                     ]
                     // Title spacer
                     + SVerticalBox::Slot()
-                      .AutoHeight()
-                      .Padding(0, 2, 0, 8)
+                    .AutoHeight()
+                    .Padding(0, 2, 0, 8)
                     [
                         SNew(SSeparator)
                     ]
                     // Linter Selection
                     + SVerticalBox::Slot()
-                      .AutoHeight()
-                      .Padding(PaddingAmount)
+                    .AutoHeight()
+                    .Padding(PaddingAmount)
                     [
                         SAssignNew(RuleSetSelectionComboBox, SComboBox<TSharedPtr<FAssetData>>)
-						.OptionsSource(&RuleSets)
-						.InitiallySelectedItem(SelectedRuleSet)
-						.OnGenerateWidget_Lambda([&](TSharedPtr<FAssetData> LintRuleSet) {
-                                                                                                   ULintRuleSet* RuleSet = Cast<ULintRuleSet>(LintRuleSet->GetAsset());
-                                                                                                   if (RuleSet != nullptr) {
-                                                                                                       return SNew(STextBlock).Text(RuleSet->RuleSetDescription.IsEmpty() ? FText::FromString(RuleSet->GetPathName()) : RuleSet->RuleSetDescription);
-                                                                                                   }
-                                                                                                   return SNew(STextBlock).Text(FText::FromString(TEXT("This Lint Rule Set Failed To Load? Uhhhh....")));
-                                                                                               })
-						.OnSelectionChanged_Lambda([&](TSharedPtr<FAssetData> Item, ESelectInfo::Type SelectInfo) {
-                                                                                                   SelectedRuleSet = Item;
-                                                                                                   RuleSetSelectionComboBox->RefreshOptions();
-                                                                                               })
-						.ContentPadding(4.0f)
+                        .OptionsSource(&RuleSets)
+                        .InitiallySelectedItem(SelectedRuleSet)
+                        .OnGenerateWidget_Lambda([&](TSharedPtr<FAssetData> LintRuleSet) {
+                            ULintRuleSet* RuleSet = Cast<ULintRuleSet>(LintRuleSet->GetAsset());
+                            if (RuleSet != nullptr) {
+                                return
+                                    SNew(STextBlock)
+                                    .Text(RuleSet->RuleSetDescription.IsEmpty() ? FText::FromString(RuleSet->GetPathName()) : RuleSet->RuleSetDescription);
+                            }
+                            
+                            return
+                                SNew(STextBlock)
+                                .Text(FText::FromString(TEXT("This Lint Rule Set Failed To Load? Uhhhh....")));
+                        })
+                        .OnSelectionChanged_Lambda([&](TSharedPtr<FAssetData> Item, ESelectInfo::Type SelectInfo) {
+                           SelectedRuleSet = Item;
+                           RuleSetSelectionComboBox->RefreshOptions();
+                        })
+                        .ContentPadding(4.0f)
                         [
                             SNew(STextBlock)
                             .Text_Lambda([&]() {
@@ -157,70 +166,70 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                 ]
                 // Lint Report
                 + SWizard::Page()
-                  .OnEnter(this, &SLintWizard::OnLintReportEntered)
-                  .CanShow_Lambda([&]() {
-                      return RuleSets.Num() >= 1 && SelectedRuleSet.IsValid();
-                  })
+                .OnEnter(this, &SLintWizard::OnLintReportEntered)
+                .CanShow_Lambda([&]() {
+                    return RuleSets.Num() >= 1 && SelectedRuleSet.IsValid();
+                })
                 [
                     SNew(SVerticalBox)
                     // Title
                     + SVerticalBox::Slot()
-                      .AutoHeight()
-                      .Padding(0)
+                    .AutoHeight()
+                    .Padding(0)
                     [
                         SNew(STextBlock)
-						.Font(FAppStyle::Get().GetFontStyle("HeadingSmall"))
-						.Text(LOCTEXT("LinterReportTitle", "Lint Report"))
+                        .Font(FAppStyle::Get().GetFontStyle("HeadingSmall"))
+                        .Text(LOCTEXT("LinterReportTitle", "Lint Report"))
                     ]
                     // Marketplace No Errors Required Text
                     + SVerticalBox::Slot()
-                      .AutoHeight()
-                      .Padding(PaddingAmount)
+                    .AutoHeight()
+                    .Padding(PaddingAmount)
                     [
                         SNew(STextBlock)
-						.Text(LOCTEXT("MarketplaceNoErrorsRequired", "The Epic Marketplace requires you to have zero linting errors before submission and approval."))
-						.Visibility_Lambda([&]() {
-                                            return (LintReport.IsValid() && LintReport->bHasRanReport && LintReport->NumErrors > 0 && LintReport->LastUsedRuleSet != nullptr && LintReport->LastUsedRuleSet->bShowMarketplacePublishingInfoInLintWizard) ? EVisibility::HitTestInvisible : EVisibility::Collapsed;
-                                        })
+                        .Text(LOCTEXT("MarketplaceNoErrorsRequired", "The Epic Marketplace requires you to have zero linting errors before submission and approval."))
+                        .Visibility_Lambda([&]() {
+                            return (LintReport.IsValid() && LintReport->bHasRanReport && LintReport->NumErrors > 0 && LintReport->LastUsedRuleSet != nullptr && LintReport->LastUsedRuleSet->bShowMarketplacePublishingInfoInLintWizard) ? EVisibility::HitTestInvisible : EVisibility::Collapsed;
+                        })
                     ]
                     // Title spacer
                     + SVerticalBox::Slot()
-                      .AutoHeight()
-                      .Padding(0, 2, 0, 8)
+                    .AutoHeight()
+                    .Padding(0, 2, 0, 8)
                     [
                         SNew(SSeparator)
                     ]
                     // Linter Report
                     + SVerticalBox::Slot()
-                      .FillHeight(1.0f)
-                      .VAlign(VAlign_Fill)
-                      .HAlign(HAlign_Fill)
-                      .Padding(PaddingAmount)
+                    .FillHeight(1.0f)
+                    .VAlign(VAlign_Fill)
+                    .HAlign(HAlign_Fill)
+                    .Padding(PaddingAmount)
                     [
                         SAssignNew(LintReport, SLintReport)
                     ]
                 ]
                 // Marketplace Info Page
                 + SWizard::Page()
-                  .OnEnter(this, &SLintWizard::OnMarketplaceRecommendationsEntered)
-                  .CanShow_Lambda([&]() {
-                      return LintReport.IsValid() && LintReport->bHasRanReport && LintReport->NumErrors <= 0 && LintReport->LastUsedRuleSet != nullptr && LintReport->LastUsedRuleSet->bShowMarketplacePublishingInfoInLintWizard;
-                  })
+                .OnEnter(this, &SLintWizard::OnMarketplaceRecommendationsEntered)
+                .CanShow_Lambda([&]() {
+                    return LintReport.IsValid() && LintReport->bHasRanReport && LintReport->NumErrors <= 0 && LintReport->LastUsedRuleSet != nullptr && LintReport->LastUsedRuleSet->bShowMarketplacePublishingInfoInLintWizard;
+                })
                 [
                     SNew(SVerticalBox)
                     // Title
                     + SVerticalBox::Slot()
-                      .AutoHeight()
-                      .Padding(0)
+                    .AutoHeight()
+                    .Padding(0)
                     [
                         SNew(STextBlock)
-						.Font(FAppStyle::Get().GetFontStyle("HeadingSmall"))
-						.Text(LOCTEXT("MarketplaceInfoTitle", "Marketplace Recommendations"))
+                        .Font(FAppStyle::Get().GetFontStyle("HeadingSmall"))
+                        .Text(LOCTEXT("MarketplaceInfoTitle", "Marketplace Recommendations"))
                     ]
                     // Title spacer
                     + SVerticalBox::Slot()
-                      .AutoHeight()
-                      .Padding(0, 2, 0, 8)
+                    .AutoHeight()
+                    .Padding(0, 2, 0, 8)
                     [
                         SNew(SSeparator)
                     ]
@@ -233,131 +242,132 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                             SNew(SVerticalBox)
                             // Disclaimer
                             + SVerticalBox::Slot()
-                              .VAlign(VAlign_Top)
-                              .AutoHeight()
+                            .VAlign(VAlign_Top)
+                            .AutoHeight()
                             [
                                 SNew(SBorder)
-								.BorderImage(FAppStyle::GetBrush("NoBorder"))
-								.Padding(PaddingAmount)
+                                .BorderImage(FAppStyle::GetBrush("NoBorder"))
+                                .Padding(PaddingAmount)
                                 [
                                     SNew(SBorder)
-									.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
-									.Padding(PaddingAmount)
+                                    .BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
+                                    .Padding(PaddingAmount)
                                     [
                                         SNew(SHorizontalBox)
                                         // Info image
                                         + SHorizontalBox::Slot()
-                                          .AutoWidth()
-                                          .VAlign(VAlign_Center)
-                                          .Padding(28.0f, 8.0f)
+                                        .AutoWidth()
+                                        .VAlign(VAlign_Center)
+                                        .Padding(28.0f, 8.0f)
                                         [
-                                            SNew(SImage).Image(FLinterStyle::Get()->GetBrush("Linter.Report.Info"))
+                                            SNew(SImage)
+                                            .Image(FLinterStyle::Get()->GetBrush("Linter.Report.Info"))
                                         ]
                                         // Disclaimer text
                                         + SHorizontalBox::Slot()
-                                          .VAlign(VAlign_Center)
-                                          .FillWidth(1.0f)
+                                        .VAlign(VAlign_Center)
+                                        .FillWidth(1.0f)
                                         [
                                             SNew(SRichTextBlock)
-											.Text(LOCTEXT("SuccessDisclaimer", "This product has successfully passed the Marketplace Guidlines Linter scan. Please note, however, that this does not guarantee this product's acceptance onto the Marketplace. We also recommend that you take the following actions listed below."))
-											.AutoWrapText(true)
-											.TextStyle(FLinterStyle::Get(), "Linter.Report.DescriptionText")
+                                            .Text(LOCTEXT("SuccessDisclaimer", "This product has successfully passed the Marketplace Guidlines Linter scan. Please note, however, that this does not guarantee this product's acceptance onto the Marketplace. We also recommend that you take the following actions listed below."))
+                                            .AutoWrapText(true)
+                                            .TextStyle(FLinterStyle::Get(), "Linter.Report.DescriptionText")
                                         ]
                                     ]
                                 ]
                             ]
                             // Fix Up Redirectors step widget
                             + SVerticalBox::Slot()
-                              .AutoHeight()
-                              .VAlign(VAlign_Fill)
-                              .HAlign(HAlign_Fill)
-                              .Padding(PaddingAmount)
+                            .AutoHeight()
+                            .VAlign(VAlign_Fill)
+                            .HAlign(HAlign_Fill)
+                            .Padding(PaddingAmount)
                             [
                                 SNew(SStepWidget)
-								.StepName(LOCTEXT("FixUpRedirectsStepName", "Fix Up Redirectors"))
-								.StepDesc(LOCTEXT("FixUpRedirectsStepDesc", "Resave all packages that point to redirectors in your project, and delete those redirectors if able to resave all the things referencing them."))
-								.Icon(FLinterStyle::Get()->GetBrush("Linter.Step.FixUpRedirects.Thumbnail"))
-								.ShowStepStatusIcon(false)
-								.StepStatus_Lambda([this]() {
-                                                     return FixUpRedirectorStatus;
-                                                 })
-								.StepActionText(LOCTEXT("FixUpRedirectsStepAction", "Fix Up Redirectors"))
-								.OnPerformAction_Lambda([this](FScopedSlowTask& ScopedSlowTask) {
-                                                     FixUpRedirectorStatus = InProgress;
-                                                     bool bSuccess = true;
+                                .StepName(LOCTEXT("FixUpRedirectsStepName", "Fix Up Redirectors"))
+                                .StepDesc(LOCTEXT("FixUpRedirectsStepDesc", "Resave all packages that point to redirectors in your project, and delete those redirectors if able to resave all the things referencing them."))
+                                .Icon(FLinterStyle::Get()->GetBrush("Linter.Step.FixUpRedirects.Thumbnail"))
+                                .ShowStepStatusIcon(false)
+                                .StepStatus_Lambda([this]() {
+                                    return FixUpRedirectorStatus;
+                                })
+                                .StepActionText(LOCTEXT("FixUpRedirectsStepAction", "Fix Up Redirectors"))
+                                .OnPerformAction_Lambda([this](FScopedSlowTask& ScopedSlowTask) {
+                                    FixUpRedirectorStatus = InProgress;
+                                    bool bSuccess = true;
 
-                                                     const FAssetRegistryModule& AssetRegistryModule = FModuleManager::Get().LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
-                                                     ScopedSlowTask.EnterProgressFrame(0, LOCTEXT("Linter.FixUpRedirects.FindingRedirectors", "Looking For redirectors..."));
+                                    const FAssetRegistryModule& AssetRegistryModule = FModuleManager::Get().LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+                                    ScopedSlowTask.EnterProgressFrame(0, LOCTEXT("Linter.FixUpRedirects.FindingRedirectors", "Looking For redirectors..."));
 
-                                                     // Form a filter from the paths
-                                                     FARFilter Filter;
-                                                     Filter.bRecursivePaths = true;
-                                                     Filter.PackagePaths.Add("/Game");
-#if UE_VERSION_NEWER_THAN(5, 1, 0)
-                                                     Filter.ClassPaths.Add(FTopLevelAssetPath{"ObjectRedirector"});
-#else
-                                                     Filter.ClassNames.Add("ObjectRedirector");
-#endif
+                                    // Form a filter from the paths
+                                    FARFilter Filter;
+                                    Filter.bRecursivePaths = true;
+                                    Filter.PackagePaths.Add("/Game");
+    #if UE_VERSION_NEWER_THAN(5, 1, 0)
+                                    Filter.ClassPaths.Add(FTopLevelAssetPath{"ObjectRedirector"});
+    #else
+                                    Filter.ClassNames.Add("ObjectRedirector");
+    #endif
 
-                                                     // Query for a list of assets in the selected paths
-                                                     TArray<FAssetData> AssetList;
-                                                     AssetRegistryModule.Get().GetAssets(Filter, AssetList);
+                                    // Query for a list of assets in the selected paths
+                                    TArray<FAssetData> AssetList;
+                                    AssetRegistryModule.Get().GetAssets(Filter, AssetList);
 
-                                                     if (AssetList.Num() > 0) {
-                                                         TArray<FString> ObjectPaths;
-                                                         for (const auto& Asset : AssetList) {
-#if UE_VERSION_NEWER_THAN(5, 1, 0)
-                                                             ObjectPaths.Add(Asset.GetObjectPathString());
-#else
-                                                             ObjectPaths.Add(Asset.ObjectPath.ToString());
-#endif
-                                                         }
+                                    if (AssetList.Num() > 0) {
+                                        TArray<FString> ObjectPaths;
+                                        for (const auto& Asset : AssetList) {
+    #if UE_VERSION_NEWER_THAN(5, 1, 0)
+                                        ObjectPaths.Add(Asset.GetObjectPathString());
+    #else
+                                        ObjectPaths.Add(Asset.ObjectPath.ToString());
+    #endif
+                                        }
 
-                                                         ScopedSlowTask.EnterProgressFrame(0.25f, LOCTEXT("Linter.FixUpRedirects.LoadingRedirectors", "Loading redirectors..."));
+                                        ScopedSlowTask.EnterProgressFrame(0.25f, LOCTEXT("Linter.FixUpRedirects.LoadingRedirectors", "Loading redirectors..."));
 
-                                                         TArray<UObject*> Objects;
-                                                         if (LoadAssetsIfNeeded(ObjectPaths, Objects)) {
-                                                             // Transform Objects array to ObjectRedirectors array
-                                                             TArray<UObjectRedirector*> Redirectors;
-                                                             for (auto&& Object : Objects) {
-                                                                 auto Redirector = CastChecked<UObjectRedirector>(Object);
-                                                                 Redirectors.Add(Redirector);
-                                                             }
+                                        TArray<UObject*> Objects;
+                                        if (LoadAssetsIfNeeded(ObjectPaths, Objects)) {
+                                            // Transform Objects array to ObjectRedirectors array
+                                            TArray<UObjectRedirector*> Redirectors;
+                                            for (auto&& Object : Objects) {
+                                                auto Redirector = CastChecked<UObjectRedirector>(Object);
+                                                Redirectors.Add(Redirector);
+                                            }
 
-                                                             ScopedSlowTask.EnterProgressFrame(0.25f, LOCTEXT("Linter.FixUpRedirects.FixingRedirectors", "Fixing up redirectors..."));
+                                            ScopedSlowTask.EnterProgressFrame(0.25f, LOCTEXT("Linter.FixUpRedirects.FixingRedirectors", "Fixing up redirectors..."));
 
-                                                             // Load the asset tools module
-                                                             FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools"));
-                                                             AssetToolsModule.Get().FixupReferencers(Redirectors);
-                                                         } else {
-                                                             FNotificationInfo NotificationInfo(LOCTEXT("FixUpRedirectorsFailed", "Linter failed to load an object redirector when trying to fix up all redirectors."));
-                                                             NotificationInfo.ExpireDuration = 6.0f;
-                                                             NotificationInfo.Hyperlink = FSimpleDelegate::CreateStatic([]() {
-                                                                 FMessageLog("LoadErrors").Open(EMessageSeverity::Info, true);
-                                                             });
-                                                             NotificationInfo.HyperlinkText = LOCTEXT("LoadObjectHyperlink", "Show Message Log");
-                                                             FSlateNotificationManager::Get().AddNotification(NotificationInfo);
-                                                             bSuccess = false;
-                                                         }
-                                                     }
+                                            // Load the asset tools module
+                                            FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools"));
+                                            AssetToolsModule.Get().FixupReferencers(Redirectors);
+                                        } else {
+                                            FNotificationInfo NotificationInfo(LOCTEXT("FixUpRedirectorsFailed", "Linter failed to load an object redirector when trying to fix up all redirectors."));
+                                            NotificationInfo.ExpireDuration = 6.0f;
+                                            NotificationInfo.Hyperlink = FSimpleDelegate::CreateStatic([]() {
+                                                FMessageLog("LoadErrors").Open(EMessageSeverity::Info, true);
+                                            });
+                                            NotificationInfo.HyperlinkText = LOCTEXT("LoadObjectHyperlink", "Show Message Log");
+                                            FSlateNotificationManager::Get().AddNotification(NotificationInfo);
+                                            bSuccess = false;
+                                        }
+                                    }
 
-                                                     FixUpRedirectorStatus = bSuccess ? Success : Error;
-                                                 })
+                                    FixUpRedirectorStatus = bSuccess ? Success : Error;
+                                })
                             ]
                             // Build Lighting Widget
                             + SVerticalBox::Slot()
                             .Padding(PaddingAmount)
                             [
                                 SNew(SBorder)
-								.BorderImage(FAppStyle::GetBrush("NoBorder"))
-								.Padding(PaddingAmount)
-								.Visibility_Lambda([&]() {
-                                                 return (MapAssetDataList.Num() > 0) ? EVisibility::SelfHitTestInvisible : EVisibility::Collapsed;
-                                             })
+                                .BorderImage(FAppStyle::GetBrush("NoBorder"))
+                                .Padding(PaddingAmount)
+                                .Visibility_Lambda([&]() {
+                                    return (MapAssetDataList.Num() > 0) ? EVisibility::SelfHitTestInvisible : EVisibility::Collapsed;
+                                })
                                 [
                                     SNew(SBorder)
-									.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
-									.Padding(PaddingAmount)
+                                    .BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
+                                    .Padding(PaddingAmount)
                                     [
                                         SNew(SVerticalBox)
                                         + SVerticalBox::Slot()
@@ -366,9 +376,9 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                                             SNew(SHorizontalBox)
                                             // Template thumbnail image
                                             + SHorizontalBox::Slot()
-                                              .Padding(4.0)
-                                              .AutoWidth()
-                                              .VAlign(VAlign_Top)
+                                            .Padding(4.0)
+                                            .AutoWidth()
+                                            .VAlign(VAlign_Top)
                                             [
                                                 SNew(SImage)
                                                 .Image(FLinterStyle::Get()->GetBrush("Linter.Step.BuildLighting.Thumbnail"))
@@ -378,22 +388,22 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                                             [
                                                 SNew(SVerticalBox)
                                                 + SVerticalBox::Slot()
-                                                  .AutoHeight()
-                                                  .Padding(PaddingAmount)
+                                                .AutoHeight()
+                                                .Padding(PaddingAmount)
                                                 [
                                                     SNew(STextBlock)
-													.Text(LOCTEXT("BuildLightingStepName", "Build Lighting and Run Map Check"))
-													.TextStyle(FLinterStyle::Get(), "Linter.Report.RuleTitle")
+                                                    .Text(LOCTEXT("BuildLightingStepName", "Build Lighting and Run Map Check"))
+                                                    .TextStyle(FLinterStyle::Get(), "Linter.Report.RuleTitle")
                                                 ]
 
                                                 + SVerticalBox::Slot()
-                                                  .AutoHeight()
-                                                  .Padding(PaddingAmount)
+                                                .AutoHeight()
+                                                .Padding(PaddingAmount)
                                                 [
                                                     SNew(SRichTextBlock)
-													.Text(LOCTEXT("BuildLightingStepDesc", "Open each map listed below and click Map Check in the Build Options Menu of the Level Editor Toolbar. If any Map Check errors are generated, resolve them before packaging your project. If any 'LIGHTING NEEDS TO BE REBUILT' errors are present press Ctrl+Shift+Semicolon to rebuild lighting."))
-													.TextStyle(FLinterStyle::Get(), "Linter.Report.DescriptionText")
-													.AutoWrapText(true)
+                                                    .Text(LOCTEXT("BuildLightingStepDesc", "Open each map listed below and click Map Check in the Build Options Menu of the Level Editor Toolbar. If any Map Check errors are generated, resolve them before packaging your project. If any 'LIGHTING NEEDS TO BE REBUILT' errors are present press Ctrl+Shift+Semicolon to rebuild lighting."))
+                                                    .TextStyle(FLinterStyle::Get(), "Linter.Report.DescriptionText")
+                                                    .AutoWrapText(true)
                                                 ]
                                             ]
                                         ]
@@ -403,9 +413,9 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                                             SNew(SSeparator)
                                         ]
                                         + SVerticalBox::Slot()
-                                          .VAlign(VAlign_Fill)
-                                          .FillHeight(1.0f)
-                                          .Padding(PaddingAmount)
+                                        .VAlign(VAlign_Fill)
+                                        .FillHeight(1.0f)
+                                        .Padding(PaddingAmount)
                                         [
                                             SAssignNew(MarketplaceRecommendationMapScrollBoxPtr, SScrollBox)
                                             .ScrollBarAlwaysVisible(true)
@@ -415,64 +425,64 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                             ]
                             // Save All Step
                             + SVerticalBox::Slot()
-                              .Padding(PaddingAmount)
-                              .AutoHeight()
+                            .Padding(PaddingAmount)
+                            .AutoHeight()
                             [
                                 SNew(SStepWidget)
-								.StepName(LOCTEXT("SaveAllStepName", "Save All"))
-								.StepDesc(LOCTEXT("SaveAllStepDesc", "Save all unsaved levels and assets to disk."))
-								.Icon(FLinterStyle::Get()->GetBrush("Linter.Step.SaveAll.Thumbnail"))
-								.ShowStepStatusIcon(false)
-								.StepStatus_Lambda([this]() {
-                                                     return SaveAllStatus;
-                                                 })
-								.StepActionText(LOCTEXT("SaveAllStepNameAction", "Save All"))
-								.OnPerformAction_Lambda([this](FScopedSlowTask& ScopedSlowTask) {
-                                                     SaveAllStatus = InProgress;
+                                .StepName(LOCTEXT("SaveAllStepName", "Save All"))
+                                .StepDesc(LOCTEXT("SaveAllStepDesc", "Save all unsaved levels and assets to disk."))
+                                .Icon(FLinterStyle::Get()->GetBrush("Linter.Step.SaveAll.Thumbnail"))
+                                .ShowStepStatusIcon(false)
+                                .StepStatus_Lambda([this]() {
+                                    return SaveAllStatus;
+                                })
+                                .StepActionText(LOCTEXT("SaveAllStepNameAction", "Save All"))
+                                .OnPerformAction_Lambda([this](FScopedSlowTask& ScopedSlowTask) {
+                                    SaveAllStatus = InProgress;
 
-                                                     // Taken from MainFrameActions.cpp SaveAll
-                                                     constexpr bool bPromptUserToSave = false;
-                                                     constexpr bool bSaveMapPackages = true;
-                                                     constexpr bool bSaveContentPackages = true;
-                                                     constexpr bool bFastSave = false;
-                                                     constexpr bool bNotifyNoPackagesSaved = false;
-                                                     constexpr bool bCanBeDeclined = false;
-                                                     if (FEditorFileUtils::SaveDirtyPackages(bPromptUserToSave, bSaveMapPackages, bSaveContentPackages, bFastSave, bNotifyNoPackagesSaved, bCanBeDeclined)) {
-                                                         SaveAllStatus = Success;
-                                                     } else {
-                                                         FNotificationInfo NotificationInfo(LOCTEXT("SaveAllFailed", "Linter failed to save all dirty assets!"));
-                                                         NotificationInfo.ExpireDuration = 6.0f;
-                                                         NotificationInfo.Hyperlink = FSimpleDelegate::CreateStatic([]() {
-                                                             FMessageLog("LoadErrors").Open(EMessageSeverity::Info, true);
-                                                         });
-                                                         NotificationInfo.HyperlinkText = LOCTEXT("LoadObjectHyperlink", "Show Message Log");
-                                                         FSlateNotificationManager::Get().AddNotification(NotificationInfo);
-                                                         SaveAllStatus = Error;
-                                                     }
-                                                 })
+                                    // Taken from MainFrameActions.cpp SaveAll
+                                    constexpr bool bPromptUserToSave = false;
+                                    constexpr bool bSaveMapPackages = true;
+                                    constexpr bool bSaveContentPackages = true;
+                                    constexpr bool bFastSave = false;
+                                    constexpr bool bNotifyNoPackagesSaved = false;
+                                    constexpr bool bCanBeDeclined = false;
+                                    if (FEditorFileUtils::SaveDirtyPackages(bPromptUserToSave, bSaveMapPackages, bSaveContentPackages, bFastSave, bNotifyNoPackagesSaved, bCanBeDeclined)) {
+                                        SaveAllStatus = Success;
+                                    } else {
+                                        FNotificationInfo NotificationInfo(LOCTEXT("SaveAllFailed", "Linter failed to save all dirty assets!"));
+                                        NotificationInfo.ExpireDuration = 6.0f;
+                                        NotificationInfo.Hyperlink = FSimpleDelegate::CreateStatic([]() {
+                                            FMessageLog("LoadErrors").Open(EMessageSeverity::Info, true);
+                                        });
+                                        NotificationInfo.HyperlinkText = LOCTEXT("LoadObjectHyperlink", "Show Message Log");
+                                        FSlateNotificationManager::Get().AddNotification(NotificationInfo);
+                                        SaveAllStatus = Error;
+                                    }
+                                })
                             ]
                             // Package Project step
                             + SVerticalBox::Slot()
-                              .Padding(PaddingAmount)
-                              .AutoHeight()
+                            .Padding(PaddingAmount)
+                            .AutoHeight()
                             [
                                 SNew(SBorder)
-								.Visibility(EVisibility::Collapsed)
-								.BorderImage(FAppStyle::GetBrush("NoBorder"))
-								.Padding(PaddingAmount)
+                                .Visibility(EVisibility::Collapsed)
+                                .BorderImage(FAppStyle::GetBrush("NoBorder"))
+                                .Padding(PaddingAmount)
                                 [
                                     SNew(SBorder)
-									.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
-									.Padding(PaddingAmount)
+                                    .BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
+                                    .Padding(PaddingAmount)
                                     [
                                         SNew(SVerticalBox)
                                         + SVerticalBox::Slot()
                                         [
                                             SNew(SHorizontalBox)
                                             + SHorizontalBox::Slot()
-                                              .Padding(4.0)
-                                              .AutoWidth()
-                                              .VAlign(VAlign_Top)
+                                            .Padding(4.0)
+                                            .AutoWidth()
+                                            .VAlign(VAlign_Top)
                                             [
                                                 SNew(SImage)
                                                 .Image(FLinterStyle::Get()->GetBrush("Linter.Step.Package.Thumbnail"))
@@ -481,26 +491,26 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                                             [
                                                 SNew(SVerticalBox)
                                                 + SVerticalBox::Slot()
-                                                  .AutoHeight()
-                                                  .Padding(PaddingAmount)
+                                                .AutoHeight()
+                                                .Padding(PaddingAmount)
                                                 [
                                                     SNew(STextBlock)
-													.Text(LOCTEXT("PackageProduct", "Package Product to .Zip"))
-													.TextStyle(FLinterStyle::Get(), "Linter.Report.RuleTitle")
+                                                    .Text(LOCTEXT("PackageProduct", "Package Product to .Zip"))
+                                                    .TextStyle(FLinterStyle::Get(), "Linter.Report.RuleTitle")
                                                 ]
 
                                                 + SVerticalBox::Slot()
-                                                  .AutoHeight()
-                                                  .Padding(PaddingAmount)
+                                                .AutoHeight()
+                                                .Padding(PaddingAmount)
                                                 [
                                                     SNew(SRichTextBlock)
-													.Text(LOCTEXT("PackageProductDesc", "Upload this .zip file to a hosting site (GoogleDrive/Dropbox/etc.) and enter the download URL as the associated product's Project File Link in the Publisher Portal."))
-													.TextStyle(FLinterStyle::Get(), "Linter.Report.DescriptionText")
-													.AutoWrapText(true)
+                                                    .Text(LOCTEXT("PackageProductDesc", "Upload this .zip file to a hosting site (GoogleDrive/Dropbox/etc.) and enter the download URL as the associated product's Project File Link in the Publisher Portal."))
+                                                    .TextStyle(FLinterStyle::Get(), "Linter.Report.DescriptionText")
+                                                    .AutoWrapText(true)
                                                 ]
                                                 + SVerticalBox::Slot()
-                                                  .AutoHeight()
-                                                  .Padding(PaddingAmount)
+                                                .AutoHeight()
+                                                .Padding(PaddingAmount)
                                                 [
                                                     SNew(SHorizontalBox)
                                                     + SHorizontalBox::Slot()
@@ -508,15 +518,15 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                                                     [
                                                         SNew(SButton)
                                                         .OnClicked_Lambda([&]() {
-#if PLATFORM_WINDOWS
+    #if PLATFORM_WINDOWS
                                                             FText PlatformName = LOCTEXT("PlatformName_Windows", "Windows");
-#elif PLATFORM_MAC
-															FText PlatformName = LOCTEXT("PlatformName_Mac", "Mac");
-#elif PLATFORM_LINUX
-															FText PlatformName = LOCTEXT("PlatformName_Linux", "Linux");
-#else
-															FText PlatformName = LOCTEXT("PlatformName_Other", "Other OS");
-#endif
+    #elif PLATFORM_MAC
+                                                            FText PlatformName = LOCTEXT("PlatformName_Mac", "Mac");
+    #elif PLATFORM_LINUX
+                                                            FText PlatformName = LOCTEXT("PlatformName_Linux", "Linux");
+    #else
+                                                            FText PlatformName = LOCTEXT("PlatformName_Other", "Other OS");
+    #endif
 
                                                             bool bOpened = false;
                                                             TArray<FString> SaveFilenames;
@@ -546,16 +556,22 @@ void SLintWizard::Construct(const FArguments& InArgs) {
 
                                                                     FString CommandLine = FString::Printf(TEXT("ZipProjectUp %s -project=\"%s\" -install=\"%s\""), UATFlags, *ProjectPath, *FinalFileName);
 
-                                                                    IUATHelperModule::Get().CreateUatTask(CommandLine, PlatformName, LOCTEXT("ZipTaskName", "Zipping Up Project"),
-                                                                                                          LOCTEXT("ZipTaskShortName", "Zip Project Task"), FAppStyle::GetBrush(TEXT("MainFrame.CookContent")));
+                                                                    IUATHelperModule::Get().CreateUatTask(
+                                                                        CommandLine,
+                                                                        PlatformName,
+                                                                        LOCTEXT("ZipTaskName", "Zipping Up Project"),
+                                                                        LOCTEXT("ZipTaskShortName", "Zip Project Task"),
+                                                                        FAppStyle::GetBrush(TEXT("MainFrame.CookContent"))
+                                                                    );
                                                                 }
 
-#if UE_VERSION_NEWER_THAN(4, 26, 0)
+    #if UE_VERSION_NEWER_THAN(4, 26, 0)
                                                                 FGlobalTabmanager::Get()->TryInvokeTab(FName("LinterTab"))->RequestCloseTab();
-#else
-																FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"))->RequestCloseTab();
-#endif
+    #else
+                                                                FGlobalTabmanager::Get()->InvokeTab(FName("LinterTab"))->RequestCloseTab();
+    #endif
                                                             }
+                                                            
                                                             return FReply::Handled();
                                                         })
                                                         [
@@ -575,6 +591,8 @@ void SLintWizard::Construct(const FArguments& InArgs) {
             ]
         ]
     ];
+    // clang-format on
+    // @formatter:on
 
     // Determine all levels in the project for wizard purposes
     FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
@@ -593,14 +611,18 @@ void SLintWizard::Construct(const FArguments& InArgs) {
     for (FAssetData Asset : AssetDatas) {
         MapAssetDataList.Add(MakeShareable(new FAssetData(Asset)));
 
+        // clang-format off
+        // @formatter:off
         MarketplaceRecommendationMapScrollBoxPtr.Get()->AddSlot()
-                                                .HAlign(HAlign_Fill)
-                                                .VAlign(VAlign_Fill)
-                                                .Padding(PaddingAmount)
-        [
-            SNew(SAssetLinkWidget)
-            .AssetData(Asset)
-        ];
+            .HAlign(HAlign_Fill)
+            .VAlign(VAlign_Fill)
+            .Padding(PaddingAmount)
+            [
+                SNew(SAssetLinkWidget)
+                .AssetData(Asset)
+            ];
+        // clang-format on
+        // @formatter:on
     }
 }
 

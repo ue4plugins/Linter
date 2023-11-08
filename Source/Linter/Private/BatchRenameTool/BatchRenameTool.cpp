@@ -31,21 +31,25 @@ FDlgBatchRenameTool::FDlgBatchRenameTool(const TArray<FAssetData> Assets) :
     bRemoveSuffix(false),
     SelectedAssets(Assets) {
     if (FSlateApplication::IsInitialized()) {
+        // clang-format off
+        // @formatter:off
         DialogWindow = SNew(SWindow)
-			.Title(LOCTEXT("BatchRenameToolDlgTitle", "Batch Rename Tool"))
-			.SupportsMinimize(false).SupportsMaximize(false)
-			.SaneWindowPlacement(true)
-			.AutoCenter(EAutoCenter::PreferredWorkArea)
-			.ClientSize(FVector2D(350, 165));
+	    .Title(LOCTEXT("BatchRenameToolDlgTitle", "Batch Rename Tool"))
+	    .SupportsMinimize(false).SupportsMaximize(false)
+	    .SaneWindowPlacement(true)
+	    .AutoCenter(EAutoCenter::PreferredWorkArea)
+	    .ClientSize(FVector2D(350, 165));
 
         const TSharedPtr<SBorder> DialogWrapper =
             SNew(SBorder)
-			.BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
-			.Padding(4.0f)
+	    .BorderImage(FAppStyle::GetBrush("ToolPanel.GroupBorder"))
+	    .Padding(4.0f)
             [
                 SAssignNew(DialogWidget, SDlgBatchRenameTool)
                 .ParentWindow(DialogWindow)
             ];
+        // clang-format on
+        // @formatter:on
 
         DialogWindow->SetContent(DialogWrapper.ToSharedRef());
     }
