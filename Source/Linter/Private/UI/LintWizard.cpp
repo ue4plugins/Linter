@@ -117,7 +117,7 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                       .Padding(0)
                     [
                         SNew(STextBlock)
-						.TextStyle(FAppStyle::Get(), "NewClassDialog.PageTitle")
+						.Font(FAppStyle::Get().GetFontStyle("HeadingSmall"))
 						.Text(LOCTEXT("LinterSelectionTitle", "Linter Rule Set Selection"))
                     ]
                     // Title spacer
@@ -169,7 +169,7 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                       .Padding(0)
                     [
                         SNew(STextBlock)
-						.TextStyle(FAppStyle::Get(), "NewClassDialog.PageTitle")
+						.Font(FAppStyle::Get().GetFontStyle("HeadingSmall"))
 						.Text(LOCTEXT("LinterReportTitle", "Lint Report"))
                     ]
                     // Marketplace No Errors Required Text
@@ -214,7 +214,7 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                       .Padding(0)
                     [
                         SNew(STextBlock)
-						.TextStyle(FAppStyle::Get(), "NewClassDialog.PageTitle")
+						.Font(FAppStyle::Get().GetFontStyle("HeadingSmall"))
 						.Text(LOCTEXT("MarketplaceInfoTitle", "Marketplace Recommendations"))
                     ]
                     // Title spacer
