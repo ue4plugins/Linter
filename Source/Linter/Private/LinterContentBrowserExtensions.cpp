@@ -1,6 +1,7 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
 #include "LinterContentBrowserExtensions.h"
+#include "ContentBrowserMenuContexts.h"
 #include "LinterStyle.h"
 #include "ContentBrowserModule.h"
 #include "Linter.h"
@@ -111,13 +112,8 @@ void FLinterContentBrowserExtensions::InstallHooks() {
         LOCTEXT("ScanWithLinter_Tooltip", "Scan project content with Linter"),
         FSlateIcon(FLinterStyle::GetStyleSetName(), "Linter.Toolbar.Icon"),
         FToolMenuExecuteAction::CreateLambda([](const FToolMenuContext& InContext) {
-            if (const UContentBrowserDataMenuContext_FolderMenu* Context = InContext.FindContext<UContentBrowserDataMenuContext_FolderMenu>()) {
-                TArray<FString> SelectedPaths;
-                for (const auto& Asset : Context->SelectedItems) {
-                    SelectedPaths.Add(Asset.GetVirtualPath().ToString());
-                }
-                
-                RunLinterForAssets(SelectedPaths);
+            if (const auto* Context = InContext.FindContext<UContentBrowserFolderContext>()) {
+                RunLinterForAssets(Context->SelectedPackagePaths);
             }
         })
     );
