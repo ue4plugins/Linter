@@ -95,7 +95,7 @@ TArray<TSharedPtr<FLintRuleViolation>> ULintRuleSet::LintPathShared(const TArray
     TArray<FLintRuleViolation> RuleViolations = LintPath(AssetPaths, ParentScopedSlowTask);
 
     TArray<TSharedPtr<FLintRuleViolation>> SharedRuleViolations;
-    for (const FLintRuleViolation Violation : RuleViolations) {
+    for (const FLintRuleViolation& Violation : RuleViolations) {
         TSharedPtr<FLintRuleViolation> SharedViolation = MakeShared<FLintRuleViolation>(Violation);
         SharedViolation->PopulateAssetData();
         SharedRuleViolations.Push(SharedViolation);

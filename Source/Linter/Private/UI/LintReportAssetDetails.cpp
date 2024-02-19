@@ -38,7 +38,7 @@ void SLintReportAssetDetails::Construct(const FArguments& Args) {
     int32 NumErrors = 0;
     int32 NumWarnings = 0;
 
-    for (const TSharedPtr<FLintRuleViolation> RuleViolation : RuleViolations.Get()) {
+    for (const auto& RuleViolation : RuleViolations.Get()) {
         switch (RuleViolation->ViolatedRule.Get()->GetDefaultObject<ULintRule>()->RuleSeverity) {
             case ELintRuleSeverity::Error: NumErrors++;
                 break;

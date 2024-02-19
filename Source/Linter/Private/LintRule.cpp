@@ -109,7 +109,7 @@ TArray<TSharedPtr<FLintRuleViolation>> FLintRuleViolation::AllRuleViolationsWith
     // This should really be done when the structs are first created
     TArray<TSharedPtr<FLintRuleViolation>> SharedViolations;
     TArray<FLintRuleViolation> Violations = AllRuleViolationsWithViolator(RuleViolationCollection, SearchViolator);
-    for (const FLintRuleViolation Violation : Violations) {
+    for (const FLintRuleViolation& Violation : Violations) {
         SharedViolations.Push(MakeShared<FLintRuleViolation>(Violation));
     }
 

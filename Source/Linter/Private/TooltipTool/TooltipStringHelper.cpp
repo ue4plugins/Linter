@@ -128,14 +128,14 @@ bool FTooltipStringHelper::ParseFunctionRawTooltip(FString RawTooltip, FText& Ou
 
 FString FTooltipStringHelper::ConvertTooltipDataToRawTooltip(FText FunctionDescription, TArray<TSharedPtr<FBPFunctionArgumentDescription>> Inputs, TArray<TSharedPtr<FBPFunctionArgumentDescription>> Outputs) {
     FString RawTooltip = FunctionDescription.ToString();
-    for (const TSharedPtr<FBPFunctionArgumentDescription> Arg : Inputs) {
+    for (const auto& Arg : Inputs) {
         RawTooltip.Append(FString::Printf(TEXT("\n@param %s  %s\t\t\t%s"), TEXT("     "), *Arg->ArgumentName.ToString(), *Arg->Tooltip.ToString()));
     }
 
     if (Outputs.Num() == 1) {
         RawTooltip.Append(FString::Printf(TEXT("\n@return       %s"), *Outputs[0]->Tooltip.ToString()));
     } else {
-        for (const TSharedPtr<FBPFunctionArgumentDescription> Arg : Outputs) {
+        for (const auto& Arg : Outputs) {
             RawTooltip.Append(FString::Printf(TEXT("\n@param %s  %s\t\t\t%s"), TEXT("[out]"), *Arg->ArgumentName.ToString(), *Arg->Tooltip.ToString()));
         }
     }

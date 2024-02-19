@@ -698,7 +698,7 @@ void STooltipTool::RebuildMemberList() {
     UBlueprint* Blueprint = Cast<UBlueprint>(BlueprintComboBox->GetSelectedItem().Get()->GetAsset());
 
     // Get variables
-    for (const FBPVariableDescription Member : Blueprint->NewVariables) {
+    for (const FBPVariableDescription& Member : Blueprint->NewVariables) {
         if ((Member.PropertyFlags & CPF_DisableEditOnInstance) != CPF_DisableEditOnInstance) {
             Members.Push(MakeShared<FBPVariableDescription>(Member));
         }
