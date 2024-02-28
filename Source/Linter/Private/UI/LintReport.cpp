@@ -233,9 +233,6 @@ void SLintReport::Construct(const FArguments& Args) {
 
 void SLintReport::Rebuild(const ULintRuleSet* SelectedLintRuleSet) {
     const float PaddingAmount = FLinterStyle::Get()->GetFloat("Linter.Padding");
-
-    NumErrors = 0;
-    NumWarnings = 0;
     bHasRanReport = false;
 
     if (SelectedLintRuleSet == nullptr) {
@@ -255,59 +252,19 @@ void SLintReport::Rebuild(const ULintRuleSet* SelectedLintRuleSet) {
     FLinterModule& LinterModule = FModuleManager::LoadModuleChecked<FLinterModule>(TEXT("Linter"));
     TArray<FString> LintPaths = LinterModule.GetDesiredLintPaths();
 
-    RuleViolations = SelectedLintRuleSet->LintPathShared(LintPaths, &SlowTask);
-
-    for (TSharedPtr<FLintRuleViolation> Violation : RuleViolations) {
-        if (Violation->ViolatedRule->GetDefaultObject<ULintRule>()->RuleSeverity <= ELintRuleSeverity::Error) {
-            NumErrors++;
-        } else {
-            NumWarnings++;
-        }
-    }
+    LintResults = SelectedLintRuleSet->LintPath(LintPaths, &SlowTask);
+    RuleViolations = LintResults->GetSharedViolations();
 
     TArray<UObject*> UniqueViolators = FLintRuleViolation::AllRuleViolationViolators(RuleViolations);
-    TSharedPtr<FAssetThumbnailPool> ThumbnailPool = MakeShareable(new FAssetThumbnailPool(UniqueViolators.Num()));
+    TSharedPtr<FAssetThumbnailPool> ThumbnailPool = MakeShared<FAssetThumbnailPool>(UniqueViolators.Num());
 
-    TSharedPtr<FJsonObject> RootJsonObject = MakeShareable(new FJsonObject);
-    TArray<TSharedPtr<FJsonValue>> ViolatorJsonObjects;
-
-    for (UObject* Violator : UniqueViolators) {
-        // We might as well build JSON data here as we're iterating through all our rule violations anyway
-        TSharedPtr<FJsonObject> AssetJsonObject = MakeShareable(new FJsonObject);
-        TArray<TSharedPtr<FLintRuleViolation>> UniqueViolatorViolations = FLintRuleViolation::AllRuleViolationsWithViolatorShared(RuleViolations, Violator);
+    for (const UObject* Violator : UniqueViolators) {
+        TArray<TSharedPtr<FLintRuleViolation>> Violations = FLintRuleViolation::AllRuleViolationsWithViolatorShared(RuleViolations, Violator);
 
         FAssetData AssetData;
-        if (UniqueViolatorViolations.Num() > 0) {
-            AssetData = UniqueViolatorViolations[0]->ViolatorAssetData;
-            AssetJsonObject->SetStringField(TEXT("ViolatorAssetName"), AssetData.AssetName.ToString());
-#if UE_VERSION_NEWER_THAN(5, 1, 0)
-            AssetJsonObject->SetStringField(TEXT("ViolatorAssetPath"), AssetData.GetObjectPathString());
-#else
-            AssetJsonObject->SetStringField(TEXT("ViolatorAssetPath"), AssetData.ObjectPath.ToString());
-#endif
-            AssetJsonObject->SetStringField(TEXT("ViolatorFullName"), AssetData.GetFullName());
-            //@TODO: Thumbnail export?
-
-            TArray<TSharedPtr<FJsonValue>> RuleViolationJsonObjects;
-
-            for (TSharedPtr<FLintRuleViolation> Violation : UniqueViolatorViolations) {
-                ULintRule* LintRule = Violation->ViolatedRule->GetDefaultObject<ULintRule>();
-                check(LintRule != nullptr);
-
-                TSharedPtr<FJsonObject> RuleJsonObject = MakeShareable(new FJsonObject);
-                RuleJsonObject->SetStringField(TEXT("RuleGroup"), LintRule->RuleGroup.ToString());
-                RuleJsonObject->SetStringField(TEXT("RuleTitle"), LintRule->RuleTitle.ToString());
-                RuleJsonObject->SetStringField(TEXT("RuleDesc"), LintRule->RuleDescription.ToString());
-                RuleJsonObject->SetStringField(TEXT("RuleURL"), LintRule->RuleURL);
-                RuleJsonObject->SetNumberField(TEXT("RuleSeverity"), static_cast<int32>(LintRule->RuleSeverity));
-                RuleJsonObject->SetStringField(TEXT("RuleRecommendedAction"), Violation->RecommendedAction.ToString());
-                RuleViolationJsonObjects.Push(MakeShareable(new FJsonValueObject(RuleJsonObject)));
-            }
-
-            AssetJsonObject->SetArrayField(TEXT("Violations"), RuleViolationJsonObjects);
+        if (Violations.Num() > 0) {
+            AssetData = Violations[0]->ViolatorAssetData;
         }
-
-        ViolatorJsonObjects.Add(MakeShareable(new FJsonValueObject(AssetJsonObject)));
 
         // clang-format off
         // @formatter:off
@@ -318,7 +275,7 @@ void SLintReport::Rebuild(const ULintRuleSet* SelectedLintRuleSet) {
             [
                 SNew(SLintReportAssetDetails)
 	        .AssetData(AssetData)
-	        .RuleViolations(UniqueViolatorViolations)
+	        .RuleViolations(Violations)
 	        .ThumbnailPool(ThumbnailPool)
             ];
         // clang-format on
@@ -326,7 +283,7 @@ void SLintReport::Rebuild(const ULintRuleSet* SelectedLintRuleSet) {
     }
 
     TMultiMap<const ULintRule*, TSharedPtr<FLintRuleViolation>> ViolationsMappedByRule = FLintRuleViolation::AllRuleViolationsMappedByViolatedLintRuleShared(RuleViolations);
-    TSharedPtr<FAssetThumbnailPool> RuleThumbnailPool = MakeShareable(new FAssetThumbnailPool(ViolationsMappedByRule.Num())); // In case we ever want to render 'rule thumbnails' in the future
+    TSharedPtr<FAssetThumbnailPool> RuleThumbnailPool = MakeShared<FAssetThumbnailPool>(ViolationsMappedByRule.Num()); // In case we ever want to render 'rule thumbnails' in the future
 
     TArray<const ULintRule*> UniqueRules;
     ViolationsMappedByRule.GetKeys(UniqueRules);
@@ -352,25 +309,12 @@ void SLintReport::Rebuild(const ULintRuleSet* SelectedLintRuleSet) {
         }
     }
 
-    // Save off our JSON to a string
-    RootJsonObject->SetArrayField(TEXT("Violators"), ViolatorJsonObjects);
-    JsonReport.Empty();
-    TSharedRef<TJsonWriter<TCHAR, TPrettyJsonPrintPolicy<TCHAR>>> Writer = TJsonWriterFactory<TCHAR, TPrettyJsonPrintPolicy<TCHAR>>::Create(&JsonReport);
-    FJsonSerializer::Serialize(RootJsonObject.ToSharedRef(), Writer);
-
     // Update Summary Text Block
-    int32 NumAssets = UniqueViolators.Num();
-    FText ResultsSummary = FText::FormatNamed(LOCTEXT("ErrorWarningDisplay", "{NumAssets} {NumAssets}|plural(one=Asset,other=Assets), {NumErrors} {NumErrors}|plural(one=Error,other=Errors), {NumWarnings} {NumWarnings}|plural(one=Warning,other=Warnings)"), TEXT("NumAssets"), NumAssets, TEXT("NumErrors"), NumErrors, TEXT("NumWarnings"), NumWarnings);
-    ResultsTextBlockPtr->SetText(ResultsSummary);
+    ResultsTextBlockPtr->SetText(LintResults->Result);
 
-    // Prepare the HTML Export
-    FString TemplatePath = FPaths::Combine(*IPluginManager::Get().FindPlugin(TEXT("Linter"))->GetBaseDir(), TEXT("Resources"), TEXT("LintReportTemplate.html"));
-
-    if (FFileHelper::LoadFileToString(HTMLReport, *TemplatePath)) {
-        HTMLReport.ReplaceInline(TEXT("{% TITLE %}"), *FPaths::GetBaseFilename(FPaths::GetProjectFilePath()));
-        HTMLReport.ReplaceInline(TEXT("{% RESULTS %}"), *ResultsSummary.ToString());
-        HTMLReport.ReplaceInline(TEXT("{% LINT_REPORT %}"), *JsonReport);
-    }
+    // Genereate JSON and HTML reports
+    JsonReport = LintResults->GenerateJsonReportString();
+    HTMLReport = LintResults->GenerateHTML();
 
     bHasRanReport = true;
 }

@@ -1,6 +1,7 @@
 // Copyright 2020 Gamemakin LLC. All Rights Reserved.
 
 #include "LinterCommandlet.h"
+
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Dom/JsonObject.h"
 #include "Dom/JsonValue.h"
@@ -72,97 +73,31 @@ int32 ULinterCommandlet::Main(const FString& InParams) {
         UE_LOG(LinterCommandlet, Error, TEXT("Failed to load a rule set. Aborting. Returning error code 1."));
         return 1;
     }
-
     UE_LOG(LinterCommandlet, Display, TEXT("Using rule set: %s"), *RuleSet->GetFullName());
 
     if (Paths.Num() == 0) {
         Paths.Add(TEXT("/Game"));
     }
-
     UE_LOG(LinterCommandlet, Display, TEXT("Attempting to Lint paths: %s"), *FString::Join(Paths, TEXT(", ")));
 
-    const TArray<FLintRuleViolation> RuleViolations = RuleSet->LintPath(Paths);
+    const ULintResults* LintResults = RuleSet->LintPath(Paths);
+    UE_LOG(LinterCommandlet, Display, TEXT("%s"), *LintResults->Result.ToString());
 
-    int32 NumErrors = 0;
-    int32 NumWarnings = 0;
-
-    for (const FLintRuleViolation& Violation : RuleViolations) {
-        if (Violation.ViolatedRule->GetDefaultObject<ULintRule>()->RuleSeverity <= ELintRuleSeverity::Error) {
-            NumErrors++;
-        } else {
-            NumWarnings++;
-        }
-    }
-
-    FString ResultsString = FText::FormatNamed(FText::FromString("Lint completed with {NumWarnings} {NumWarnings}|plural(one=warning,other=warnings), {NumErrors} {NumErrors}|plural(one=error,other=errors)."), TEXT("NumWarnings"), FText::FromString(FString::FromInt(NumWarnings)), TEXT("NumErrors"), FText::FromString(FString::FromInt(NumErrors))).ToString();
-    UE_LOG(LinterCommandlet, Display, TEXT("Lint completed with %s."), *ResultsString);
-
-    bool bWriteReport = Switches.Contains(TEXT("json")) || ParamsMap.Contains(TEXT("json")) || Switches.Contains(TEXT("html")) || ParamsMap.Contains(TEXT("html"));
-    if (bWriteReport) {
+    if (Switches.Contains("json") || ParamsMap.Contains("json") || Switches.Contains("html") || ParamsMap.Contains("html")) {
         UE_LOG(LinterCommandlet, Display, TEXT("Generating output report..."));
 
-        TSharedPtr<FJsonObject> RootJsonObject = MakeShareable(new FJsonObject);
-        TArray<TSharedPtr<FJsonValue>> ViolatorJsonObjects;
-
-        TArray<UObject*> UniqueViolators = FLintRuleViolation::AllRuleViolationViolators(RuleViolations);
-        for (const UObject* Violator : UniqueViolators) {
-            TSharedPtr<FJsonObject> AssetJsonObject = MakeShareable(new FJsonObject);
-            TArray<FLintRuleViolation> UniqueViolatorViolations = FLintRuleViolation::AllRuleViolationsWithViolator(RuleViolations, Violator);
-
-            FAssetData AssetData;
-            if (UniqueViolatorViolations.Num() > 0) {
-                UniqueViolatorViolations[0].PopulateAssetData();
-                AssetData = UniqueViolatorViolations[0].ViolatorAssetData;
-                AssetJsonObject->SetStringField(TEXT("ViolatorAssetName"), AssetData.AssetName.ToString());
-#if UE_VERSION_NEWER_THAN(5, 1, 0)
-                AssetJsonObject->SetStringField(TEXT("ViolatorAssetPath"), AssetData.GetObjectPathString());
-#else
-                AssetJsonObject->SetStringField(TEXT("ViolatorAssetPath"), AssetData.ObjectPath.ToString());
-#endif
-                AssetJsonObject->SetStringField(TEXT("ViolatorFullName"), AssetData.GetFullName());
-                //@TODO: Thumbnail export?
-
-                TArray<TSharedPtr<FJsonValue>> RuleViolationJsonObjects;
-
-                for (const FLintRuleViolation& Violation : UniqueViolatorViolations) {
-                    ULintRule* LintRule = Violation.ViolatedRule->GetDefaultObject<ULintRule>();
-                    check(LintRule != nullptr);
-
-                    TSharedPtr<FJsonObject> RuleJsonObject = MakeShareable(new FJsonObject);
-                    RuleJsonObject->SetStringField(TEXT("RuleGroup"), LintRule->RuleGroup.ToString());
-                    RuleJsonObject->SetStringField(TEXT("RuleTitle"), LintRule->RuleTitle.ToString());
-                    RuleJsonObject->SetStringField(TEXT("RuleDesc"), LintRule->RuleDescription.ToString());
-                    RuleJsonObject->SetStringField(TEXT("RuleURL"), LintRule->RuleURL);
-                    RuleJsonObject->SetNumberField(TEXT("RuleSeverity"), static_cast<int32>(LintRule->RuleSeverity));
-                    RuleJsonObject->SetStringField(TEXT("RuleRecommendedAction"), Violation.RecommendedAction.ToString());
-                    RuleViolationJsonObjects.Push(MakeShareable(new FJsonValueObject(RuleJsonObject)));
-                }
-
-                AssetJsonObject->SetArrayField(TEXT("Violations"), RuleViolationJsonObjects);
-            }
-
-            ViolatorJsonObjects.Add(MakeShareable(new FJsonValueObject(AssetJsonObject)));
-        }
-
-        // Save off our JSON to a string
-        RootJsonObject->SetArrayField(TEXT("Violators"), ViolatorJsonObjects);
-        FString JsonReport;
-        TSharedRef<TJsonWriter<TCHAR, TPrettyJsonPrintPolicy<TCHAR>>> Writer = TJsonWriterFactory<TCHAR, TPrettyJsonPrintPolicy<TCHAR>>::Create(&JsonReport);
-        FJsonSerializer::Serialize(RootJsonObject.ToSharedRef(), Writer);
-
-        // write json file if requested
-        if (Switches.Contains(TEXT("json")) || ParamsMap.Contains(FString(TEXT("json")))) {
+        // Write JSON file if requested
+        if (Switches.Contains("json") || ParamsMap.Contains(FString("json"))) {
             FDateTime Now = FDateTime::Now();
-            FString JsonOutputName = TEXT("lint-report-") + Now.ToString() + TEXT(".json");
+            FString JsonOutputName = "lint-report-" + Now.ToString() + ".json";
 
-            const FString LintReportPath = FPaths::ProjectSavedDir() / TEXT("LintReports");
+            const FString LintReportPath = FPaths::ProjectSavedDir() / "LintReports";
             FString FullOutputPath = LintReportPath / JsonOutputName;
 
-            if (ParamsMap.Contains(FString(TEXT("json")))) {
-                const FString JsonOutputOverride = *ParamsMap.FindChecked(FString(TEXT("json")));
+            if (ParamsMap.Contains("json")) {
+                const FString JsonOutputOverride = *ParamsMap.FindChecked(FString("json"));
                 if (FPaths::IsRelative(JsonOutputOverride)) {
-                    JsonOutputName = JsonOutputOverride;
-                    FullOutputPath = LintReportPath / JsonOutputName;
+                    FullOutputPath = LintReportPath / JsonOutputOverride;
                 } else {
                     FullOutputPath = JsonOutputOverride;
                 }
@@ -170,9 +105,10 @@ int32 ULinterCommandlet::Main(const FString& InParams) {
 
             FullOutputPath = FPaths::ConvertRelativePathToFull(FullOutputPath);
             IFileManager::Get().MakeDirectory(*FPaths::GetPath(FullOutputPath), true);
-
             UE_LOG(LinterCommandlet, Display, TEXT("Exporting JSON report to %s"), *FullOutputPath);
-            if (FFileHelper::SaveStringToFile(JsonReport, *FullOutputPath)) {
+            
+            const FString ReportString = LintResults->GenerateJsonReportString();
+            if (FFileHelper::SaveStringToFile(ReportString, *FullOutputPath)) {
                 UE_LOG(LinterCommandlet, Display, TEXT("Exported JSON report successfully."));
             } else {
                 UE_LOG(LinterCommandlet, Error, TEXT("Failed to export JSON report. Aborting. Returning error code 1."));
@@ -202,21 +138,7 @@ int32 ULinterCommandlet::Main(const FString& InParams) {
             IFileManager::Get().MakeDirectory(*FPaths::GetPath(FullOutputPath), true);
             UE_LOG(LinterCommandlet, Display, TEXT("Exporting HTML report to %s"), *FullOutputPath);
 
-            FString TemplatePath = FPaths::Combine(*IPluginManager::Get().FindPlugin(TEXT("Linter"))->GetBaseDir(), TEXT("Resources"), TEXT("LintReportTemplate.html"));
-            UE_LOG(LinterCommandlet, Display, TEXT("Loading HTML report template from %s"), *TemplatePath);
-
-            FString HTMLReport;
-            if (FFileHelper::LoadFileToString(HTMLReport, *TemplatePath)) {
-                UE_LOG(LinterCommandlet, Display, TEXT("Loading HTML report template successfully."));
-
-                HTMLReport.ReplaceInline(TEXT("{% TITLE %}"), *FPaths::GetBaseFilename(FPaths::GetProjectFilePath()));
-                HTMLReport.ReplaceInline(TEXT("{% RESULTS %}"), *ResultsString);
-                HTMLReport.ReplaceInline(TEXT("{% LINT_REPORT %}"), *JsonReport);
-            } else {
-                UE_LOG(LinterCommandlet, Error, TEXT("Failed to load HTML report template."));
-                return 1;
-            }
-
+            const FString HTMLReport = LintResults->GenerateHTML();
             if (FFileHelper::SaveStringToFile(HTMLReport, *FullOutputPath)) {
                 UE_LOG(LinterCommandlet, Display, TEXT("Exported HTML report successfully."));
             } else {
@@ -226,7 +148,7 @@ int32 ULinterCommandlet::Main(const FString& InParams) {
         }
     }
 
-    if (NumErrors > 0 || (Switches.Contains(TEXT("TreatWarningsAsErrors")) && NumWarnings > 0)) {
+    if (LintResults->Errors > 0 || (Switches.Contains(TEXT("TreatWarningsAsErrors")) && LintResults->Warnings > 0)) {
         UE_LOG(LinterCommandlet, Display, TEXT("Lint completed with errors. Returning error code 2."));
         return 2;
     }

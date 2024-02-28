@@ -139,7 +139,7 @@ TArray<FLintRuleViolation> FLintRuleViolation::AllRuleViolationsOfRuleGroup(cons
 TArray<UObject*> FLintRuleViolation::AllRuleViolationViolators(const TArray<FLintRuleViolation>& RuleViolationCollection) {
     TArray<UObject*> Violators;
     for (const FLintRuleViolation& RuleViolation : RuleViolationCollection) {
-        Violators.Add(RuleViolation.Violator.Get());
+        Violators.AddUnique(RuleViolation.Violator.Get());
     }
     return Violators;
 }

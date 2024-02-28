@@ -189,7 +189,7 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                         SNew(STextBlock)
                         .Text(LOCTEXT("MarketplaceNoErrorsRequired", "The Epic Marketplace requires you to have zero linting errors before submission and approval."))
                         .Visibility_Lambda([&]() {
-                            return (LintReport.IsValid() && LintReport->bHasRanReport && LintReport->NumErrors > 0 && LintReport->LastUsedRuleSet != nullptr && LintReport->LastUsedRuleSet->bShowMarketplacePublishingInfoInLintWizard) ? EVisibility::HitTestInvisible : EVisibility::Collapsed;
+                            return (LintReport.IsValid() && LintReport->bHasRanReport && LintReport->LintResults->Errors > 0 && LintReport->LastUsedRuleSet != nullptr && LintReport->LastUsedRuleSet->bShowMarketplacePublishingInfoInLintWizard) ? EVisibility::HitTestInvisible : EVisibility::Collapsed;
                         })
                     ]
                     // Title spacer
@@ -213,7 +213,7 @@ void SLintWizard::Construct(const FArguments& InArgs) {
                 + SWizard::Page()
                 .OnEnter(this, &SLintWizard::OnMarketplaceRecommendationsEntered)
                 .CanShow_Lambda([&]() {
-                    return LintReport.IsValid() && LintReport->bHasRanReport && LintReport->NumErrors <= 0 && LintReport->LastUsedRuleSet != nullptr && LintReport->LastUsedRuleSet->bShowMarketplacePublishingInfoInLintWizard;
+                    return LintReport.IsValid() && LintReport->bHasRanReport && LintReport->LintResults->Errors <= 0 && LintReport->LastUsedRuleSet != nullptr && LintReport->LastUsedRuleSet->bShowMarketplacePublishingInfoInLintWizard;
                 })
                 [
                     SNew(SVerticalBox)
