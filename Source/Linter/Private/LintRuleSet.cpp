@@ -1,8 +1,7 @@
 #include "LintRuleSet.h"
 
 #include "AnyObject_LinterDummyClass.h"
-#include "IPluginManager.h"
-#include "JsonObjectWrapper.h"
+#include "Interfaces/IPluginManager.h"
 #include "LintRunner.h"
 #include "Linter.h"
 #include "AssetRegistry/AssetRegistryModule.h"
@@ -25,6 +24,7 @@ TSharedPtr<FJsonObject> ULintResults::GenerateJsonReport() const {
     auto Report = MakeShared<FJsonObject>();
 
     Report->SetStringField("Project", FPaths::GetBaseFilename(FPaths::GetProjectFilePath()));
+    Report->SetStringField("LintRuleSet", LintRuleSet);
     Report->SetStringField("Result", Result.ToString());
     Report->SetNumberField("Warnings", Warnings);
     Report->SetNumberField("Errors", Errors);
@@ -125,6 +125,7 @@ ULintResults* ULintRuleSet::LintPath(TArray<FString> AssetPaths, FScopedSlowTask
     NamingConvention.LoadSynchronous();
 
     ULintResults* Results = NewObject<ULintResults>();
+    Results->LintRuleSet = NameForCommandlet;
 
     if (AssetPaths.Num() == 0) {
         AssetPaths.Push(TEXT("/Game"));

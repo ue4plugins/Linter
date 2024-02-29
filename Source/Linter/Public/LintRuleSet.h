@@ -23,7 +23,10 @@ UCLASS(BlueprintType, Blueprintable)
 class ULintResults : public UObject {
     GENERATED_BODY()
 
-public:
+public:    
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lint")
+    FString LintRuleSet;
+    
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Lint")
     int32 Warnings = 0;
     
