@@ -1,5 +1,7 @@
 // Copyright 2019-2020 Gamemakin LLC. All Rights Reserved.
 #include "LintRules/LintRule_Texture_Size_NotTooBig.h"
+
+#include "Linter.h"
 #include "LintRuleSet.h"
 
 ULintRule_Texture_Size_NotTooBig::ULintRule_Texture_Size_NotTooBig(const FObjectInitializer& ObjectInitializer) :
@@ -18,8 +20,15 @@ bool ULintRule_Texture_Size_NotTooBig::PassesRule(UObject* ObjectToLint, const U
 bool ULintRule_Texture_Size_NotTooBig::PassesRule_Internal_Implementation(UObject* ObjectToLint, const ULintRuleSet* ParentRuleSet, TArray<FLintRuleViolation>& OutRuleViolations) const {
     const UTexture2D* Texture = CastChecked<UTexture2D>(ObjectToLint);
 
-    const int32 TexSizeX = Texture->GetSizeX();
-    const int32 TexSizeY = Texture->GetSizeY();
+    // ToDo: Make Texture->GetSizeX() work again (possibly Bug in 5.3?)
+    const FTexturePlatformData* PlatformData = Texture->GetPlatformData();
+    if (!PlatformData) {
+        UE_LOG(LogLinter, Warning, TEXT("Could not get Platform Data for Texture!"))
+        return true;
+    }
+    
+    int32 TexSizeX = PlatformData->SizeX;
+    int32 TexSizeY = PlatformData->SizeY;
 
     // Check to see if textures are too big
     if (TexSizeX > MaxTextureSizeX || TexSizeY > MaxTextureSizeY) {
